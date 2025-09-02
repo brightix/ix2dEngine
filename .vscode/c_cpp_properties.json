@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:\\visual studio code\\x86_64-w64-mingw32\\include",
+                "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/include",
+                "${workspaceFolder}/Engine/Types",
+                "${workspaceFolder}/Engine/Header",
+                "${workspaceFolder}/Engine/Utilities",
+                "${workspaceFolder}/Engine/Enum",
+                "${workspaceFolder}/Engine/Structure",
+                "${workspaceFolder}/Engine/Window"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:\\visual studio code\\mingw64\\bin\\gcc.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++26",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
