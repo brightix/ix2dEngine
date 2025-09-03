@@ -1,9 +1,9 @@
 #include <iostream>
+#include <GameInstance.hpp>
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include "Actor.h"
 #include <FuncLib/ixStaticFuncLib.hpp>
-#include <GameInstance.hpp>
 #include "Content/ixLib/TestActor.h"
 using namespace std;
 int main()

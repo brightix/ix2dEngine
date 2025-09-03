@@ -8,7 +8,8 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
-                "${workspaceFolder}/Engine/Class/*.cpp",
+                //编译的源文件
+                "${workspaceFolder}/Engine/Source/*.cpp",
                 //SDL3
                 "-ID:/visual studio code/x86_64-w64-mingw32/include",
                 "-LD:/visual studio code/x86_64-w64-mingw32/lib",
@@ -26,6 +27,7 @@
                 "-I${workspaceFolder}/Engine/Window",
                 "-lSDL3",
                 "-lwinmm",
+                "-lSDL3_ttf",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

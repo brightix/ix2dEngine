@@ -2,10 +2,11 @@
 #include <windows.h>
 class Timer
 {
-    LARGE_INTEGER freq, start, end;
+    LARGE_INTEGER freq, start, end, last;
 public:
     Timer()
     {
+        last = {};
         QueryPerformanceFrequency(&freq);
     }
     void Start()
@@ -37,5 +38,18 @@ public:
             QueryPerformanceCounter(&now);
             elapsed = static_cast<double>(now.QuadPart - begin.QuadPart) / freq.QuadPart;
         } while (elapsed < duration);
+    }
+    //每次调用返回距上次调用的时间
+
+    double Click()
+    {
+        LARGE_INTEGER now;
+        double time = 0.0;
+        if(last.QuadPart != 0){
+            QueryPerformanceCounter(&now);
+            time = static_cast<double>(now.QuadPart - last.QuadPart) / freq.QuadPart;
+        }
+        QueryPerformanceCounter(&last);
+        return time;
     }
 };

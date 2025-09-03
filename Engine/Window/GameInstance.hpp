@@ -1,13 +1,15 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include <FuncLib/ixStaticFuncLib.hpp>
-#include <Actor.h>
 #include <vector>
 #include <memory>
-#include <Timer.hpp>
-#include <SystemConfig.hpp>
 #include <iostream>
-#include <Font.hpp>
+
+#include "Timer.hpp"
+#include "SystemConfig.hpp"
+#include "FuncLib/ixStaticFuncLib.hpp"
+#include "Actor.h"
+#include "Font.hpp"
+
 class GameInstance
 {
     SDL_Renderer* renderer;
@@ -22,7 +24,7 @@ class GameInstance
 
     //Tick计时器
     Timer TickTimer;
-
+    Timer ConsumeTimer;
 private:
     GameInstance()
     {
@@ -62,39 +64,49 @@ public:
         static GameInstance instance;
         return instance;
     }
-    void Tick()
-    {
-        bool running = true;
-        while (running) {
-            SDL_Event e;
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_EVENT_QUIT) {
-                    running = false;
-                }
+void Tick()
+{
+    bool running = true;
+    TickTimer.Start(); // 关键：第一次先 Start
+    while (running) {
+        ConsumeTimer.Start();
+        deltaTime = TickTimer.End();   // 上一帧耗时
+        TickTimer.Start();             // 重置计时
+        
+        std::cout << deltaTime << std::endl;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_EVENT_QUIT) {
+                running = false;
             }
-
-            // 清屏（黑色）
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
-
-            // 在中间画一个红色矩形
-            //场景Tick
-            for(auto& a : Actors){
-                a->Tick(deltaTime);
-            }
-            //std::cout << deltaTime << std::endl;
-            //控件Tick
-            
-            // 显示到窗口
-            SDL_RenderPresent(renderer);
-            TickTimer.Delay((1.0/SysConfig.TargetFps) - TickTimer.End());
-            deltaTime = TickTimer.End();
-            TickTimer.Start();
         }
+
+        // 清屏
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        // 场景逻辑
+        for (auto& a : Actors) {
+            a->Tick(deltaTime);
+        }
+
+        // FPS 显示
+        double fps = (deltaTime > 0) ? (1.0 / deltaTime) : 0.0;
+        auto tex = FontRenderer::Instance().GetTextTexture("FPS: " + std::to_string(fps));
+        SDL_FRect dst = {0,0,(float)tex->w,(float)tex->h};
+        SDL_RenderTexture(renderer, tex.get(), nullptr, &dst);
+
+        // 显示到窗口
+        SDL_RenderPresent(renderer);
+
+        // 控制帧率
+        //double frameDuration = (1.0 / SysConfig.TargetFps) - deltaTime;
+        TickTimer.Delay((1.0 / SysConfig.TargetFps) - ConsumeTimer.End());
     }
+}
     void Ready()
     {
-        TickTimer.Start();
+        //TickTimer.Start();
     }
     ~GameInstance()
     {    
@@ -108,7 +120,10 @@ public:
     {
         Actors.push_back(actor);
     }
-
+    void Init()
+    {
+        //fontRenderer();
+    }
     Vec2d<double> GetViewportSize() { return SysConfig.ViewportSize; }
     SDL_Renderer* GetRenderer() { return renderer; }
 };

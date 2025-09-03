@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "D:\\visual studio code\\x86_64-w64-mingw32\\include",
+                "D:/visual studio code/x86_64-w64-mingw32/include",
                 "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/include",
                 "${workspaceFolder}/Engine/Types",
                 "${workspaceFolder}/Engine/Header",

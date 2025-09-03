@@ -1,28 +1,29 @@
 #pragma once
+
 #include <SDL3_ttf/SDL_ttf.h>
-#include <FuncLib/ixStaticFuncLib.hpp>
-#include <DataStructure/LRUCache.hpp>
+#include <filesystem>
+#include <unordered_map>
+#include "Exception.hpp"
+#include "FuncLib/ixStaticFuncLib.hpp"
+#include "DataStructure/LRUCache.hpp"
+
 class FontRenderer
 {
-    LRUCache<std::string,TTF_Font*> fontMap;
+    using Texture = std::shared_ptr<SDL_Texture>;
+    SDL_Renderer* renderer;
+    LRUCache<std::string,TTF_Font*> fontCache;
+    std::unordered_map<std::string,std::string> fontMap;
+    SDL_Color color;
+    FontRenderer();
 public:
-    FontRenderer() : fontMap(3)
-    {
-        fontMap.onEvict = [](TTF_Font*& font){
-            if(font) {
-                TTF_CloseFont(font); // 释放字体资源
-                font = nullptr;      // 避免悬空指针
-            }
-        };  
-        TTF_Font* font = TTF_OpenFont("C:/Windows/Fonts/Arial.ttf", 24); // 字体路径 + 字号
-        if (!font) {
-            LogToFile("字体文件加载失败",Error);
-            return;
-        }
-    }
-    ~FontRenderer()
-    {
-        TTF_Quit();
-    }
-
+    //FontRenderer(size_t size);
+    static FontRenderer& Instance();
+    //获取字体
+    TTF_Font* GetFont(std::string fontName,size_t size);
+    //无缓存 加载字体
+    bool LoadFont(std::string fontName,size_t size);
+    Texture GetTextTexture(std::string str,std::string fontName = "simkai", size_t fontSize = 24, SDL_Color col = {255,255,255,255});
+    ~FontRenderer();
+private:
+    void Init();
 };
