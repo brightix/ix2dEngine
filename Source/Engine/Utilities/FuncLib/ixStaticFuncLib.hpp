@@ -25,6 +25,11 @@ inline void LogToFile(const std::string str, LogLevel level = LogLevel::Tip)
     logText.append(" [" + std::string(magic_enum::enum_name(level)) + "]: " + str);
     file << logText << std::endl;
     file.close();
+    if (level == FatalError)
+    {
+        std::cerr << "致命错误" << std::endl;
+        std::abort();
+    }
 }
 
 inline void PrintString(std::string str)

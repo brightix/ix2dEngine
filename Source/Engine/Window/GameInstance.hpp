@@ -10,12 +10,13 @@
 #include "Structure/SystemConfig.hpp"
 #include "Enum/LogLevel.h"
 #include "Classes/Actor.h"
+#include "Classes/GameModeBase.hpp"
 
 class GameInstance
 {
     SDL_Renderer* renderer;
     SDL_Window* window;
-    std::vector<std::shared_ptr<Actor>> Actors;
+    std::vector<sptr<Actor>> Actors;
 
     //系统数据
     SystemConfig SysConfig;
@@ -24,8 +25,11 @@ class GameInstance
     //std::vector<std::shared_ptr<UserWidget>> Actors;
 
     //Tick计时器
-    Timer TickTimer;
-    Timer ConsumeTimer;
+    sptr<Timer> TickTimer;
+    sptr<Timer> ConsumeTimer;
+
+    //游戏模式
+    sptr<GameModeBase> gameMode;
 private:
     GameInstance()
     {
@@ -68,11 +72,11 @@ public:
 void Tick()
 {
     bool running = true;
-    TickTimer.Start(); // 关键：第一次先 Start
+    TickTimer->Start(); // 关键：第一次先 Start
     while (running) {
-        ConsumeTimer.Start();
-        deltaTime = TickTimer.End();   // 上一帧耗时
-        TickTimer.Start();             // 重置计时
+        ConsumeTimer->Start();
+        deltaTime = TickTimer->End();   // 上一帧耗时
+        TickTimer->Start();             // 重置计时
         
         //std::cout << deltaTime << std::endl;
         SDL_Event e;
@@ -87,6 +91,7 @@ void Tick()
         SDL_RenderClear(renderer);
 
         // 场景逻辑
+        gameMode->Tick(deltaTime);
         for (auto& a : Actors) {
             a->Tick(deltaTime);
         }
@@ -102,7 +107,7 @@ void Tick()
 
         // 控制帧率
         //double frameDuration = (1.0 / SysConfig.TargetFps) - deltaTime;
-        TickTimer.Delay((1.0 / SysConfig.TargetFps) - ConsumeTimer.End());
+        TickTimer->Delay((1.0 / SysConfig.TargetFps) - ConsumeTimer->End());
     }
 }
     void Ready()

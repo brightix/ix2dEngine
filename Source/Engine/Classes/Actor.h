@@ -1,8 +1,8 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include "Types/Transform.hpp"
 
-class Object{};
+#include "Object.h"
+#include "Types/Transform.hpp"
 
 class Actor : public Object
 {
@@ -16,10 +16,11 @@ public:
 public:
     Actor();
     Actor(Transform tf);
+    ~Actor() override;
 public:
 
     virtual void EventBegin(){}
-    virtual void Tick(double delta){}
+    virtual void Tick(double deltaTime){}
     virtual void EventEnd(){}
     //attribution
 

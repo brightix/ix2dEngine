@@ -1,13 +1,16 @@
 #pragma once
 #include <iostream>
 
-class Controller 
+#include "Pawn.hpp"
+#include "Window/GlobalMacros.hpp"
+
+class Controller : public Actor
 {
+    sptr<Pawn> controlled_pawn;
+
 public:
-    Controller()
-    {
-        std::cout << "hellop" << std::endl;
-    }
+    Controller();
     ~Controller()= default;
+    void Tick(double delta) override;
 };
 

@@ -15,3 +15,5 @@ Actor::Actor(Transform tf)
     transform = tf;
     Construct();
 }
+
+Actor::~Actor() {}
