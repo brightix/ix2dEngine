@@ -16,7 +16,7 @@ void EventSystem::CallEvent(const std::string& event_name, std::optional<EventPa
     }
     else
     {
-        LogToFile("执行了不存在的事件，事件名：" + event_name);
+        Log("执行了不存在的事件，事件名：" + event_name);
     }
 }
 

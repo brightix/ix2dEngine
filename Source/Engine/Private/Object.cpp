@@ -24,3 +24,4 @@ void Object::AddEventDispatcher(const std::string& event_name, EventMethod event
 
     dispatcher_system.AddEventDispatcher(event_name,event_method);
 }
+

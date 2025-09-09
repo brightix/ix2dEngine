@@ -4,8 +4,8 @@
 
 class GameModeBase : public Actor
 {
-    sptr<Controller> controller;
-    sptr<Pawn> AutoGeneratePawn;
+    GCPtr<Controller> controller;
+    GCPtr<Pawn> AutoGeneratePawn;
 
 public:
     GameModeBase();

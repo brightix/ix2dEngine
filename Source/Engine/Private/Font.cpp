@@ -3,16 +3,16 @@
 #include "Window/Font.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "Window/GameInstance.hpp"
+#include "Window/GameEngine.hpp"
 
 void FontRenderer::Init()
 {
     if (!TTF_Init()) {
-        LogToFile("TTF初始化失败");
+        Log("TTF初始化失败");
         throw std::runtime_error("TTF_Init failed: " + std::string(SDL_GetError()));
         return;
     }
-    renderer = GameInstance::Instance().GetRenderer();
+    renderer = GameEngine::Instance().GetRenderer();
     fontCache.onEvict = [](TTF_Font*& font){
         if(font) {
             TTF_CloseFont(font); // 释放字体资源
@@ -91,7 +91,7 @@ FontRenderer::Texture FontRenderer::GetTextTexture(std::string str,std::string f
         SDL_DestroySurface(surface); // 表面用完就释放
         return texture;
     }catch(const Exception& e){
-        LogToFile(e.what());
+        Log(e.what());
         //std::cout << e.what() << endl;
     }
     return std::make_shared<SDL_Texture>();

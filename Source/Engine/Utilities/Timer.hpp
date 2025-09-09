@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
-class Timer
+#include "Classes/Object.h"
+
+class Timer : public Object
 {
     LARGE_INTEGER freq, start, end, last;
 public:

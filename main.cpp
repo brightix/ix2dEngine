@@ -4,18 +4,23 @@
 #include "Classes/Actor.h"
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
-#include "Window/GameInstance.hpp"
+#include "Window/GameEngine.hpp"
 #include "Classes/Controller.hpp"
 #include "Content/Public/TestActor.h"
+#include <fcntl.h>
 using namespace std;
 int main()
 {
+#ifdef _WIN32
+    // 设置控制台为 UTF-8
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    GameEngine::Instance();
     Actor a(Transform(Vec2d<double>(50.0,50.0),{}));
-    GameInstance::Instance().AddActor(make_shared<TestActor>(1));
-    GameInstance::Instance().AddActor(make_shared<TestActor>(5));
-    //娓告垙瀹炰緥
-    GameInstance::Instance().Ready();
-    GameInstance::Instance().Tick();
+	GCPtr<Actor> c = make_GCPtr<Actor>(GameEngine::Instance().GetGameWorld().get());
+	//游戏实例
+    GameEngine::Instance().Ready();
+    GameEngine::Instance().Tick();
 
 
     return 0;

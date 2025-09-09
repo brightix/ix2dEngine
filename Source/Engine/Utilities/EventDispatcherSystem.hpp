@@ -2,7 +2,6 @@
 #include "Event.hpp"
 #include "Types/EventParam.hpp"
 
-
 using EventMethod = std::function<void(std::optional<EventParams>)>;
 
 class EventDispatcherSystem

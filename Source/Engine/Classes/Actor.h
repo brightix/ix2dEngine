@@ -15,9 +15,8 @@ public:
     SDL_Window* window;
 public:
     Actor();
-    Actor(Transform tf);
-    ~Actor() override;
-public:
+	explicit Actor(Transform tf);
+	~Actor() override;
 
     virtual void EventBegin(){}
     virtual void Tick(double deltaTime){}
@@ -28,6 +27,12 @@ public:
     //Get
     Vec2d<float> GetWorldLocation();
     Vec2d<float> GetRelativeLocation();
+	template<typename T>
+	GCPtr<T> SpawnActorFromSelf(T* actor)
+	{
+		return GCPtr<T>(this,actor);
+	}
+
 private:
     void Construct();
 };

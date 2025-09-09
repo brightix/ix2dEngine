@@ -15,6 +15,6 @@ void Event::Execute(std::optional<EventParams>&& event_params)
     }
     else
     {
-        LogToFile("调用了空事件，event_func为nullptr");
+        Log("调用了空事件，event_func为nullptr");
     }
 }

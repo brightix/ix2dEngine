@@ -4,6 +4,7 @@
 #include "Types/EventParam.hpp"
 #include "Utilities/EventDispatcherSystem.hpp"
 
+class GameEngine;
 using namespace std;
 class TestActor : public Actor
 {
@@ -14,7 +15,7 @@ public:
         this->name = "ixActor";
         EventParams epp;
         epp.Add("name",name);
-        EventMethod e([](std::optional<EventParams> ep) {
+        EventMethod e([](std::optional<EventParams> e	p) {
             std::cout << *ep->Get<string>("name") << std::endl;
         });
         AddCustomEvent("testMethod",e);
@@ -22,9 +23,8 @@ public:
     }
     void Tick(double delta) override
     {
-        SDL_FRect rect = { ((float)r)*100, 250, 100, 100 };
-        SDL_SetRenderDrawColor(renderer, r*10, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &rect);
+    	//GCPtr<ExternalWrapper<SDL_Texture>>(this,ExternalWrapper<SDL_Texture>(SDL_Texture({})))
+    	GameEngine::Instance().RenderTexture(r);
 
     }
 };

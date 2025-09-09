@@ -1,9 +1,19 @@
 #include "Classes/Actor.h"
-#include "Window/GameInstance.hpp"
+#include "Window/GameEngine.hpp"
+
+Vec2d<float> Actor::GetWorldLocation()
+{
+	return {};
+}
+
+Vec2d<float> Actor::GetRelativeLocation()
+{
+	return {};
+}
 
 void Actor::Construct()
 {
-    renderer = GameInstance::Instance().GetRenderer();
+    //renderer = GameEngine::Instance().GetRenderer();
 }
 Actor::Actor() : Object()
 {
