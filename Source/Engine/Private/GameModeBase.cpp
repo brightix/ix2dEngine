@@ -9,7 +9,7 @@ GameModeBase::~GameModeBase() {}
 
 void GameModeBase::Tick(double deltaTime)
 {
-    Actor::Tick(deltaTime);
+    //Actor::Tick(deltaTime);
 //控制器
     controller->Tick(deltaTime);
 

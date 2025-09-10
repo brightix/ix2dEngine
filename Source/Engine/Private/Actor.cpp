@@ -1,5 +1,5 @@
 #include "Classes/Actor.h"
-#include "Window/GameEngine.hpp"
+#include "../System/GameEngine.hpp"
 
 Vec2d<float> Actor::GetWorldLocation()
 {

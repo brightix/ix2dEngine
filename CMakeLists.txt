@@ -20,7 +20,7 @@ target_include_directories(MyProject PRIVATE
         "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/include"
         "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/include"
         "${CMAKE_SOURCE_DIR}/Source/Engine"
-        "${CMAKE_SOURCE_DIR}/Source/Content"
+        "${CMAKE_SOURCE_DIR}/Content/Public"
 )
 
 # 链接库目录

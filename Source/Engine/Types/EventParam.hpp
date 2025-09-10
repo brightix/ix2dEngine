@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <unordered_map>
 
-#include "Window/GlobalMacros.hpp"
+#include "../System/GlobalMacros.hpp"
 
 //
 // struct EventParams

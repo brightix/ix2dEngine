@@ -30,7 +30,7 @@ public:
 	template<typename T>
 	GCPtr<T> SpawnActorFromSelf(T* actor)
 	{
-		return GCPtr<T>(this,actor);
+		return GCPtr<T>(actor, this);
 	}
 
 private:

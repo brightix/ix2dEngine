@@ -1,5 +1,5 @@
 #pragma once
-#include "Window/GlobalMacros.hpp"
+#include "System/GlobalMacros.hpp"
 
 class Widget : public Object
 {

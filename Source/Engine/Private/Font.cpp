@@ -1,9 +1,9 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "Window/Font.hpp"
+#include "../System/Font.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "Window/GameEngine.hpp"
+#include "../System/GameEngine.hpp"
 
 void FontRenderer::Init()
 {
@@ -21,7 +21,7 @@ void FontRenderer::Init()
     };
 
     //遍历所有字体
-    std::string path = "Source/Engine/Window/Fonts/";
+    std::string path = "Source/Engine/System/Fonts/";
     for(const auto& entry : std::filesystem::directory_iterator(path))
     {
         if(entry.is_regular_file())

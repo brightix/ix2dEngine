@@ -1,5 +1,5 @@
 #pragma once
-#include "Window/GCObject.hpp"
+#include "System/GCObject.hpp"
 
 template<typename T,typename...Args>
 struct ExternalWrapper : GCObject

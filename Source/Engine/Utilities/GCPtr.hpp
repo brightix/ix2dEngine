@@ -1,5 +1,5 @@
 #pragma once
-#include "Window/GCObject.hpp"
+#include "System/GCObject.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include <cxxabi.h>
 inline std::vector<GCObject*> GCAllObjects;
@@ -12,52 +12,75 @@ class GCPtr
 	// 构造
 public:
 	GCPtr() : ptr(nullptr), outer(nullptr) {}
-	explicit GCPtr(GCObject* outer, T* p) : ptr(p), outer(outer)
+	//新对象
+	explicit GCPtr(T* p, GCObject* outer) : ptr(p), outer(outer)
 	{
 		static_assert(std::is_base_of_v<GCObject, T>, "T 必须继承自 GCObject");
-		if(outer)
-		{
-			outer->referencing.push_back(static_cast<GCObject*>(ptr));
-			static_cast<GCObject*>(ptr)->referenced.push_back(outer);
-		}
-		else
+		if(!outer)
 		{
 			Log("构造了野指针");
 		}
+		GCLink(ptr,outer);
 		GCAllObjects.push_back(ptr);
 	}
+	//获取新引用
+	explicit GCPtr(T* p) : ptr(p), outer(nullptr) {}
 
-	GCPtr(const GCPtr& other)
+	//派生->基类
+	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(nullptr) {}
+
+	//给outer添加新对象引用
+	GCPtr(const GCPtr& other, GCObject* outer)
 	{
 		ptr = other.ptr;
-		outer = other.outer;
+		this->outer = outer;
+		GCLink(ptr,outer);
 	}
+	GCPtr(const GCPtr& other) : ptr(nullptr), outer(nullptr)
+	{
+		GCUnLink(ptr, outer);
+		ptr = other.Get();
+	}
+
 	GCPtr& operator=(const GCPtr& other)
 	{
+		GCUnLink(ptr,outer);
 		ptr = other.ptr;
-		outer = other.outer;
 		return *this;
 	}
 
+	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+	GCPtr& operator=(const GCPtr<U>& other) {
+		GCUnLink(ptr,outer);
+		ptr = other.Get();
+		outer = nullptr;
+		return *this;
+	}
 	// 移动赋值
 	GCPtr& operator=(GCPtr&& other) noexcept
 	{
 		if (this != &other)
 		{
+			GCUnLink(ptr,outer);
 			ptr = other.ptr;
 			outer = other.outer;
+			GCLink(ptr,outer);
 		}
 		return *this;
 	}
-	//移动构造
-	// GCPtr(GCPtr&& other) noexcept : ptr(other.ptr) ,outer(other.outer)
-	// {
-	// 	outer->referencing.push_back(ptr)
-	// 	// TODO: 移动时更新 outer->references，如果需要
-	// }
+	//移动构造 GC不安全
+	GCPtr(GCPtr&& other) noexcept : ptr(other.ptr) ,outer(nullptr) {}
 
+	void SetOwner(GCObject* owner)
+	{
+		outer = owner;
+		GCLink(ptr,owner);
+	}
+	//assets
 	~GCPtr() {}
-	T* get() const { return ptr; }
+	T* Get() const { return ptr; }
+	GCObject* GetOuter() const { return outer; }
 	T* operator->() const
 	{
 		return ptr;
@@ -70,15 +93,42 @@ public:
 	{
 		return ptr != nullptr;
 	}
+//绑定GC关系
+	static void GCLink(GCObject* child, GCObject* parent)
+	{
+		if (!child || !parent)
+		{
+			Log("GCLink 绑定到空指针");
+			return ;
+		}
+		child->referenced.push_back(parent);
+		parent->referencing.push_back(child);
+	}
+	static void GCUnLink(GCObject* child, GCObject* parent)
+	{
+		if (!child || !parent)
+		{
+			Log("GCLink 绑定到空指针");
+			return ;
+		}
+		// 从 parent->referencing 移除 child
+		auto& refs = parent->referencing;
+		std::erase(refs, child);
+
+		// 从 child->referenced 移除 parent
+		auto& parents = child->referenced;
+		std::erase(parents, parent);
+	}
 };
 
-
-
-template<typename T, typename ...Args>
-inline GCPtr<T> make_GCPtr(GCObject* outer,Args&&...args)
+template<typename T>
+GCPtr<T> share_GCPtr(T* ptr, GCObject* owner)
 {
-	return GCPtr<T>(outer, new T(std::forward<Args>(args)...));
+
+	return GCPtr<T>(ptr,owner);
 }
+
+
 
 
 inline int GCSweep()

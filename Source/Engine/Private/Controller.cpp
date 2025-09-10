@@ -7,19 +7,19 @@
 #include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
 #include "Utilities/json.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "Window/GameEngine.hpp"
+#include "../System/GameEngine.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 Controller::Controller() : show_mouse_cursor(false)
 {
-	controlled_pawn = make_GCPtr<Pawn>(this);
-	input_map = make_GCPtr<InputMap>(this);
+	controlled_pawn = make_GCPtr<Pawn>();
+	input_map = make_GCPtr<InputMap>();
 }
 
 void Controller::Tick(double delta)
 {
-    Actor::Tick(delta);
+    //Actor::Tick(delta);
     SDL_Event event;
 
     while (SDL_PollEvent(&event))

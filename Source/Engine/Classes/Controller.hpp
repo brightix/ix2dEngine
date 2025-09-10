@@ -4,7 +4,7 @@
 #include "Actor.h"
 #include "InputMap.hpp"
 #include "Types/Vec.hpp"
-#include "Window/GlobalMacros.hpp"
+#include "../System/GlobalMacros.hpp"
 
 class Object;
 class Pawn;

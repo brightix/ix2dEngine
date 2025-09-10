@@ -36,7 +36,7 @@ struct EventParams : GCObject
 		auto it = values.find(val_name);
 		if (it != values.end())
 		{
-			return static_cast<EventParam<T>*>(it->second.get())->value;
+			return static_cast<EventParam<T>*>(it->second.Get())->value;
 		}
 		return std::nullopt;
 	}
@@ -45,7 +45,7 @@ struct EventParams : GCObject
 	void Add(const std::string& val_name, U&& v)
 	{
 		using W = std::decay_t<U>;
-		values[val_name] = GCPtr<IEventParam>(this, static_cast<IEventParam*>(new EventParam<W>(v)));
+		values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
 	}
 
 

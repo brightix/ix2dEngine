@@ -4,7 +4,7 @@
 #include "Classes/Actor.h"
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
-#include "Window/GameEngine.hpp"
+#include "System/GameEngine.hpp"
 #include "Classes/Controller.hpp"
 #include "Content/Public/TestActor.h"
 #include <fcntl.h>
@@ -15,11 +15,10 @@ int main()
     // 设置控制台为 UTF-8
     SetConsoleOutputCP(CP_UTF8);
 #endif
-    GameEngine::Instance();
-    Actor a(Transform(Vec2d<double>(50.0,50.0),{}));
-	GCPtr<Actor> c = make_GCPtr<Actor>(GameEngine::Instance().GetGameWorld().get());
+    auto game_engine = GameEngine::Instance();
 	//游戏实例
-    GameEngine::Instance().Ready();
+	//
+    GameEngine::Instance().Construct();
     GameEngine::Instance().Tick();
 
 
