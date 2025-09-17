@@ -18,6 +18,17 @@ struct Vec2d
         x = static_cast<T>(V.x);
         y = static_cast<T>(V.y);
     }
+	//template<type>
+	void operator+=(Vec2d<T> other)
+    {
+	    x+=other.x;
+    	y+=other.y;
+    }
+	template<typename U>
+	Vec2d<U> operator*(U val)
+    {
+	    return Vec2d<U>(x*val,y*val);
+    }
 };
 
 template<typename T>

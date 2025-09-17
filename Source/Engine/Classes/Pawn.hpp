@@ -1,10 +1,12 @@
 #pragma once
 #include "Classes/Actor.h"
 #include "SubSystem/EnhancedInputSubSystem.hpp"
+#include "System/Texture.hpp"
 
 class Pawn : public Actor
 {
 	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
+	//GCPtr<> sprite;
 public:
     Pawn();
     ~Pawn() override;

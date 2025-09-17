@@ -64,5 +64,5 @@ public:
     SDL_Renderer* GetRenderer() { return renderer; }
     GCPtr<GameWorld> GetGameWorld();
 //Render
-	void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
+	void RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location);
 };

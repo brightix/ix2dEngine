@@ -9,7 +9,7 @@
 class GameWorld : public Object
 {
 
-	std::vector<GCPtr<Actor>> Actors;
+	std::vector<GCPtr<Actor>> actors;
 	//游戏模式
 	GCPtr<GameModeBase> game_mode;
 
@@ -30,12 +30,21 @@ public:
 	GCPtr<T> SpawnActorFromClass(Args...args)
 	{
 		GCPtr<T> actor = make_GCPtr<T>(std::forward<Args>(args)...);
-		Actors.emplace_back(actor);
+		actors.emplace_back(actor);
+		return actor;
+	}
+	template<typename T>
+	GCPtr<T> SpawnActorFromClass(T* actor_raw)
+	{
+		GCPtr<T> actor = GCPtr<T>(actor_raw,this);
+		actors.emplace_back(actor_raw);
 		return actor;
 	}
 
 
-
+//Sys
+	void ConstructWorld();
+	void AddToWorld(GCPtr<Actor> actor);
 	//Debug限定
 	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
 

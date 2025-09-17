@@ -55,6 +55,9 @@ void GameEngine::Tick()
 
 		// 场景逻辑
 		game_world->Tick(delta_time);
+
+
+
 		// FPS 显示
 		double fps = (delta_time > 0) ? (1.0 / delta_time) : 0.0;
 		auto tex = FontRenderer::Instance().GetTextTexture("FPS: " + std::to_string(fps));
@@ -73,6 +76,7 @@ void GameEngine::Construct()
 {
 	Object::Construct();
 	game_world->Construct();
+	game_world->ConstructWorld();
 }
 
 GameEngine::~GameEngine()
@@ -89,11 +93,11 @@ GCPtr<GameWorld> GameEngine::GetGameWorld()
 	return game_world;
 }
 
-void GameEngine::RenderTexture(GCPtr<Texture> texture, SDL_FRect location)
+void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)
 {
 	//SDL
-	GCPtr t1(texture.Get(),this);
-	GCPtr<Texture> t2 = share_GCPtr(texture.Get(),this);
+	//GCPtr t1(texture.Get(),this);
+	//GCPtr<Texture> t2 = share_GCPtr(texture.Get(),this);
 	SDL_RenderTexture(renderer,texture.Get()->texture,nullptr,&location);
 
 }

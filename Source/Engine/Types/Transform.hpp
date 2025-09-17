@@ -5,9 +5,9 @@
 
 struct Transform
 {
-    Vec2d<double> Location;
+    Vec2d<float> Location;
     Rotation rotation;
     
     Transform() : rotation({}),Location({}) {}
-    Transform(Vec2d<double> Location_,Rotation rotation_) : Location(Location_),rotation(rotation_) {}
+    Transform(const Vec2d<float> Location_, const Rotation rotation_) : Location(Location_),rotation(rotation_) {}
 };

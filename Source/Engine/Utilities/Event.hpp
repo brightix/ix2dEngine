@@ -58,7 +58,7 @@ struct Event
 	//事件方法
     std::function<void(std::optional<EventParams>)> event_func;
 
-    explicit Event(const std::string& event_name, std::function<void(std::optional<EventParams>)> event_func);
+    explicit Event(const std::string& event_name, std::function<void(std::optional<EventParams>)> event_func = {});
 
     void Execute(std::optional<EventParams>&& event_params = std::nullopt);
 

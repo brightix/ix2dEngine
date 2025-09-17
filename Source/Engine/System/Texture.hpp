@@ -3,13 +3,15 @@
 #include "Classes/Object.h"
 #include "Types/Vec.hpp"
 
-struct Texture : public Object
+struct StaticTexture : public Object
 {
 	SDL_Texture* texture;
+	float w;
+	float h;
 public:
-    Texture();
-	Texture(Vec2d<float> size, SDL_Color color);
-    ~Texture()= default;
+    StaticTexture();
+	StaticTexture(Vec2d<float> size, SDL_Color color);
+    ~StaticTexture()= default;
 	SDL_Texture* operator()() const
 	{
 		return texture;

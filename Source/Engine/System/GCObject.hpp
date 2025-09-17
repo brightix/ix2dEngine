@@ -17,7 +17,7 @@ struct GCObject
 	{
 		return GCPtr<T>(new T(std::forward<Args>(args)...), this);
 	}
-	template<typename T, typename ...Args>
+	template<typename T>
 	GCPtr<T> make_GCPtr(T* p)
 	{
 		return GCPtr<T>(p, this);

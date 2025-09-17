@@ -7,11 +7,12 @@ Pawn::Pawn()
 {
 	enhanced_input_sub_system = SpawnActorFromSelf(new EnhancedInputSubSystem());
 
-	enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[](EnhancedInputParam<bool> eip) {
+	enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[this](EnhancedInputParam<bool> eip) {
 		auto f = eip.status;
 		switch (f)
 		{
 			case Triggered:
+				this->AddWorldLocation(UpDir*1.f);
 				break;
 			case EnhancedInputParamStatus::Start:
 				printf("%s\n",eip.input_action.key_name.c_str());
@@ -79,7 +80,7 @@ Pawn::~Pawn()= default;
 void Pawn::Tick(double deltaTime)
 {
     Actor::Tick(deltaTime);
-
+	RenderOnScreen();
 }
 
 void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param)

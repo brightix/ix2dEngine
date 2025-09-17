@@ -20,8 +20,9 @@ public:
 		{
 			Log("构造了野指针");
 		}
-		GCLink(ptr,outer);
+		//GCLink(ptr,outer);
 		GCAllObjects.push_back(ptr);
+		//AddToObject();
 	}
 	//获取新引用
 	explicit GCPtr(T* p) : ptr(p), outer(nullptr) {}
@@ -37,11 +38,8 @@ public:
 		this->outer = outer;
 		GCLink(ptr,outer);
 	}
-	GCPtr(const GCPtr& other) : ptr(nullptr), outer(nullptr)
-	{
-		GCUnLink(ptr, outer);
-		ptr = other.Get();
-	}
+	/// 以下弱引用
+	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(nullptr) {}
 
 	GCPtr& operator=(const GCPtr& other)
 	{
@@ -49,7 +47,7 @@ public:
 		ptr = other.ptr;
 		return *this;
 	}
-
+	//
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
 	GCPtr& operator=(const GCPtr<U>& other) {
 		GCUnLink(ptr,outer);
@@ -57,7 +55,7 @@ public:
 		outer = nullptr;
 		return *this;
 	}
-	// 移动赋值
+	// 移动赋值 [强引用] 给make_GCPtr用的
 	GCPtr& operator=(GCPtr&& other) noexcept
 	{
 		if (this != &other)
@@ -67,16 +65,17 @@ public:
 			outer = other.outer;
 			GCLink(ptr,outer);
 		}
+
 		return *this;
 	}
-	//移动构造 GC不安全
-	GCPtr(GCPtr&& other) noexcept : ptr(other.ptr) ,outer(nullptr) {}
-
-	void SetOwner(GCObject* owner)
+	//移动构造 [废弃] GC不安全
+	GCPtr(GCPtr&& other) noexcept
 	{
-		outer = owner;
-		GCLink(ptr,owner);
-	}
+		ptr = other.ptr;
+		outer = other.outer;
+	} // noexcept : ptr(other.ptr) ,outer(nullptr) {}
+
+
 	//assets
 	~GCPtr() {}
 	T* Get() const { return ptr; }
@@ -93,12 +92,18 @@ public:
 	{
 		return ptr != nullptr;
 	}
+	void SetOwner(GCObject* owner)
+	{
+		outer = owner;
+		GCLink(ptr,owner);
+	}
 //绑定GC关系
 	static void GCLink(GCObject* child, GCObject* parent)
 	{
 		if (!child || !parent)
 		{
-			Log("GCLink 绑定到空指针");
+			//Log("GCLink 绑定到空指针");
+			std::cout << "绑定到空指针" << std::endl;
 			return ;
 		}
 		child->referenced.push_back(parent);
@@ -108,7 +113,8 @@ public:
 	{
 		if (!child || !parent)
 		{
-			Log("GCLink 绑定到空指针");
+			//Log("GCLink 绑定到空指针");
+			std::cout << "接触到空指针" << std::endl;
 			return ;
 		}
 		// 从 parent->referencing 移除 child
@@ -128,7 +134,10 @@ GCPtr<T> share_GCPtr(T* ptr, GCObject* owner)
 	return GCPtr<T>(ptr,owner);
 }
 
-
+inline void AddToObject(GCObject* ptr)
+{
+	GCAllObjects.push_back(ptr);
+}
 
 
 inline int GCSweep()

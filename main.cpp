@@ -8,6 +8,8 @@
 #include "Classes/Controller.hpp"
 #include "Content/Public/TestActor.h"
 #include <fcntl.h>
+
+#include "Classes/Pawn.hpp"
 using namespace std;
 int main()
 {
@@ -15,11 +17,12 @@ int main()
     // 设置控制台为 UTF-8
     SetConsoleOutputCP(CP_UTF8);
 #endif
-    auto game_engine = GameEngine::Instance();
+    auto& game_engine = GameEngine::Instance();
 	//游戏实例
 	//
-    GameEngine::Instance().Construct();
-    GameEngine::Instance().Tick();
+    game_engine.Construct();
+
+    game_engine.Tick();
 
 
     return 0;

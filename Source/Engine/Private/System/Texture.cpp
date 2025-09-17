@@ -2,10 +2,12 @@
 
 #include "System/GameEngine.hpp"
 
-Texture::Texture() : texture(nullptr) {}
+StaticTexture::StaticTexture() : texture(nullptr) {}
 
-Texture::Texture(Vec2d<float> size, SDL_Color color)
+StaticTexture::StaticTexture(Vec2d<float> size, SDL_Color color)
 {
+	w = size.x;
+	h = size.y;
 	texture = SDL_CreateTexture(
 		GameEngine::Instance().GetRenderer(),
 		SDL_PIXELFORMAT_RGBA8888,

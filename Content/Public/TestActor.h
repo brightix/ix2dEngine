@@ -12,7 +12,7 @@ class TestActor : public Actor
 public:
     int r;
 
-	GCPtr<Texture> texture;
+	GCPtr<StaticTexture> texture;
 
 	SDL_FRect rect;
     TestActor(int r) : r(r)
@@ -26,7 +26,7 @@ public:
         });
         AddCustomEvent("testMethod",e);
         CallEvent("testMethod",epp);
-    	texture = SpawnActorFromSelf(new Texture({120,120},{255,255,255,255}));
+    	texture = SpawnActorFromSelf(new StaticTexture({120,120},{255,255,255,255}));
 
     	rect = { 100, 250, 100, 100 };
     }
