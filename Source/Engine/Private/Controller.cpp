@@ -9,12 +9,18 @@
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../System/GameEngine.hpp"
 
+
 using namespace std;
 using json = nlohmann::json;
 Controller::Controller() : show_mouse_cursor(false)
 {
-	controlled_pawn = SpawnActorFromSelf<Pawn>(new Pawn());
+	//controlled_pawn = SpawnActorFromSelf<Pawn>(new Pawn());
 	input_map = make_GCPtr<InputMap>();
+}
+
+void Controller::Control(Pawn* pawn)
+{
+	controlled_pawn = make_GCPtr<Pawn>(pawn);
 }
 
 void Controller::Tick(double delta)
@@ -37,17 +43,13 @@ void Controller::Tick(double delta)
         		if (controlled_pawn)
         		{
 			        SDL_Scancode scancode = event.key.scancode;
-
-        			if (event.key.repeat == 0)
+					auto& key = keys_state[scancode];
+        			if (key == Idle)
         			{
         				// Start
-        				EnhancedInputParam<bool> eip(input_map->key_map[scancode],true,Start);
-        				controlled_pawn->CallEnhancedInputEventBool(eip);
-        			}
-        			else
-        			{
-        				// Triggered
-        				EnhancedInputParam<bool> eip(input_map->key_map[scancode],true,Triggered);
+        				key = Start;
+        				//cout << "start" << endl;
+        				EnhancedInputParam<bool> eip(input_map->key_map[scancode],true,key);
         				controlled_pawn->CallEnhancedInputEventBool(eip);
         			}
         		}
@@ -58,8 +60,13 @@ void Controller::Tick(double delta)
 	    			// Completed
 	    			SDL_Scancode scancode = event.key.scancode;
 
+	    			auto& key = keys_state[scancode];
+	    			key = Complete;
+
 	    			EnhancedInputParam<bool> eip(input_map->key_map[scancode],false,Complete);
 	    			controlled_pawn->CallEnhancedInputEventBool(eip);
+
+	    			key = Idle;
 	    		}
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_DOWN: // 鼠标按下
@@ -80,4 +87,25 @@ void Controller::Tick(double delta)
         		break;
         }
 	}
+
+	const bool* state = SDL_GetKeyboardState(nullptr);
+	for (auto& x : keys_state)
+	{
+		if (state[x.first])
+		{
+			if (x.second == Start)
+			{
+				x.second = Triggered;
+				continue;
+			}
+			//cout << "triggered" << endl;
+			EnhancedInputParam<bool> eip(input_map->key_map[x.first],false,Triggered);
+			controlled_pawn->CallEnhancedInputEventBool(eip);
+		}
+	}
+}
+
+Pawn* Controller::GetControlledPawn() const
+{
+	return controlled_pawn.Get();
 }

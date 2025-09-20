@@ -32,6 +32,12 @@ public:
     void CallEvent(const std::string& event_name,std::optional<EventParams> params = std::nullopt);
     //添加事件分发器安全版本需要验证参数包类型
     void AddEventDispatcher(const std::string& event_name,EventMethod event_method);
-
+	template<typename T>
+	GCPtr<T> ConstructObjectFromClass(T* object)
+	{
+		auto it = GCPtr<T>(object,this);
+		static_cast<Object*>(it.Get())->Construct();
+		return it;
+	}
     ~Object() override = default;
 };

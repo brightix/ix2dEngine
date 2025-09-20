@@ -7,10 +7,11 @@
 #include "Classes/Object.h"
 #include "Types/Vec.hpp"
 
-enum EnhancedInputParamStatus
+enum EnhancedInputParamStatus : int
 {
-	Triggered,
+	Idle,
 	Start,
+	Triggered,
 	Cancel,
 	Complete,
 };

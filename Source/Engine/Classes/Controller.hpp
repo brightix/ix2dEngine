@@ -6,6 +6,7 @@
 #include "Types/Vec.hpp"
 #include "../System/GlobalMacros.hpp"
 
+enum EnhancedInputParamStatus : int;
 class Object;
 class Pawn;
 
@@ -21,12 +22,16 @@ class Controller : public Actor
 
     GCPtr<Object> CurrentFocus;
 	GCPtr<InputMap> input_map;
+	std::unordered_map<SDL_Scancode,EnhancedInputParamStatus> keys_state;
     //bool
     bool show_mouse_cursor;
 public:
     Controller();
     ~Controller()= default;
-
+	void Control(Pawn* pawn);
     void Tick(double delta) override;
+
+
+	Pawn* GetControlledPawn() const;
 };
 

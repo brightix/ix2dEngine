@@ -20,8 +20,10 @@ int main()
     auto& game_engine = GameEngine::Instance();
 	//ÓÎÏ·ÊµÀı
 	//
+
     game_engine.Construct();
 
+	game_engine.EventBegin();
     game_engine.Tick();
 
 

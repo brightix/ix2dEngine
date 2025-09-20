@@ -9,17 +9,20 @@
 class GameWorld : public Object
 {
 
-	std::vector<GCPtr<Actor>> actors;
+	std::vector<Actor*> actors;
 	//游戏模式
 	GCPtr<GameModeBase> game_mode;
 
 
+	//
+	bool is_simulation;
 	//调试面板
 	GCPtr<CanvasWidget> debug_viewport;
 public:
     GameWorld();
     ~GameWorld()= default;
 	void Construct() override;
+	void StartSimulation();
 	// 从类构建Actor
 	// void SpawnActorFromClass(std::shared_ptr<T> actor){
 	// 	Actors.push_back(actor);
@@ -29,22 +32,25 @@ public:
 	template<typename T,typename...Args>
 	GCPtr<T> SpawnActorFromClass(Args...args)
 	{
-		GCPtr<T> actor = make_GCPtr<T>(std::forward<Args>(args)...);
-		actors.emplace_back(actor);
-		return actor;
+		GCPtr<T> i = make_GCPtr<T>(std::forward<Args>(args)...);
+		auto a = static_cast<Actor*>(i.Get());
+		a->Construct();
+		actors.emplace_back(a);
+		return i;
 	}
 	template<typename T>
 	GCPtr<T> SpawnActorFromClass(T* actor_raw)
 	{
-		GCPtr<T> actor = GCPtr<T>(actor_raw,this);
-		actors.emplace_back(actor_raw);
-		return actor;
+		auto i = GCPtr<T>(actor_raw, this);
+		auto a = static_cast<Actor*>(i.Get());
+		a->Construct();
+		AddToWorld(a);
+		return i;
 	}
 
 
 //Sys
-	void ConstructWorld();
-	void AddToWorld(GCPtr<Actor> actor);
+	void AddToWorld(Actor* actor);
 	//Debug限定
 	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
 

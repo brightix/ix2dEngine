@@ -1,5 +1,6 @@
 #include "System/GameEngine.hpp"
 
+#include "System/Font.hpp"
 #include "System/Texture.hpp"
 
 
@@ -24,7 +25,7 @@ GameEngine::GameEngine() : delta_time(0)
 	}
 
 	// 创建渲染器
-	renderer = SDL_CreateRenderer(window, NULL);
+	renderer = SDL_CreateRenderer(window, nullptr);
 	if (!renderer)
 	{
 		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
@@ -33,11 +34,19 @@ GameEngine::GameEngine() : delta_time(0)
 		return;
 	}
 	timeBeginPeriod(1);
+}
+
+void GameEngine::Construct()
+{
+	//Object::Construct();
+
+	SysConfig = {30, {640, 480}};
+	game_world = make_GCPtr<GameWorld>(new GameWorld());
+	game_world->Construct();
 	tick_timer = make_GCPtr<Timer>(new Timer());
 	consume_timer = make_GCPtr<Timer>();
-	SysConfig = {120, {640, 480}};
-	game_world = make_GCPtr<GameWorld>();
 	running = true;
+	game_world->StartSimulation();
 }
 
 void GameEngine::Tick()
@@ -47,7 +56,6 @@ void GameEngine::Tick()
 		consume_timer->Start();
 		delta_time = tick_timer->End();   // 上一帧耗时
 		tick_timer->Start();             // 重置计时
-
 
 		// 清屏
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -68,15 +76,14 @@ void GameEngine::Tick()
 		SDL_RenderPresent(renderer);
 
 		// 控制帧率
-		//tick_timer->Delay((1.0 / SysConfig.TargetFps) - consume_timer->End());
+		tick_timer->Delay((1.0 / SysConfig.TargetFps) - consume_timer->End());
 	}
 }
 
-void GameEngine::Construct()
+
+
+void GameEngine::EventBegin()
 {
-	Object::Construct();
-	game_world->Construct();
-	game_world->ConstructWorld();
 }
 
 GameEngine::~GameEngine()
@@ -95,11 +102,7 @@ GCPtr<GameWorld> GameEngine::GetGameWorld()
 
 void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)
 {
-	//SDL
-	//GCPtr t1(texture.Get(),this);
-	//GCPtr<Texture> t2 = share_GCPtr(texture.Get(),this);
 	SDL_RenderTexture(renderer,texture.Get()->texture,nullptr,&location);
-
 }
 
 
