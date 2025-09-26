@@ -27,7 +27,7 @@ class Controller : public Actor
     bool show_mouse_cursor;
 public:
     Controller();
-    ~Controller()= default;
+    ~Controller() override = default;
 	void Control(Pawn* pawn);
     void Tick(double delta) override;
 

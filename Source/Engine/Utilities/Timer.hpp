@@ -5,12 +5,14 @@
 class Timer : public Object
 {
     LARGE_INTEGER freq, start, end, last;
+	double target_time;
 public:
-    Timer()
+    Timer() : start(), end()
     {
-        last = {};
-        QueryPerformanceFrequency(&freq);
+	    last = {};
+	    QueryPerformanceFrequency(&freq);
     }
+
     void Start()
     {
         QueryPerformanceCounter(&start);
@@ -41,8 +43,8 @@ public:
             elapsed = static_cast<double>(now.QuadPart - begin.QuadPart) / freq.QuadPart;
         } while (elapsed < duration);
     }
-    //每次调用返回距上次调用的时间
 
+    //每次调用返回距上次调用的时间
     double Click()
     {
         LARGE_INTEGER now;
@@ -53,5 +55,10 @@ public:
         }
         QueryPerformanceCounter(&last);
         return time;
+    }
+
+	void SetTimer(double delay_time,std::function<void()> callback_func)
+    {
+
     }
 };

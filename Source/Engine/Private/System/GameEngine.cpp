@@ -40,7 +40,7 @@ void GameEngine::Construct()
 {
 	//Object::Construct();
 
-	SysConfig = {30, {640, 480}};
+	SysConfig = {200, {640, 480}};
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
 	tick_timer = make_GCPtr<Timer>(new Timer());

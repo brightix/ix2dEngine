@@ -14,10 +14,13 @@ class Actor : public Object
 	GCPtr<StaticTexture> static_texture;
 
     bool isShowInGame;
+//每个actor内部有个计时器组件，用来定时处理事件
+
 
 	//关卡 负责管理生命周期
 	GCPtr<GameWorld> game_world;
-public:
+
+
     SDL_Renderer* renderer;
     SDL_Window* window;
 public:

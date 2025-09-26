@@ -24,6 +24,7 @@ void GameWorld::StartSimulation()
 	{
 		a->EventBegin();
 	}
+	//GC_timer->Start();
 	is_simulation = true;
 }
 
@@ -44,6 +45,7 @@ void GameWorld::Tick(double deltaTime)
 		return;
 	}
 	//计算
+
 	game_mode->Tick(deltaTime);
 	for (auto& a : actors) {
 		a->Tick(deltaTime);

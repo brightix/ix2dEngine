@@ -4,6 +4,7 @@
 #include "Classes/Actor.h"
 #include "Classes/GameModeBase.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
+#include "Utilities/Timer.hpp"
 
 
 class GameWorld : public Object
@@ -18,6 +19,7 @@ class GameWorld : public Object
 	bool is_simulation;
 	//调试面板
 	GCPtr<CanvasWidget> debug_viewport;
+	GCPtr<Timer> GC_timer;
 public:
     GameWorld();
     ~GameWorld()= default;

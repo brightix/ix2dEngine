@@ -15,7 +15,8 @@ using json = nlohmann::json;
 Controller::Controller() : show_mouse_cursor(false)
 {
 	//controlled_pawn = SpawnActorFromSelf<Pawn>(new Pawn());
-	input_map = make_GCPtr<InputMap>();
+	//input_map = make_GCPtr<InputMap>();
+	input_map = ConstructObjectFromClass<InputMap>(new InputMap());
 }
 
 void Controller::Control(Pawn* pawn)

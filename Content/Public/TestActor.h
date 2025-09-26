@@ -24,7 +24,7 @@ public:
         EventMethod e([](std::optional<EventParams> ep) {
             std::cout << *ep->Get<string>("name") << std::endl;
         });
-        AddCustomEvent("testMethod",e);
+        AddCustomEvent("testMethod",std::move(e));
         CallEvent("testMethod",epp);
     	texture = ConstructObjectFromClass(new StaticTexture({120,120},{255,255,255,255}));
 
