@@ -8,19 +8,19 @@
 void FontRenderer::Init()
 {
     if (!TTF_Init()) {
-        Log("TTF³õÊ¼»¯Ê§°Ü");
+        Log("TTFï¿½ï¿½Ê¼ï¿½ï¿½Ê§ï¿½ï¿½");
         throw std::runtime_error("TTF_Init failed: " + std::string(SDL_GetError()));
         return;
     }
     renderer = GameEngine::Instance().GetRenderer();
     fontCache.onEvict = [](TTF_Font*& font){
         if(font) {
-            TTF_CloseFont(font); // ÊÍ·Å×ÖÌå×ÊÔ´
-            font = nullptr;      // ±ÜÃâÐü¿ÕÖ¸Õë
+            TTF_CloseFont(font); // ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´
+            font = nullptr;      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
         }
     };
 
-    //±éÀúËùÓÐ×ÖÌå
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     std::string path = "Source/Engine/System/Fonts/";
     for(const auto& entry : std::filesystem::directory_iterator(path))
     {
@@ -56,13 +56,13 @@ TTF_Font* FontRenderer::GetFont(std::string fontName,size_t size)
     if(!font)
     {
         try{
-            if(!LoadFont(fontName,size))//±¾µØÃ»ÓÐ¸Ã×ÖÌå
+            if(!LoadFont(fontName,size))//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½
             {
-                throw Exception("Î´ÕÒµ½×ÖÌå");
+                throw Exception("Î´ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½");
             }
             return *fontCache.get(request);
         }catch (const std::exception& e) {
-            std::cerr << "Òì³£²¶»ñ: " << e.what() << std::endl;
+            std::cerr << "ï¿½ì³£ï¿½ï¿½ï¿½ï¿½: " << e.what() << std::endl;
             return nullptr;
         }
     }
@@ -83,12 +83,12 @@ bool FontRenderer::LoadFont(std::string fontName,size_t size)
 
 FontRenderer::Texture FontRenderer::GetTextTexture(std::string str,std::string fontName, size_t fontSize, SDL_Color col)
 {
-    //¼ÓÔØÄ¬ÈÏ×ÖÌå
+    //ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     try{
         TTF_Font* font = GetFont(fontName,fontSize);
         SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), str.length(), col);
         Texture texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, surface),SDL_DestroyTexture);
-        SDL_DestroySurface(surface); // ±íÃæÓÃÍê¾ÍÊÍ·Å
+        SDL_DestroySurface(surface); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½
         return texture;
     }catch(const Exception& e){
         Log(e.what());

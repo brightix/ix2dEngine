@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <SDL3/SDL_scancode.h>
 
-#include "Object.h"
+#include "Object.hpp"
 
 enum class EnhancedInputParamType
 {

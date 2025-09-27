@@ -4,7 +4,7 @@
 #include <SDL3/SDL_scancode.h>
 
 #include "Classes/InputMap.hpp"
-#include "Classes/Object.h"
+#include "Classes/Object.hpp"
 #include "Types/Vec.hpp"
 
 enum EnhancedInputParamStatus : int

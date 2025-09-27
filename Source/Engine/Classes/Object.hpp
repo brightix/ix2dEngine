@@ -2,7 +2,7 @@
 #include <string>
 
 #include "Utilities/EventDelegateSystem.hpp"
-#include "Utilities/EventDispatcherSystem.hpp"
+#include "Core/EventDispatcherSystem.hpp"
 #include "Core/EventSystem.hpp"
 #include "../System/GCObject.hpp"
 #include "Utilities/GCPtr.hpp"

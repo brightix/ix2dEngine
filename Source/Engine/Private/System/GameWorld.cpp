@@ -8,11 +8,11 @@ GameWorld::GameWorld() : is_simulation(false) {}
 void GameWorld::Construct()
 {
 	auto game = game_mode;
-	Actor a(Transform(Vec2d<float>(50.0,50.0),{}));
+	//Actor a(Transform(Vec2d<float>(50.0,50.0),{}));
 	//actors.push_back(make_GCPtr<Pawn>(new Pawn()));
 	//GCPtr<TestActor> c = make_GCPtr<TestActor>(1);
-	auto g = SpawnActorFromClass<TestActor>(new TestActor(1));
-	auto g2 = SpawnActorFromClass<TestActor>(1);
+	// auto g = SpawnActorFromClass<TestActor>(new TestActor(1));
+	// auto g2 = SpawnActorFromClass<TestActor>(1);
 
 }
 

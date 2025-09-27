@@ -1,10 +1,10 @@
 #include "Classes/Actor.h"
 #include "../System/GameEngine.hpp"
 
-Actor::Actor() : Object() {}
-Actor::Actor(Transform tf) : transform(tf) {}
+Actor::Actor() : Actor(Transform()) {}
+Actor::Actor(Transform tf) : transform(tf), isShowInGame(false), renderer(nullptr), window(nullptr) {}
 
-Actor::~Actor() {}
+Actor::~Actor() = default;
 
 void Actor::Construct()
 {
@@ -26,7 +26,7 @@ void Actor::AddWorldLocation(Vec2d<float> dis)
 	transform.Location+=dis;
 }
 
-Vec2d<float> Actor::GetWorldLocation()
+Vec2d<float> Actor::GetWorldLocation() const
 {
 	return transform.Location;
 }
@@ -40,10 +40,11 @@ void Actor::RenderOnScreen()
 {
 	// auto& i = GameEngine::Instance();
 	// auto t = static_texture;
+
 	GameEngine::Instance().RenderTexture(static_texture,{transform.Location.x,transform.Location.y,static_texture->w,static_texture->h});
 }
 
-void Actor::AddToWorld(Actor* a)
+void Actor::AddToWorld(Actor* a) const
 {
 	game_world->AddToWorld(a);
 }

@@ -28,6 +28,11 @@ inline void LogToFile(const std::string msg, std::string file_name = "", std::st
 
 	//时间 + 文件路径 + 行数 + 问题严重程度 + 问题描述
     logText.append(" [" + std::string(magic_enum::enum_name(level)) + "]: " + msg);
+
+#ifdef DebugMod
+    std::cout << logText << std::endl;
+#endif
+
     file << logText << std::endl;
     file.close();
     if (level == FatalError)

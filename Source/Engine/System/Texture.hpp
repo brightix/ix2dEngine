@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL_render.h>
-#include "Classes/Object.h"
+#include "Classes/Object.hpp"
 #include "Types/Vec.hpp"
 
 struct StaticTexture : public Object
@@ -10,7 +10,9 @@ struct StaticTexture : public Object
 	float h;
 public:
     StaticTexture();
-	StaticTexture(Vec2d<float> size, SDL_Color color);
+
+	StaticTexture(Vec2d<float> size, SDL_Color color, bool is_fill = false);
+
     ~StaticTexture()= default;
 	SDL_Texture* operator()() const
 	{

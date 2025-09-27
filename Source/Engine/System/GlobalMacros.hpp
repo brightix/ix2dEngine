@@ -6,3 +6,6 @@
 #define DownDir  Vec2d<int>(0, 1)
 #define LeftDir  Vec2d<int>(-1, 0)
 #define RightDir Vec2d<int>(1, 0)
+
+
+#define DebugMod 1

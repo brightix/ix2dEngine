@@ -14,7 +14,7 @@ GameEngine::GameEngine() : delta_time(0)
 	// 创建窗口
 	window = SDL_CreateWindow(
 		"Hello SDL3",        // 标题
-		800, 600,            // 宽高
+		1200, 1000,            // 宽高
 		SDL_WINDOW_RESIZABLE // 可拉伸
 	);
 	if (!window)
@@ -40,7 +40,7 @@ void GameEngine::Construct()
 {
 	//Object::Construct();
 
-	SysConfig = {200, {640, 480}};
+	SysConfig = {120, {640, 480}};
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
 	tick_timer = make_GCPtr<Timer>(new Timer());

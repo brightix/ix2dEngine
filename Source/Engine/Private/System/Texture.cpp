@@ -2,9 +2,11 @@
 
 #include "System/GameEngine.hpp"
 
-StaticTexture::StaticTexture() : texture(nullptr) {}
+StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0) {
+}
 
-StaticTexture::StaticTexture(Vec2d<float> size, SDL_Color color)
+
+StaticTexture::StaticTexture(const Vec2d<float> size, const SDL_Color color, bool is_fill)
 {
 	w = size.x;
 	h = size.y;
@@ -33,16 +35,47 @@ StaticTexture::StaticTexture(Vec2d<float> size, SDL_Color color)
 	}
 
 	// 填充颜色 (pitch 表示每行的字节数)
+
 	Uint32* dst = static_cast<Uint32*>(pixels);
 	Uint32 pixelColor = (color.a << 24) | (color.b << 16) | (color.g << 8) | (color.r);
 
-	for (int y = 0; y < size.x; ++y)
+	int p = pitch / 4;
+
+	int sx = size.x;
+	int sy = size.y;
+	if (is_fill)
 	{
-		for (int x = 0; x < size.y; ++x)
+		for (int y = 0; y < size.x; ++y)
 		{
-			dst[y * (pitch / 4) + x] = pixelColor;
+			for (int x = 0; x < size.y; ++x)
+			{
+				dst[y * p + x] = pixelColor;
+			}
 		}
 	}
+	else
+	{
+		const int out_line_width = 3;
+		for (int y = 0; y < sx; ++y)
+		{
+			for (int x = 0; x < sy; ++x)
+			{
+				// 判断是否属于上边缘描边（顶部向内扩展out_line_width像素）
+				bool is_top_edge = (y < out_line_width);
+				// 判断是否属于下边缘描边（底部向内扩展out_line_width像素）
+				bool is_bottom_edge = (y >= sx - out_line_width);
+				// 判断是否属于左边缘描边（左侧向内扩展out_line_width像素，且不在上下边缘覆盖区）
+				bool is_left_edge = (x < out_line_width) && (y >= out_line_width) && (y < sx - out_line_width);
+				// 判断是否属于右边缘描边（右侧向内扩展out_line_width像素，且不在上下边缘覆盖区）
+				bool is_right_edge = (x >= sy - out_line_width) && (y >= out_line_width) && (y < sx - out_line_width);
 
+				// 只要属于任意一条边的描边范围，就绘制像素
+				if (is_top_edge || is_bottom_edge || is_left_edge || is_right_edge)
+				{
+					dst[y * p + x] = pixelColor;
+				}
+			}
+		}
+	}
 	SDL_UnlockTexture(texture);
 }

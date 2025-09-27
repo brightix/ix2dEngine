@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 
-#include "Object.h"
+#include "Object.hpp"
 #include "System/Texture.hpp"
 #include "Types/Transform.hpp"
 
@@ -38,7 +38,7 @@ public:
 	void AddWorldLocation(Vec2d<float> dis);
 
     //Get
-    Vec2d<float> GetWorldLocation();
+    Vec2d<float> GetWorldLocation() const;
     Vec2d<float> GetRelativeLocation();
 
 	template<typename T>
@@ -53,7 +53,7 @@ public:
 //Sys
 	virtual void RenderOnScreen();
 private:
-	void AddToWorld(Actor* a);
+	void AddToWorld(Actor* a) const;
 };
 
 template<typename T>

@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "Classes/Object.h"
+#include "Classes/Object.hpp"
 
 class Timer : public Object
 {

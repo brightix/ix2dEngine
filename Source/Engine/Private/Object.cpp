@@ -1,4 +1,4 @@
-#include "Classes/Object.h"
+#include "Classes/Object.hpp"
 
 #include <iostream>
 using namespace std;
@@ -21,8 +21,7 @@ void Object::CallEvent(const std::string& event_name, std::optional<EventParams>
 
 void Object::AddEventDispatcher(const std::string& event_name, EventMethod&& event_method)
 {
-
-    dispatcher_system.AddEventDispatcher(event_name,event_method);
+    dispatcher_system.AddEventDispatcher(event_name);
 }
 
 void Object::BindEvent(std::string dispatcher_name, EventMethod method)

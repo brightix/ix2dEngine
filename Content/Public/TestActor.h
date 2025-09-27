@@ -2,8 +2,6 @@
 #include <iostream>
 #include "Classes/Actor.h"
 #include "System/Texture.hpp"
-#include "Types/EventParam.hpp"
-#include "Utilities/EventDispatcherSystem.hpp"
 
 class GameEngine;
 using namespace std;

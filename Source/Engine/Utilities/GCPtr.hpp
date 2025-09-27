@@ -103,7 +103,7 @@ public:
 		if (!child || !parent)
 		{
 			//Log("GCLink 绑定到空指针");
-			std::cout << "绑定到空指针" << std::endl;
+			//std::cout << "绑定到空指针" << std::endl;
 			return ;
 		}
 		child->referenced.push_back(parent);
@@ -114,7 +114,7 @@ public:
 		if (!child || !parent)
 		{
 			//Log("GCLink 绑定到空指针");
-			std::cout << "接触到空指针" << std::endl;
+			//std::cout << "接触到空指针" << std::endl;
 			return ;
 		}
 		// 从 parent->referencing 移除 child
