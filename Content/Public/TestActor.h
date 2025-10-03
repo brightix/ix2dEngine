@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "Classes/Actor.h"
+#include "Classes/Actor.hpp"
 #include "System/Texture.hpp"
 
 class GameEngine;
@@ -13,17 +13,19 @@ public:
 	GCPtr<StaticTexture> texture;
 
 	SDL_FRect rect;
-    TestActor(int r) : r(r)
-    {
 
-        this->name = "ixActor";
-        EventParams epp;
-        epp.Add("name",name);
-        EventMethod e([](std::optional<EventParams> ep) {
-            std::cout << *ep->Get<string>("name") << std::endl;
-        });
-        AddCustomEvent("testMethod",std::move(e));
-        CallEvent("testMethod",epp);
+    explicit TestActor(int r) : r(r), rect() {}
+
+	void Construct() override
+    {
+    	this->name = "ixActor";
+    	EventParams epp;
+    	epp.Add("name",name);
+    	EventMethod e([](std::optional<EventParams> ep) {
+			std::cout << *ep->Get<string>("name") << std::endl;
+		});
+    	AddCustomEvent("testMethod",std::move(e));
+    	CallEvent("testMethod",epp);
     	texture = ConstructObjectFromClass(new StaticTexture({120,120},{255,255,255,255}));
 
     	rect = { 100, 250, 100, 100 };

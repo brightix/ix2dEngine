@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 23)
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
         ${CMAKE_SOURCE_DIR}/Source/Content/Private/*.cpp
-#        ${CMAKE_SOURCE_DIR}/Source/Content/Public/Component/*.cpp
+#        ${CMAKE_SOURCE_DIR}/Source/Content/Public/ActorComponent/*.cpp
 )
 add_executable(ix2d
         ${ENGINE_SOURCES}

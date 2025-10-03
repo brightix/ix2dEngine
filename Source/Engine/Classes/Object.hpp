@@ -27,7 +27,7 @@ public:
     Object();
     Object* GetSelfPtr();
 
-	virtual void Construct() {}
+	virtual void Construct(){}
 	//生命周期类
 
     void AddCustomEvent(const std::string& event_name, EventMethod&& event_method);

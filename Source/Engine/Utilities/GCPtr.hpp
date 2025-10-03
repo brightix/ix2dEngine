@@ -20,12 +20,12 @@ public:
 		{
 			Log("构造了野指针");
 		}
-		//GCLink(ptr,outer);
+		GCLink(ptr,outer);
 		GCAllObjects.push_back(ptr);
 		//AddToObject();
 	}
 	//获取新引用
-	explicit GCPtr(T* p) : ptr(p), outer(nullptr) {}
+	//explicit GCPtr(T* p) : ptr(p), outer(nullptr) {}
 
 	//派生->基类
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
@@ -60,7 +60,7 @@ public:
 	{
 		if (this != &other)
 		{
-			GCUnLink(ptr,outer);
+			GCUnLink(other.ptr,other.outer);
 			ptr = other.ptr;
 			outer = other.outer;
 			GCLink(ptr,outer);
@@ -140,34 +140,8 @@ inline void AddToObject(GCObject* ptr)
 }
 
 
-inline int GCSweep()
-{
-	for (auto obj : GCAllObjects)
-	{
-		obj->bMarked = false;
-	}
-	int cnt = 0;
-	for (GCObject* obj : GCAllObjects)
-	{
-		if (!obj->bMarked)
-		{
-			delete obj;
-			cnt++;
-		}
-	}
-	return cnt;
-}
 
-inline void GCMark(GCObject* gc_object)
-{
-	//对象不存在 or 已被标记
-	//if (!gc_object || gc_object->bMarked) return;
-	gc_object->bMarked = true;
-	for (auto child : gc_object->referencing)
-	{
-		GCMark(child);
-	}
-}
+
 
 // template<class T>
 // GCPtr<T> new_GCPtr(GCObject* Outer = nullptr) {

@@ -1,6 +1,6 @@
 #pragma once
 #include "Controller.hpp"
-#include "Classes/Actor.h"
+#include "Classes/Actor.hpp"
 
 class GameModeBase : public Actor
 {
@@ -13,5 +13,7 @@ public:
     void Tick(double deltaTime) override;
 	void Construct() override;
 	void EventBegin() override;
+
+    GCPtr<Controller> CreateController() const;
 };
 

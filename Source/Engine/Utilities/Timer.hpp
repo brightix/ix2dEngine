@@ -6,6 +6,7 @@ class Timer : public Object
 {
     LARGE_INTEGER freq, start, end, last;
 	double target_time;
+    bool has_task;
 public:
     Timer() : start(), end()
     {
@@ -59,6 +60,7 @@ public:
 
 	void SetTimer(double delay_time,std::function<void()> callback_func)
     {
+        has_task = true;
 
     }
 };

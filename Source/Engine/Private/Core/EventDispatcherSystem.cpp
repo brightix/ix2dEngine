@@ -32,6 +32,7 @@ void EventDispatcherSystem::CallEvent(std::string event_name, std::optional<Even
         for (auto& method : it->second)
         {
             method.second(std::move(event_params));
+            Log("执行了  "+ event_name + "  的事件！");
         }
     }
     else

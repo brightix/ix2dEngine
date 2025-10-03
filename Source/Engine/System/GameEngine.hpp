@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include "GameWorld.hpp"
 #include "Texture.hpp"
+#include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
 #include "Utilities/ConverterRegistry.hpp"
@@ -24,7 +25,7 @@ class GameEngine : public Object
     //Tick计时器
     GCPtr<Timer> tick_timer;
     GCPtr<Timer> consume_timer;
-
+    TimerSystem timer_system;
 
 
     //类型转换
@@ -57,4 +58,9 @@ public:
     GCPtr<GameWorld> GetGameWorld();
 //Render
 	void RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location);
+
+    //Sys
+    void GCMark(GCObject* gc_object);
+
+    int GCSweep();
 };

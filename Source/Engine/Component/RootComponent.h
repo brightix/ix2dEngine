@@ -1,4 +1,0 @@
-class RootComponent
-{
-    RootComponent();
-};

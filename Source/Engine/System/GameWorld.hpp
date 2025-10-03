@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Classes/Actor.h"
+#include "Classes/Actor.hpp"
 #include "Classes/GameModeBase.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
@@ -17,9 +17,12 @@ class GameWorld : public Object
 
 	//
 	bool is_simulation;
+	bool is_server;
 	//调试面板
 	GCPtr<CanvasWidget> debug_viewport;
 	GCPtr<Timer> GC_timer;
+
+	std::vector<GCPtr<Controller>> controllers;
 public:
     GameWorld();
     ~GameWorld()= default;
@@ -32,7 +35,7 @@ public:
 
 	//从类构建对象
 	template<typename T,typename...Args>
-	GCPtr<T> SpawnActorFromClass(Args...args)
+	GCPtr<T> SpawnActorToWorld(Args...args)
 	{
 		GCPtr<T> i = make_GCPtr<T>(std::forward<Args>(args)...);
 		auto a = static_cast<Actor*>(i.Get());
@@ -41,22 +44,28 @@ public:
 		return i;
 	}
 	template<typename T>
-	GCPtr<T> SpawnActorFromClass(T* actor_raw)
+	GCPtr<T> SpawnActorToWorld(T* actor_raw)
 	{
 		auto i = GCPtr<T>(actor_raw, this);
 		auto a = static_cast<Actor*>(i.Get());
 		a->Construct();
-		AddToWorld(a);
+		actors.emplace_back(a);
+		//AddToWorld(a);
 		return i;
 	}
-
+// 服务器方法
+	//添加玩家
+	GCPtr<Controller> AddController(Controller *controller);
 
 //Sys
 	void AddToWorld(Actor* actor);
 	//Debug限定
 	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
 
-	void Tick(double deltaTime);
+	void Tick(double delta_time);
+
+	bool IsServer() const;
+	bool IsClient() const;
 };
 
 

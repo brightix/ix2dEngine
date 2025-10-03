@@ -7,13 +7,14 @@
 #include "Utilities/magic_enum.hpp"
 #include "Enum/LogLevel.h"
 #include "Utilities/json.hpp"
+#include "System/GlobalMacros.hpp"
 
 #define Log(msg) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__))
 #define LogWithLevel(msg,level) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__), level)
 
 inline void LogToFile(const std::string msg, std::string file_name = "", std::string line = "", std::string func_name = "", LogLevel level = LogLevel::Tip)
 {
-    std::ofstream file("Log.txt",std::ios::app);
+    std::ofstream file("Log.log",std::ios::app);
     if(!file.is_open())
     {
         std::cerr << "文件打开失败" << std::endl;

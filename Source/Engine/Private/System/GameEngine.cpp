@@ -39,14 +39,27 @@ GameEngine::GameEngine() : delta_time(0)
 void GameEngine::Construct()
 {
 	//Object::Construct();
-
+	//将自己添加进全局GC
+	GCAllObjects.push_back(this);
 	SysConfig = {120, {640, 480}};
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
+
 	tick_timer = make_GCPtr<Timer>(new Timer());
 	consume_timer = make_GCPtr<Timer>();
 	running = true;
 	game_world->StartSimulation();
+	timer_system.SetTimer(2000,[this]() {
+		printf("GCSweep!!\n");
+		std::cout << "{" << GCSweep() << "} objects have been Swept!" << std::endl;
+		return 2000;
+	});
+	auto dd = ConstructObjectFromClass(new Actor());
+	timer_system.SetTimer(5000,[dd]() {
+		dd->DestroyActor();
+		return -1;
+	});
+
 }
 
 void GameEngine::Tick()
@@ -63,7 +76,7 @@ void GameEngine::Tick()
 
 		// 场景逻辑
 		game_world->Tick(delta_time);
-
+		timer_system.Run();
 
 
 		// FPS 显示
@@ -105,4 +118,32 @@ void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)
 	SDL_RenderTexture(renderer,texture.Get()->texture,nullptr,&location);
 }
 
+void GameEngine::GCMark(GCObject *gc_object)
+{
+	//对象不存在 or 已被标记
+	if (!gc_object || gc_object->bMarked) return;
+	gc_object->bMarked = true;
+	for (auto child : gc_object->referencing)
+	{
+		GCMark(child);
+	}
+}
 
+int GameEngine::GCSweep()
+{
+	for (auto obj : GCAllObjects)
+	{
+		obj->bMarked = false;
+	}
+	GCMark(this);
+	int cnt = 0;
+	for (GCObject* obj : GCAllObjects)
+	{
+		if (!obj->bMarked)
+		{
+			delete obj;
+			cnt++;
+		}
+	}
+	return cnt;
+}

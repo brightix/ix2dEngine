@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-#include "Actor.h"
+#include "Actor.hpp"
 #include "InputMap.hpp"
 #include "Types/Vec.hpp"
 #include "../System/GlobalMacros.hpp"
@@ -29,6 +29,7 @@ public:
     Controller();
     ~Controller() override = default;
 	void Control(Pawn* pawn);
+	void Construct() override;
     void Tick(double delta) override;
 
 

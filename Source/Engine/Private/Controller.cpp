@@ -16,12 +16,20 @@ Controller::Controller() : show_mouse_cursor(false)
 {
 	//controlled_pawn = SpawnActorFromSelf<Pawn>(new Pawn());
 	//input_map = make_GCPtr<InputMap>();
-	input_map = ConstructObjectFromClass<InputMap>(new InputMap());
 }
 
 void Controller::Control(Pawn* pawn)
 {
+
 	controlled_pawn = make_GCPtr<Pawn>(pawn);
+
+}
+
+void Controller::Construct()
+{
+	Actor::Construct();
+
+	input_map = ConstructObjectFromClass<InputMap>(new InputMap());
 }
 
 void Controller::Tick(double delta)
@@ -66,7 +74,6 @@ void Controller::Tick(double delta)
 
 	    			EnhancedInputParam<bool> eip(input_map->key_map[scancode],false,Complete);
 	    			controlled_pawn->CallEnhancedInputEventBool(eip);
-
 	    			key = Idle;
 	    		}
         		break;

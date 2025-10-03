@@ -1,5 +1,7 @@
 #include "Classes/GameModeBase.hpp"
 
+#include <System/GameWorld.hpp>
+
 #include "Classes/Pawn.hpp"
 
 GameModeBase::GameModeBase()
@@ -14,7 +16,7 @@ void GameModeBase::Tick(double deltaTime)
 {
     //Actor::Tick(deltaTime);
 //控制器
-    controller->Tick(deltaTime);
+    //controller->Tick(deltaTime);
 
 //UI
 
@@ -30,10 +32,19 @@ void GameModeBase::Construct()
 void GameModeBase::EventBegin()
 {
 	Actor::EventBegin();
-	controller = SpawnActorFromSelf(new Controller());
-	controller->EventBegin();
+	controller = CreateController();
+	//controller = SpawnActorFromSelf(new Controller());
 	auto_generate_pawn = SpawnActorFromSelf(new Pawn());
-	auto_generate_pawn->EventBegin();
+	//auto_generate_pawn->EventBegin();
+
+	this->dispatcher_system.CallEvent("EventBegin");
 
 	controller->Control(auto_generate_pawn.Get());
 }
+
+GCPtr<Controller> GameModeBase::CreateController() const
+{
+	return game_world->AddController(new Controller());
+}
+
+// TODO AIController

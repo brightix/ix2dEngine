@@ -5,6 +5,7 @@
 #include "System/Texture.hpp"
 #include "Types/Transform.hpp"
 
+class ActorComponent;
 class GameWorld;
 
 class Actor : public Object
@@ -13,16 +14,23 @@ class Actor : public Object
     Transform transform;
 	GCPtr<StaticTexture> static_texture;
 
+
+	//Component
     bool isShowInGame;
 //每个actor内部有个计时器组件，用来定时处理事件
 
 
-	//关卡 负责管理生命周期
-	GCPtr<GameWorld> game_world;
-
 
     SDL_Renderer* renderer;
     SDL_Window* window;
+
+protected:
+
+	//关卡 负责管理生命周期
+	//GameWorld* game_world;
+	GCPtr<GameWorld> game_world;
+	std::unordered_map<std::string,GCPtr<ActorComponent>> components;
+
 public:
     Actor();
 	explicit Actor(Transform tf);
@@ -30,8 +38,14 @@ public:
 
 	void Construct() override;
     virtual void EventBegin();
-    virtual void Tick(double deltaTime);
+	virtual void PrePhysicsTick(double delta_time){}
+	virtual void PostPhysicsTick(double delta_time){}
+    virtual void Tick(double delta_time);
+	virtual void ActorComponentTick(double delta_time);
     virtual void EventEnd(){}
+
+
+	void DestroyActor() const;
     //attribution
 
 	//Add
@@ -48,6 +62,9 @@ public:
 		auto a = static_cast<Actor*>(i.Get());
 		a->Construct();
 		AddToWorld(a);
+		this->dispatcher_system.BindEventTo("EventBegin",a,Event("EventBegin",[a](TEventParams) {
+			a->EventBegin();
+		}));
 		return i;
 	}
 //Sys

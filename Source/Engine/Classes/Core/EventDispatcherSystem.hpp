@@ -26,6 +26,6 @@ public:
 	//绑定事件到
     void BindEventTo(std::string event_name,Object* obj, Event event);
 
-	void CallEvent(std::string event_name,std::optional<EventParams> event_params);
+	void CallEvent(std::string event_name,std::optional<EventParams> event_params = std::nullopt);
 };
 

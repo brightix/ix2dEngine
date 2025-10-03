@@ -9,3 +9,6 @@
 
 
 #define DebugMod 1
+
+
+#define TEventParams std::optional<EventParams>

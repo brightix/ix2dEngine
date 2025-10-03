@@ -1,4 +1,7 @@
-#include "Classes/Actor.h"
+#include "Classes/Actor.hpp"
+
+#include <Classes/ActorComponent/ActorComponent.hpp>
+
 #include "../System/GameEngine.hpp"
 
 Actor::Actor() : Actor(Transform()) {}
@@ -14,12 +17,31 @@ void Actor::Construct()
 void Actor::EventBegin()
 {
 	game_world = make_GCPtr<GameWorld>(GameEngine::Instance().GetGameWorld().Get());
+	//game_world = GameEngine::Instance().GetGameWorld().Get();
 }
 
-void Actor::Tick(double deltaTime)
+//Actor tick -> component tick
+//所有重写tick都在PreTick内
+void Actor::Tick(double delta_time)
 {
+	//
+	// PreTick(delta_time);
+	// ActorComponentTick(delta_time);
 }
 
+void Actor::ActorComponentTick(double delta_time)
+{
+	for (auto& c : components)
+	{
+		c.second->ActorComponentTick(delta_time);
+	}
+}
+
+
+void Actor::DestroyActor() const
+{
+	delete this;
+}
 
 void Actor::AddWorldLocation(Vec2d<float> dis)
 {
