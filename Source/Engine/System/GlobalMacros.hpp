@@ -12,3 +12,5 @@
 
 
 #define TEventParams std::optional<EventParams>
+
+#define Color_White SDL_Color(255,255,255,255)

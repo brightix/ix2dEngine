@@ -22,12 +22,7 @@ void Actor::EventBegin()
 
 //Actor tick -> component tick
 //所有重写tick都在PreTick内
-void Actor::Tick(double delta_time)
-{
-	//
-	// PreTick(delta_time);
-	// ActorComponentTick(delta_time);
-}
+void Actor::Tick(double delta_time) {}
 
 void Actor::ActorComponentTick(double delta_time)
 {
@@ -38,9 +33,10 @@ void Actor::ActorComponentTick(double delta_time)
 }
 
 
-void Actor::DestroyActor() const
+void Actor::DestroyActor()
 {
-	delete this;
+	is_pending_kill = true;
+	is_active = false;
 }
 
 void Actor::AddWorldLocation(Vec2d<float> dis)
@@ -64,6 +60,11 @@ void Actor::RenderOnScreen()
 	// auto t = static_texture;
 
 	GameEngine::Instance().RenderTexture(static_texture,{transform.Location.x,transform.Location.y,static_texture->w,static_texture->h});
+}
+
+bool Actor::IsActive() const
+{
+	return is_active;
 }
 
 void Actor::AddToWorld(Actor* a) const

@@ -1,15 +1,23 @@
 #pragma once
 #include <string>
 
+
+static int glo_id;
 template<typename T>
 class GCPtr;
 struct GCObject
 {
 	bool bMarked = false;
-	std::string name;
+	bool is_been_free = false;
+	bool is_pending_kill = false;
+	int id;
 	std::vector<GCObject*> referenced;
 	std::vector<GCObject*> referencing;
-
+	GCObject()
+	{
+		printf("s\n");
+		id = glo_id++;
+	}
 
 	//GC安全
 	template<typename T, typename ...Args>
@@ -22,6 +30,9 @@ struct GCObject
 	{
 		return GCPtr<T>(p, this);
 	}
-	virtual ~GCObject()= default;
+	virtual ~GCObject()
+	{
+		is_been_free = true;
+	}
 };
 

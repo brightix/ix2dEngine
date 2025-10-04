@@ -65,6 +65,8 @@ void GameEngine::Construct()
 void GameEngine::Tick()
 {
 	tick_timer->Start(); // 关键：第一次先 Start
+	auto tex = StaticTexture({100,100});
+	SDL_FRect dst = {0,0,(float)tex.w,(float)tex.h};
 	while (running) {
 		consume_timer->Start();
 		delta_time = tick_timer->End();   // 上一帧耗时
@@ -78,12 +80,10 @@ void GameEngine::Tick()
 		game_world->Tick(delta_time);
 		timer_system.Run();
 
-
-		// FPS 显示
 		double fps = (delta_time > 0) ? (1.0 / delta_time) : 0.0;
-		auto tex = FontRenderer::Instance().GetTextTexture("FPS: " + std::to_string(fps));
-		SDL_FRect dst = {0,0,(float)tex->w,(float)tex->h};
-		SDL_RenderTexture(renderer, tex.get(), nullptr, &dst);
+		FontRenderer::Instance().UpdateTextTexture(&tex, std::to_string(fps));
+		// FPS 显示
+		SDL_RenderTexture(renderer, tex.GetTexture(), nullptr, &dst);
 
 		// 显示到窗口
 		SDL_RenderPresent(renderer);
@@ -97,6 +97,7 @@ void GameEngine::Tick()
 
 void GameEngine::EventBegin()
 {
+
 }
 
 GameEngine::~GameEngine()
@@ -121,7 +122,7 @@ void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)
 void GameEngine::GCMark(GCObject *gc_object)
 {
 	//对象不存在 or 已被标记
-	if (!gc_object || gc_object->bMarked) return;
+	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
 	gc_object->bMarked = true;
 	for (auto child : gc_object->referencing)
 	{
@@ -131,19 +132,39 @@ void GameEngine::GCMark(GCObject *gc_object)
 
 int GameEngine::GCSweep()
 {
-	for (auto obj : GCAllObjects)
+	try
 	{
-		obj->bMarked = false;
-	}
-	GCMark(this);
-	int cnt = 0;
-	for (GCObject* obj : GCAllObjects)
-	{
-		if (!obj->bMarked)
+		for (auto& obj : GCAllObjects)
 		{
-			delete obj;
-			cnt++;
+			obj->bMarked = false;
 		}
+		GCMark(this);
+		std::vector<GCObject *> temp;
+		int size = GCAllObjects.size();
+		//temp.reserve(size);
+		int cnt = 0;
+
+		std::vector<GCObject*> to_delete;
+		to_delete.reserve(GCAllObjects.size());
+		for (auto& obj : GCAllObjects)
+		{
+			if (!obj->bMarked)
+			{
+				to_delete.emplace_back(obj);
+				cnt++;
+			}
+			else temp.emplace_back(obj);
+		}
+		for (int i = 0; i < to_delete.size(); i++)
+		{
+			delete to_delete[i];
+		}
+
+		GCAllObjects.swap(temp);
+		return cnt;
+	}catch (const std::exception& e)
+	{
+		Log(e.what());
+		return -1;
 	}
-	return cnt;
 }

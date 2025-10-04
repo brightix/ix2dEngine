@@ -2,38 +2,28 @@
 
 #include <iostream>
 
+using TPS = std::chrono::time_point<std::chrono::steady_clock>;
+using namespace std::chrono;
 TimerSystem::TimerSystem()
 {
-    QueryPerformanceFrequency(&freq);
 }
 void TimerSystem::Run()
 {
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
-    while (!task_queue.empty())
+    const TPS now = steady_clock::now();
+    while (!task_queue.empty() && now > task_queue.top().end_time)
     {
-        const auto&[delay_ms, start_time, callback] = task_queue.top();
-        auto dd = static_cast<double>(now.QuadPart - start_time.QuadPart) / freq.QuadPart;
-        if (dd*1000.0 > delay_ms)
-        //if (now.QuadPart - start_time.QuadPart > static_cast<__int64>(delay_ms) * freq.QuadPart)
+        const auto&[end_time,callback] = task_queue.top();
+        if(const int nxt_time = task_queue.top().callback();nxt_time > 0)
         {
-            if(const int nxt_time = task_queue.top().callback();nxt_time > 0)
-            {
-                SetTimer(nxt_time, callback);
-            }
-            task_queue.pop();
+            SetTimer(nxt_time, callback);
         }
-        else
-        {
-            break;
-        }
+        task_queue.pop();
     }
 }
 
 void TimerSystem::SetTimer(int delay, std::function<int()> callback)
 {
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
-    task_queue.emplace(delay,now,std::move(callback));
+    TPS now = steady_clock::now();
+    task_queue.emplace(now + milliseconds(delay),std::move(callback));
 }
 

@@ -17,6 +17,7 @@ class Actor : public Object
 
 	//Component
     bool isShowInGame;
+	bool is_active;
 //每个actor内部有个计时器组件，用来定时处理事件
 
 
@@ -45,7 +46,7 @@ public:
     virtual void EventEnd(){}
 
 
-	void DestroyActor() const;
+	void DestroyActor();
     //attribution
 
 	//Add
@@ -69,6 +70,7 @@ public:
 	}
 //Sys
 	virtual void RenderOnScreen();
+	bool IsActive() const;
 private:
 	void AddToWorld(Actor* a) const;
 };

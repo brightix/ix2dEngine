@@ -67,24 +67,36 @@ void GameWorld::Tick(double delta_time)
 //计算物理
 	for (auto& a : actors)
 	{
-		a->PrePhysicsTick(delta_time);
+		if (a->IsActive())
+		{
+			a->PrePhysicsTick(delta_time);
+		}
 	}
 //映射物理
 	for (auto& a : actors)
 	{
-		a->PostPhysicsTick(delta_time);
+		if (a->IsActive())
+		{
+			a->PostPhysicsTick(delta_time);
+		}
 	}
 //普通Tick
 	for (auto& a : actors)
 	{
-		a->Tick(delta_time);
-		a->ActorComponentTick(delta_time);
+		if (a->IsActive())
+		{
+			a->Tick(delta_time);
+			a->ActorComponentTick(delta_time);
+		}
 	}
 
 //渲染
 	for (auto& a : actors)
 	{
-		a->RenderOnScreen();
+		if (a->IsActive())
+		{
+			a->RenderOnScreen();
+		}
 	}
 
 	for (auto& controller : controllers)

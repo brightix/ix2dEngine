@@ -11,9 +11,12 @@ struct StaticTexture : public Object
 public:
     StaticTexture();
 
-	StaticTexture(Vec2d<float> size, SDL_Color color, bool is_fill = false);
+	StaticTexture(Vec2d<float> size, SDL_Color color = Color_White, bool is_fill = false);
+	StaticTexture(SDL_Texture* texture);
+    ~StaticTexture();
+	SDL_Texture* GetTexture() const ;
 
-    ~StaticTexture()= default;
+
 	SDL_Texture* operator()() const
 	{
 		return texture;

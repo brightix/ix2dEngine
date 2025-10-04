@@ -79,3 +79,15 @@ StaticTexture::StaticTexture(const Vec2d<float> size, const SDL_Color color, boo
 	}
 	SDL_UnlockTexture(texture);
 }
+
+StaticTexture::StaticTexture(SDL_Texture *texture) : texture(texture), w(texture->w), h(texture->h) {}
+
+StaticTexture::~StaticTexture()
+{
+	SDL_DestroyTexture(texture);
+}
+
+SDL_Texture * StaticTexture::GetTexture() const
+{
+	return texture;
+}

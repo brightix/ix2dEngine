@@ -1,22 +1,19 @@
 #pragma once
 #include <functional>
 #include <queue>
-
-#include <windows.h>
+#include <chrono>
 struct TimerTask
 {
-    int delay_ms;
-    LARGE_INTEGER start_time;
+    std::chrono::time_point<std::chrono::steady_clock> end_time;
     std::function<int()> callback;
 };
 
 inline auto TimerTaskComp = [](TimerTask& a,TimerTask& b) {
-    return a.delay_ms > b.delay_ms;
+    return a.end_time > b.end_time;
 };
 
 class TimerSystem
 {
-    LARGE_INTEGER freq;
     std::priority_queue<TimerTask, std::vector<TimerTask>, decltype(TimerTaskComp)> task_queue;
 public:
     TimerSystem();
