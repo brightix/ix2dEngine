@@ -8,14 +8,13 @@ class GCPtr;
 struct GCObject
 {
 	bool bMarked = false;
-	bool is_been_free = false;
 	bool is_pending_kill = false;
 	int id;
 	std::vector<GCObject*> referenced;
 	std::vector<GCObject*> referencing;
 	GCObject()
 	{
-		printf("s\n");
+		//printf("s\n");
 		id = glo_id++;
 	}
 
@@ -32,7 +31,6 @@ struct GCObject
 	}
 	virtual ~GCObject()
 	{
-		is_been_free = true;
 	}
 };
 

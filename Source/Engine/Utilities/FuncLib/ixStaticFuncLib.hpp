@@ -25,7 +25,7 @@ inline void LogToFile(const std::string msg, std::string file_name = "", std::st
 
     std::ostringstream timeStream;
     timeStream << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-    std::string logText = timeStream.str() + file_name + line + func_name;
+    std::string logText = timeStream.str() + file_name + " at " + line + " line " + func_name;
 
 	//时间 + 文件路径 + 行数 + 问题严重程度 + 问题描述
     logText.append(" [" + std::string(magic_enum::enum_name(level)) + "]: " + msg);

@@ -8,7 +8,7 @@
 void FontRenderer::Init()
 {
     if (!TTF_Init()) {
-        Log("TTF��ʼ��ʧ��");
+        Log("TTF 初始化失败");
         throw std::runtime_error("TTF_Init failed: " + std::string(SDL_GetError()));
         return;
     }
@@ -36,6 +36,7 @@ void FontRenderer::Init()
             }
         }
     }
+    default_font = TTF_OpenFont(path.c_str(), 64);
 }
 
 FontRenderer::FontRenderer() : fontCache(3)
@@ -55,16 +56,13 @@ TTF_Font* FontRenderer::GetFont(std::string fontName,size_t size)
     auto font = fontCache.get(request);
     if(!font)
     {
-        try{
-            if(!LoadFont(fontName,size))//����û�и�����
-            {
-                throw Exception("δ�ҵ�����");
-            }
-            return *fontCache.get(request);
-        }catch (const std::exception& e) {
-            std::cerr << "�쳣����: " << e.what() << std::endl;
-            return nullptr;
+        if(!LoadFont(fontName,size))
+        {
+            Log("字体加载失败，已返回默认simkai字体");
+            LoadFont("simkai",size);
+            return *fontCache.get("simkai");
         }
+        return *fontCache.get(request);
     }
     return *font;
 }
@@ -77,61 +75,80 @@ bool FontRenderer::LoadFont(std::string fontName,size_t size)
         fontCache.put(fontName + std::to_string(size),font);
         return true;
     }
-    throw std::runtime_error("Failed to load font: " + fontName + "\nSDL_ttf Error: " + SDL_GetError());
+    //throw std::runtime_error("Failed to load font: " + fontName + "\nSDL_ttf Error: " + SDL_GetError());
     return false;
 }
 
-GCPtr<StaticTexture> FontRenderer::GetTextTexture(std::string str,std::string fontName, size_t fontSize, SDL_Color col)
+StaticTexture* FontRenderer::GetTextTexture(std::string str, std::string fontName, size_t fontSize, SDL_Color col)
 {
     //
     try{
         TTF_Font* font = GetFont(fontName,fontSize);
         SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), str.length(), col);
-        GCPtr<StaticTexture> texture = ConstructObjectFromClass<StaticTexture>(new StaticTexture(SDL_CreateTextureFromSurface(renderer, surface)));
+        SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND); // 启用混合模式
+        StaticTexture* texture = new StaticTexture(SDL_CreateTextureFromSurface(renderer, surface));
         SDL_DestroySurface(surface); // 清除CPU缓存
         return texture;
     }catch(const Exception& e){
         Log(e.what());
-        //std::cout << e.what() << endl;
     }
     return {};
 }
-void FontRenderer::UpdateTextTexture(const StaticTexture *texture,
+
+void FontRenderer::UpdateTextTexture(SDL_Texture *texture,
                                      const std::string &str,
                                      const std::string &fontName,
                                      size_t fontSize,
-                                     SDL_Color col)
+                                     const SDL_Color col)
 {
     try {
         TTF_Font* font = GetFont(fontName, fontSize);
+        if (!font) {
+            Log("GetFont failed");
+            return;
+        }
+        SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), str.length(), SDL_Color{100,0,100,150});
+        //SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND); // 启用混合模式
+        // auto* temptex = SDL_CreateTextureFromSurface(renderer,surface);
+        // auto dstt = SDL_FRect(400,700,temptex->w,temptex->h);
+        // SDL_RenderTexture(renderer,temptex,nullptr,&dstt);
+        // SDL_DestroyTexture(temptex);
 
-        // 1. 渲染文字到 surface
-        SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), str.length(), col);
-
-        // 2. 获取纹理大小
-        int w = surface->w;
-        int h = surface->h;
-
-        // 3. Lock texture
-        void* pixels;
-        int pitch;
-        SDL_LockTexture(texture->GetTexture(), nullptr, &pixels, &pitch);
-
-        // 4. 拷贝 surface 内容到 texture 内存
-        // 注意 surface->pitch 可能和 texture pitch 不同
-        for (int y = 0; y < h; y++) {
-            memcpy(static_cast<Uint8 *>(pixels) + y * pitch,
-                   static_cast<Uint8 *>(surface->pixels) + y * surface->pitch,
-                   w * 4); // 假设 RGBA8888
+        if (!surface)
+        {
+            //Log("TTF_RenderText_Blended failed: " + std::string(TTF_GetError()));
+            return;
         }
 
-        SDL_UnlockTexture(texture->GetTexture());
-        SDL_DestroySurface(surface); // 清除 CPU 缓存
+        if (!texture)
+        {
+            Log("Texture is null");
+            SDL_DestroySurface(surface);
+            return;
+        }
+        // SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        auto dst = SDL_Rect{0,0,surface->w,surface->h};
+        SDL_UpdateTexture(texture, &dst, surface->pixels, surface->pitch);
+
+        SDL_DestroySurface(surface);
 
     } catch (const Exception& e) {
         Log(e.what());
     }
+
+    // SDL_SetRenderTarget(renderer,texture->GetTexture());
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    // SDL_RenderClear(renderer);
+    // SDL_RenderTexture(renderer, some_other_texture, nullptr, &dstRect);
+    // SDL_SetRenderTarget(renderer, nullptr);
+    //
+    // void* pixels;
+    // int pitch;
+    // SDL_LockTexture(texture->GetTexture(), nullptr, &pixels, &pitch);
+    // memcpy(pixels, surface->pixels, surface->h * pitch);
+    // SDL_UnlockTexture(texture->GetTexture());
 }
+
 FontRenderer::~FontRenderer()
 {
     TTF_Quit();

@@ -8,6 +8,7 @@
 #include "Utilities/json.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../System/GameEngine.hpp"
+#include "System/Font.hpp"
 
 
 using namespace std;
@@ -30,6 +31,7 @@ void Controller::Construct()
 	Actor::Construct();
 
 	input_map = ConstructObjectFromClass<InputMap>(new InputMap());
+	pawn_location_tex = ConstructObjectFromClass<StaticTexture>(FontRenderer::Instance().GetTextTexture("                    "));
 }
 
 void Controller::Tick(double delta)
@@ -110,6 +112,15 @@ void Controller::Tick(double delta)
 			EnhancedInputParam<bool> eip(input_map->key_map[x.first],false,Triggered);
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
+	}
+
+	if (controlled_pawn)
+	{
+		FontRenderer::Instance().UpdateTextTexture(pawn_location_tex->GetTexture(),controlled_pawn->GetWorldLocation().str());
+		//FontRenderer::Instance().UpdateTextTexture(pawn_location_tex.Get(),controlled_pawn->GetWorldLocation().str());
+
+		auto dst = SDL_FRect(0,200,pawn_location_tex->w,pawn_location_tex->h);
+		SDL_RenderTexture(renderer, pawn_location_tex->GetTexture(), nullptr, &dst);
 	}
 }
 

@@ -5,7 +5,7 @@ struct Vec2d
 {
     T x;
     T y;
-    Vec2d()= default;
+    Vec2d() :x(0), y(0) {}
 
     Vec2d(T x,T y)
     {

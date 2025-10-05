@@ -28,6 +28,28 @@ void GameWorld::StartSimulation()
 	}
 	//GC_timer->Start();
 	is_simulation = true;
+
+
+	auto dd = SpawnActorToWorld(new Actor(Transform{{500,500}}));
+	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
+		dd->DestroyActor();
+		return -1;
+	});
+}
+
+std::vector<GCPtr<Controller>> GameWorld::GetControllers()
+{
+	return controllers;
+}
+
+std::vector<Actor *> GameWorld::GetActors()
+{
+	return actors;
+}
+
+void GameWorld::RemoveActorByPtr(Actor *actor)
+{
+	std::erase(actors, actor);
 }
 
 GCPtr<Controller> GameWorld::AddController(Controller *controller)
@@ -60,49 +82,10 @@ void GameWorld::Tick(double delta_time)
 	{
 		return;
 	}
+
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
-
-
-//计算物理
-	for (auto& a : actors)
-	{
-		if (a->IsActive())
-		{
-			a->PrePhysicsTick(delta_time);
-		}
-	}
-//映射物理
-	for (auto& a : actors)
-	{
-		if (a->IsActive())
-		{
-			a->PostPhysicsTick(delta_time);
-		}
-	}
-//普通Tick
-	for (auto& a : actors)
-	{
-		if (a->IsActive())
-		{
-			a->Tick(delta_time);
-			a->ActorComponentTick(delta_time);
-		}
-	}
-
-//渲染
-	for (auto& a : actors)
-	{
-		if (a->IsActive())
-		{
-			a->RenderOnScreen();
-		}
-	}
-
-	for (auto& controller : controllers)
-	{
-		controller->Tick(delta_time);
-	}
+	buffer_system.Tick(delta_time);
 }
 
 bool GameWorld::IsServer() const

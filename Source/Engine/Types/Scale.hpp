@@ -1,6 +1,8 @@
-#pragma once 
-#include <Vec.hpp>
-class Scale
+#pragma once
+#include "var_type.hpp"
+#include "Vec.hpp"
+
+class Scale : var_type
 {
     Vec2d<float> Scaling;
     Scale() : Scaling({}){}

@@ -54,3 +54,9 @@ classDiagram
     Object <|-- Actor
     Actor <|-- Pawn
     Actor <|-- GameModeBase
+```
+典型的无异议构造
+```cpp
+//绑定了GC关系，但ptr为局部变量，导致内存泄漏
+auto ptr = ConstructObjectFromClass(new Actor(Transform{{500,500}}));
+```

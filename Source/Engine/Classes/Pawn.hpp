@@ -9,7 +9,7 @@ class Pawn : public Actor
 {
 	using Actor::Actor;
 	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
-	Vec2d<float> player_input_Vec;
+	//Vec2d<float> player_input_Vec;
 	float base_move_speed;
 	//GCPtr<> sprite;
 protected:

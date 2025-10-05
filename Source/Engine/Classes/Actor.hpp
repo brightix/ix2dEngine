@@ -3,38 +3,43 @@
 
 #include "Object.hpp"
 #include "System/Texture.hpp"
+#include "Types/Location.hpp"
 #include "Types/Transform.hpp"
 
+enum class ActorMobility;
 class ActorComponent;
 class GameWorld;
 
 class Actor : public Object
 {
     //Attribution
-    Transform transform;
-	GCPtr<StaticTexture> static_texture;
+	GCPtr<StaticTexture> collision_box;
 
 
 	//Component
     bool isShowInGame;
 	bool is_active;
 //每个actor内部有个计时器组件，用来定时处理事件
+	ActorMobility mobility;
 
-
-
-    SDL_Renderer* renderer;
-    SDL_Window* window;
 
 protected:
 
 	//关卡 负责管理生命周期
 	//GameWorld* game_world;
+
+	Transform transform;
+
+	SDL_Renderer* renderer;
+	SDL_Window* window;
 	GCPtr<GameWorld> game_world;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> components;
-
 public:
+	bool is_pre_kill = false; // for render thread 防止悬空指正延迟删除
+public:
+
     Actor();
-	explicit Actor(Transform tf);
+	explicit Actor(const Transform &tf);
 	~Actor() override;
 
 	void Construct() override;
@@ -49,12 +54,17 @@ public:
 	void DestroyActor();
     //attribution
 
+	void SetMobility(ActorMobility target_mobility);
 	//Add
 	void AddWorldLocation(Vec2d<float> dis);
 
     //Get
-    Vec2d<float> GetWorldLocation() const;
+    Location GetWorldLocation() const;
     Vec2d<float> GetRelativeLocation();
+
+
+	Transform GetWorldTransform() const;
+
 
 	template<typename T>
 	GCPtr<T> SpawnActorFromSelf(T* actor)
@@ -70,7 +80,12 @@ public:
 	}
 //Sys
 	virtual void RenderOnScreen();
-	bool IsActive() const;
+
+    void RenderCollisionBox() const;
+
+    bool IsActive() const;
+
+
 private:
 	void AddToWorld(Actor* a) const;
 };

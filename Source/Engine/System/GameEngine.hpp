@@ -23,9 +23,8 @@ class GameEngine : public Object
     //std::vector<std::shared_ptr<UserWidget>> Actors;
 
     //Tick计时器
-    GCPtr<Timer> tick_timer;
-    GCPtr<Timer> consume_timer;
-    TimerSystem timer_system;
+    GCPtr<NewTimer> tick_timer;
+    GCPtr<NewTimer> consume_timer;
 
 
     //类型转换
@@ -36,8 +35,11 @@ class GameEngine : public Object
 private:
     //只放全局变量初始化
     GameEngine();
-
 public:
+
+    TimerSystem timer_system;
+public:
+
     static GameEngine& Instance()
     {
         static GameEngine instance;
@@ -54,7 +56,6 @@ public:
 //Get
     Vec2d<double> GetViewportSize() { return SysConfig.ViewportSize; }
     SDL_Renderer* GetRenderer() { return renderer; }
-
     GCPtr<GameWorld> GetGameWorld();
 //Render
 	void RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location);

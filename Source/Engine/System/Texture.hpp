@@ -6,13 +6,14 @@
 struct StaticTexture : public Object
 {
 	SDL_Texture* texture;
-	float w;
-	float h;
+	int w;
+	int h;
 public:
     StaticTexture();
 
-	StaticTexture(Vec2d<float> size, SDL_Color color = Color_White, bool is_fill = false);
-	StaticTexture(SDL_Texture* texture);
+	explicit StaticTexture(Vec2d<int> size, SDL_Color color = Color_White, bool is_fill = false);
+	StaticTexture(SDL_Texture* texture, SDL_TextureAccess texture_mode = SDL_TEXTUREACCESS_STREAMING);
+	StaticTexture(StaticTexture&& other);
     ~StaticTexture();
 	SDL_Texture* GetTexture() const ;
 

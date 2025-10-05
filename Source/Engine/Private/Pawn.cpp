@@ -5,9 +5,7 @@
 #include <iostream>
 #include <Classes/ActorComponent/MovableComponent.hpp>
 
-Pawn::Pawn()
-{
-}
+Pawn::Pawn() : Actor(Transform()), base_move_speed(200.f) {}
 
 Pawn::~Pawn()= default;
 
@@ -35,7 +33,7 @@ void Pawn::EventBegin()
 void Pawn::Tick(double deltaTime)
 {
     Actor::Tick(deltaTime);
-
+	//std::cout << transform.location.str() << std::endl;
 	//this->AddWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
 	//player_input_Vec = {};
 	//event_system.CallEvent("test");

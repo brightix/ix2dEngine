@@ -25,6 +25,10 @@ class Controller : public Actor
 	std::unordered_map<SDL_Scancode,EnhancedInputParamStatus> keys_state;
     //bool
     bool show_mouse_cursor;
+
+	//Debug
+	GCPtr<StaticTexture> pawn_location_tex;
+
 public:
     Controller();
     ~Controller() override = default;

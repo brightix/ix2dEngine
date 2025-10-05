@@ -20,9 +20,6 @@ protected:
 	//事件系统
     EventSystem event_system;
 
-	//生命周期
-	//挂载的子object
-	//std::vector<Object> inner;
 public:
     Object();
     Object* GetSelfPtr();

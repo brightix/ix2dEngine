@@ -1,13 +1,21 @@
 #pragma once
 
 #include "Rotation.hpp"
-#include "Types/Vec.hpp"
+#include "Scaling.hpp"
+#include "var_type.hpp"
+#include "Vec.hpp"
 
-struct Transform
+struct Transform : var_type
 {
-    Vec2d<float> Location;
+    Location location;
     Rotation rotation;
-    
-    Transform() : rotation({}),Location({}) {}
-    Transform(const Vec2d<float> Location_, const Rotation rotation_) : Location(Location_),rotation(rotation_) {}
+    Scaling scaling;
+    Transform() {}
+    explicit Transform(const Vec2d<float> loc) : location(loc){}
+    Transform(const Vec2d<float> Location_, const Rotation rotation_) : location(Location_),rotation(rotation_) {}
+
+    std::string str() override
+    {
+        return {};
+    }
 };

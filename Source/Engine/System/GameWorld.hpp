@@ -3,9 +3,12 @@
 
 #include "Classes/Actor.hpp"
 #include "Classes/GameModeBase.hpp"
+#include "Classes/Core/RenderBufferSystem.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
 
+
+class RenderBufferSystem;
 
 class GameWorld : public Object
 {
@@ -14,6 +17,8 @@ class GameWorld : public Object
 	//游戏模式
 	GCPtr<GameModeBase> game_mode;
 
+
+	RenderBufferSystem buffer_system;
 
 	//
 	bool is_simulation;
@@ -32,6 +37,27 @@ public:
 	// void SpawnActorFromClass(std::shared_ptr<T> actor){
 	// 	Actors.push_back(actor);
 	// }
+
+
+//Get
+	std::vector<GCPtr<Controller>> GetControllers();
+	std::vector<Actor*> GetActors();
+
+//Set
+	void RemoveActorByPtr(Actor* actor);
+// 服务器方法
+	//添加玩家
+	GCPtr<Controller> AddController(Controller *controller);
+
+//Sys
+	void AddToWorld(Actor* actor);
+	//Debug限定
+	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
+
+	void Tick(double delta_time);
+
+	bool IsServer() const;
+	bool IsClient() const;
 
 	//从类构建对象
 	template<typename T,typename...Args>
@@ -53,19 +79,7 @@ public:
 		//AddToWorld(a);
 		return i;
 	}
-// 服务器方法
-	//添加玩家
-	GCPtr<Controller> AddController(Controller *controller);
 
-//Sys
-	void AddToWorld(Actor* actor);
-	//Debug限定
-	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
-
-	void Tick(double delta_time);
-
-	bool IsServer() const;
-	bool IsClient() const;
 };
 
 
