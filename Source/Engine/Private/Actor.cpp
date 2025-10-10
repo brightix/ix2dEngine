@@ -92,6 +92,11 @@ bool Actor::IsActive() const
 	return is_active;
 }
 
+bool Actor::IsVisible() const
+{
+	return !hidden_in_game;
+}
+
 void Actor::AddToWorld(Actor* a) const
 {
 	game_world->AddToWorld(a);

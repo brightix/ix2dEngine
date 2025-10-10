@@ -85,7 +85,7 @@ void GameWorld::Tick(double delta_time)
 
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
-	buffer_system.Tick(delta_time);
+	tick_manager.Tick(delta_time);
 }
 
 bool GameWorld::IsServer() const

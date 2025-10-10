@@ -101,13 +101,23 @@ StaticTexture::StaticTexture(const Vec2d<int> size, const SDL_Color color, const
 // 	SDL_UnlockTexture(texture);
 }
 
-StaticTexture::StaticTexture(SDL_Texture *texture, SDL_TextureAccess texture_mode) : texture(texture), w(texture->w), h(texture->h) {}
-StaticTexture::StaticTexture(StaticTexture &&other)
-{
+StaticTexture::StaticTexture(SDL_Texture* texture, SDL_TextureAccess texture_mode) : texture(texture), w(texture->w), h(texture->h) {}
+StaticTexture::StaticTexture(StaticTexture& other) {
+	texture = other.texture;
+	w = other.w;
+	h = other.h;
+}
+StaticTexture::StaticTexture(StaticTexture&& other)
+ noexcept {
 	texture = other.texture;
 	w = other.w;
 	h = other.h;
 	other.texture = nullptr;
+}
+
+void StaticTexture::SetPivot(Vec2d<float> p)
+{
+	pivot = p;
 }
 
 StaticTexture::~StaticTexture()
@@ -115,7 +125,29 @@ StaticTexture::~StaticTexture()
 	if (texture) SDL_DestroyTexture(texture);
 }
 
-SDL_Texture * StaticTexture::GetTexture() const
+void StaticTexture::Copy(StaticTexture& other)
+{
+	w = other.w;
+	h = other.h;
+	auto renderer = GameEngine::Instance().GetRenderer();
+	SDL_Texture* newTexture = SDL_CreateTexture(renderer,
+	SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+	w, h);
+	// 保存原渲染目标
+	SDL_Texture* origTarget = SDL_GetRenderTarget(renderer);
+
+	// 设置新纹理为渲染目标
+	SDL_SetRenderTarget(renderer, newTexture);
+
+	// 渲染原纹理到新纹理
+	SDL_RenderTexture(renderer, other.texture, nullptr, nullptr);
+
+	// 恢复原渲染目标
+	SDL_SetRenderTarget(renderer, origTarget);
+
+}
+
+SDL_Texture* StaticTexture::GetTexture() const
 {
 	return texture;
 }

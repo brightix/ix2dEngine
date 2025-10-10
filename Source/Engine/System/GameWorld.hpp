@@ -3,12 +3,13 @@
 
 #include "Classes/Actor.hpp"
 #include "Classes/GameModeBase.hpp"
-#include "Classes/Core/RenderBufferSystem.hpp"
+#include "Classes/Core/ThreadManager.hpp"
+#include "Classes/Core/TickManager.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
 
 
-class RenderBufferSystem;
+class TickManager;
 
 class GameWorld : public Object
 {
@@ -18,8 +19,8 @@ class GameWorld : public Object
 	GCPtr<GameModeBase> game_mode;
 
 
-	RenderBufferSystem buffer_system;
-
+	TickManager tick_manager;
+	ThreadManager thread_manager;
 	//
 	bool is_simulation;
 	bool is_server;

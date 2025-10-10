@@ -10,12 +10,11 @@ using namespace std;
 int main()
 {
 #ifdef _WIN32
-    // ????????? UTF-8
+    //UTF-8
     SetConsoleOutputCP(CP_UTF8);
 #endif
     auto& game_engine = GameEngine::Instance();
-	//??????
-	//
+
     game_engine.Construct();
 
 	game_engine.EventBegin();

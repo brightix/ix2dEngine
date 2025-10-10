@@ -15,7 +15,6 @@ protected:
     //事件分发器
     //委托
     EventDispatcherSystem dispatcher_system;
-
     //EventDelegateSystem delegate_system;
 	//事件系统
     EventSystem event_system;

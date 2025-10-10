@@ -13,6 +13,12 @@
 
 #define TEventParams std::optional<EventParams>
 
+// #define vector
+
+
+
+
+
 #define Color_White SDL_Color(255,255,255,255)
 
 #define Color_Red SDL_Color(255,0,0,255)

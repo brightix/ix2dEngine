@@ -19,6 +19,7 @@ class Actor : public Object
 	//Component
     bool isShowInGame;
 	bool is_active;
+	bool hidden_in_game;
 //每个actor内部有个计时器组件，用来定时处理事件
 	ActorMobility mobility;
 
@@ -45,8 +46,9 @@ public:
 	void Construct() override;
     virtual void EventBegin();
 	virtual void PrePhysicsTick(double delta_time){}
+
+	virtual void Tick(double delta_time);
 	virtual void PostPhysicsTick(double delta_time){}
-    virtual void Tick(double delta_time);
 	virtual void ActorComponentTick(double delta_time);
     virtual void EventEnd(){}
 
@@ -84,7 +86,7 @@ public:
     void RenderCollisionBox() const;
 
     bool IsActive() const;
-
+	bool IsVisible() const;
 
 private:
 	void AddToWorld(Actor* a) const;
