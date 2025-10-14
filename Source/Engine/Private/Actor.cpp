@@ -2,7 +2,7 @@
 
 #include <Classes/ActorComponent/ActorComponent.hpp>
 
-#include "../System/GameEngine.hpp"
+#include "../Classes/Core/GameEngine.hpp"
 #include "Enum/ActorEnum.hpp"
 
 Actor::Actor() : Actor(Transform()) {}
@@ -16,7 +16,7 @@ void Actor::Construct()
 	renderer = GameEngine::Instance().GetRenderer();
 	//默认生成一个200x200的矩形作为sprite
 	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
-	collision_box = ConstructObjectFromClass(new StaticTexture({200,200},{255,255,255,255}));
+	collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
 void Actor::EventBegin()

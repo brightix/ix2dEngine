@@ -1,7 +1,7 @@
 #include "Classes/Core/TickManager.hpp"
 
-#include "System/GameEngine.hpp"
-#include "System/GameWorld.hpp"
+#include "../../Classes/Core/GameEngine.hpp"
+#include "../../Classes/Core/GameWorld.hpp"
 
 void TickManager::Tick(double delta_time)
 {

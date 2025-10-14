@@ -1,6 +1,6 @@
-#include "System/Texture.hpp"
+#include "../../Structure/Texture.hpp"
 
-#include "System/GameEngine.hpp"
+#include "../../Classes/Core/GameEngine.hpp"
 
 StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0) {
 }

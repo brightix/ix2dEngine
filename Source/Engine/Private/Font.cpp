@@ -3,7 +3,7 @@
 #include "../System/Font.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "../System/GameEngine.hpp"
+#include "../Classes/Core/GameEngine.hpp"
 
 void FontRenderer::Init()
 {

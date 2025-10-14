@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "Texture.hpp"
+#include "../Structure/Texture.hpp"
 #include "Classes/Object.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/GCPtr.hpp"

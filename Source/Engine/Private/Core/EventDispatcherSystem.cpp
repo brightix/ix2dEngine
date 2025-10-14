@@ -11,6 +11,7 @@ void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
     // }
 }
 
+//在这个事件系统里绑定其他对象的事件
 void EventDispatcherSystem::BindEventTo(std::string event_name, Object *obj, Event event)
 {
     auto it = bound_dispatcher.find(event_name);

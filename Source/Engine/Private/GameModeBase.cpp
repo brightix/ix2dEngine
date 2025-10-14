@@ -1,6 +1,6 @@
 #include "Classes/GameModeBase.hpp"
 
-#include <System/GameWorld.hpp>
+#include "Classes/Core/GameWorld.hpp"
 
 #include "Classes/Pawn.hpp"
 

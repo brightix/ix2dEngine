@@ -7,7 +7,7 @@
 #include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
 #include "Utilities/json.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "../System/GameEngine.hpp"
+#include "../Classes/Core/GameEngine.hpp"
 #include "System/Font.hpp"
 
 
@@ -30,8 +30,8 @@ void Controller::Construct()
 {
 	Actor::Construct();
 
-	input_map = ConstructObjectFromClass<InputMap>(new InputMap());
-	pawn_location_tex = ConstructObjectFromClass<StaticTexture>(FontRenderer::Instance().GetTextTexture("                    "));
+	input_map = NewObject<InputMap>(new InputMap());
+	pawn_location_tex = NewObject<StaticTexture>(FontRenderer::Instance().GetTextTexture("                    "));
 }
 
 void Controller::Tick(double delta)

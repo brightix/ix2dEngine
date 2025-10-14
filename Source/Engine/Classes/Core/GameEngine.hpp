@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL.h>
 #include "GameWorld.hpp"
-#include "Texture.hpp"
+#include "../../Structure/Texture.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
@@ -32,6 +32,8 @@ class GameEngine : public Object
 
 	//组件
 	GCPtr<GameWorld> game_world;
+
+	//子系统
 private:
     //只放全局变量初始化
     GameEngine();
@@ -65,3 +67,9 @@ public:
 
     int GCSweep();
 };
+
+
+inline GameWorld* GetWorld()
+{
+	return GameEngine::Instance().GetGameWorld().Get();
+}

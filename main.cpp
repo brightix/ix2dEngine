@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 #include "Classes/Actor.hpp"
 #include "Types/Vec.hpp"
-#include "System/GameEngine.hpp"
+#include "Source/Engine/Classes/Core/GameEngine.hpp"
 #include <fcntl.h>
 
 #include "Classes/Pawn.hpp"

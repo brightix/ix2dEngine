@@ -4,7 +4,7 @@
 #include "Utilities/EventDelegateSystem.hpp"
 #include "Core/EventDispatcherSystem.hpp"
 #include "Core/EventSystem.hpp"
-#include "../System/GCObject.hpp"
+#include "Core/GCObject.hpp"
 #include "Utilities/GCPtr.hpp"
 class Object : public GCObject
 {
@@ -31,7 +31,7 @@ public:
     //添加事件分发器安全版本需要验证参数包类型
     void AddEventDispatcher(const std::string& event_name, EventMethod&& event_method);
 	template<typename T>
-	GCPtr<T> ConstructObjectFromClass(T* object)
+	GCPtr<T> NewObject(T* object)
 	{
 		auto it = GCPtr<T>(object,this);
 		static_cast<Object*>(it.Get())->Construct();

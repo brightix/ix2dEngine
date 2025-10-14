@@ -1,7 +1,7 @@
 #pragma once
 #include "Classes/Actor.hpp"
 #include "SubSystem/EnhancedInputSubSystem.hpp"
-#include "System/Texture.hpp"
+#include "../Structure/Texture.hpp"
 
 class MovableComponent;
 

@@ -3,7 +3,7 @@
 #include <thread>
 #include <SDL3/SDL_render.h>
 
-#include "System/GameEngine.hpp"
+#include "../../Classes/Core/GameEngine.hpp"
 
 ThreadManager::ThreadManager() 
 {

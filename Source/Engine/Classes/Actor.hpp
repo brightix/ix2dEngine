@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 
 #include "Object.hpp"
-#include "System/Texture.hpp"
+#include "../Structure/Texture.hpp"
 #include "Types/Location.hpp"
 #include "Types/Transform.hpp"
 

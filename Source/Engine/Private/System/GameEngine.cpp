@@ -1,7 +1,7 @@
-#include "System/GameEngine.hpp"
+#include "../../Classes/Core/GameEngine.hpp"
 
 #include "System/Font.hpp"
-#include "System/Texture.hpp"
+#include "../../Structure/Texture.hpp"
 
 
 GameEngine::GameEngine() : delta_time(0)
