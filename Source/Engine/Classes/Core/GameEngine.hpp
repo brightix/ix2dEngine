@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include "GameWorld.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "../../Structure/Texture.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"

@@ -7,8 +7,6 @@
 #include "../Structure/Texture.hpp"
 #include "Classes/Object.hpp"
 #include "Utilities/Exception.hpp"
-#include "Utilities/GCPtr.hpp"
-#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "Utilities/DataStructure/LRUCache.hpp"
 
 class FontRenderer : public Object

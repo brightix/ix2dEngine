@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Location.hpp"
 #include "Rotation.hpp"
 #include "Scaling.hpp"
 #include "var_type.hpp"

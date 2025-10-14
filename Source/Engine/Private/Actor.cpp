@@ -2,7 +2,7 @@
 
 #include <Classes/ActorComponent/ActorComponent.hpp>
 
-#include "../Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameEngine.hpp"
 #include "Enum/ActorEnum.hpp"
 
 Actor::Actor() : Actor(Transform()) {}

@@ -1,7 +1,6 @@
 #pragma once
 #include "var_type.hpp"
 #include "Vec.hpp"
-#include "Classes/Actor.hpp"
 
 struct Location : var_type
 {
