@@ -30,15 +30,15 @@ struct EnhancedInputParam
 
 // Vec2d<double> 特化
 template<>
-struct EnhancedInputParam<Vec2d<double>>
+struct EnhancedInputParam<Vec2<double>>
 {
-	Vec2d<double> val;
+	Vec2<double> val;
 	EnhancedInputParamStatus status;
 
-	EnhancedInputParam(const Vec2d<double>& v, EnhancedInputParamStatus s = EnhancedInputParamStatus::Start)
+	EnhancedInputParam(const Vec2<double>& v, EnhancedInputParamStatus s = EnhancedInputParamStatus::Start)
 		: val(v), status(s) {}
 
-	Vec2d<double> Get() const { return val; }
+	Vec2<double> Get() const { return val; }
 };
 
 // Vec<double> 特化

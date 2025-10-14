@@ -2,14 +2,16 @@
 #include <memory>
 
 //#define sptr std::shared_ptr
-#define UpDir    Vec2d<int>(0, -1)
-#define DownDir  Vec2d<int>(0, 1)
-#define LeftDir  Vec2d<int>(-1, 0)
-#define RightDir Vec2d<int>(1, 0)
+#define UpDir    Vec2<int>(0, -1)
+#define DownDir  Vec2<int>(0, 1)
+#define LeftDir  Vec2<int>(-1, 0)
+#define RightDir Vec2<int>(1, 0)
 
 
 #define DebugMod 1
 
+
+#define NAME(x) x + std::string("_") + std::to_string(glo_id); glo_id++
 
 #define TEventParams std::optional<EventParams>
 

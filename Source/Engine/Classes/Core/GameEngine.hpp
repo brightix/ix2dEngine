@@ -9,6 +9,7 @@
 #include "Utilities/ConverterRegistry.hpp"
 #include "Utilities/ExternalWrapper.hpp"
 #include "Utilities/GCPtr.hpp"
+#include "Classes/SubSystem/GarbageCollection.hpp"
 
 class GameEngine : public Object
 {
@@ -34,6 +35,7 @@ class GameEngine : public Object
 	GCPtr<GameWorld> game_world;
 
 	//子系统
+	GCPtr<SubsystemManager<EngineSubSystem>> engine_subsystem;
 private:
     //只放全局变量初始化
     GameEngine();
@@ -56,7 +58,7 @@ public:
     }
     ~GameEngine();
 //Get
-    Vec2d<double> GetViewportSize() { return SysConfig.ViewportSize; }
+    Vec2<double> GetViewportSize() { return SysConfig.ViewportSize; }
     SDL_Renderer* GetRenderer() { return renderer; }
     GCPtr<GameWorld> GetGameWorld();
 //Render
@@ -72,4 +74,9 @@ public:
 inline GameWorld* GetWorld()
 {
 	return GameEngine::Instance().GetGameWorld().Get();
+}
+
+inline GameEngine* GetEngine()
+{
+	return &GameEngine::Instance();
 }

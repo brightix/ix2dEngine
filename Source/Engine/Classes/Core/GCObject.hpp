@@ -7,6 +7,7 @@ template<typename T>
 class GCPtr;
 struct GCObject
 {
+    std::string name = "未命名";
 	bool bMarked = false;
 	bool is_pending_kill = false;
 	int id;
@@ -29,6 +30,8 @@ struct GCObject
 	{
 		return GCPtr<T>(p, this);
 	}
+
+
 	virtual ~GCObject()
 	{
 	}

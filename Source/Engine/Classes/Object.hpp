@@ -8,8 +8,6 @@
 #include "Utilities/GCPtr.hpp"
 class Object : public GCObject
 {
-public:
-    std::string name;
 protected:
     Object* Self;
     //事件分发器

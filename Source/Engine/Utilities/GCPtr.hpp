@@ -38,41 +38,39 @@ public:
 	}
 
 
-	//派生->基类  同样会造成GC回收
+	//派生->基类  gc链不变，有释放风险
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(nullptr) {}
+	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {}
 
-	//给outer添加新对象引用
-	GCPtr(const GCPtr& other, GCObject* outer)
-	{
-		ptr = other.ptr;
-		this->outer = outer;
-		GCLink(ptr,outer);
-	}
+	// //给outer添加新对象引用
+	// GCPtr(const GCPtr& other, GCObject* outer)
+	// {
+	// 	ptr = other.ptr;
+	// 	this->outer = outer;
+	// 	GCLink(ptr,outer);
+	// }
 
 	/// 以下弱引用 会导致被GC回收,所以不要使用这个方法初始化值，要用类自带的Spawn 或 Construct
-	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(nullptr) {}
+	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(other.outer) {}
 	GCPtr& operator=(const GCPtr& other)
 	{
-		GCUnLink(ptr,outer);
 		ptr = other.ptr;
-		GClink(ptr,outer);
+		outer = other.outer;
 		return *this;
 	}
 	//
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
 	GCPtr& operator=(const GCPtr<U>& other) {
-		GCUnLink(ptr,outer);
 		ptr = other.Get();
-		GCLink(ptr,outer);
+		outer = other.GetOuter();
 		return *this;
 	}
-	//移动构造 [废弃] GC不安全
-	GCPtr(GCPtr&& other) noexcept
-	{
-		ptr = other.ptr;
-		outer = other.outer;
-	} // noexcept : ptr(other.ptr) ,outer(nullptr) {}
+	// //移动构造 [废弃] GC不安全
+	// GCPtr(GCPtr&& other) noexcept
+	// {
+	// 	ptr = other.ptr;
+	// 	outer = other.outer;
+	// } // noexcept : ptr(other.ptr) ,outer(nullptr) {}
 
 
 	//assets

@@ -2,24 +2,15 @@
 #include "../../Classes/Core/GameEngine.hpp"
 #include "TestActor.h"
 #include "Classes/Pawn.hpp"
-#include "Classes/SubSystem/Sub/GarbageCollection.hpp"
+#include "../../Classes/SubSystem/GarbageCollection.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
 {
+	name = NAME("World");
 	auto game = game_mode;
 	is_server = true;
-	CreateWorldSubSystem<GarbageCollection>("GarbageCollection");
-	//Actor a(Transform(Vec2d<float>(50.0,50.0),{}));
-	//actors.push_back(make_GCPtr<Pawn>(new Pawn()));
-	//GCPtr<TestActor> c = make_GCPtr<TestActor>(1);
-	// auto g = SpawnActorFromClass<TestActor>(new TestActor(1));
-	// auto g2 = SpawnActorFromClass<TestActor>(1);
-	timer_system.SetTimer(2000,[this]() {
-		std::cout << "{ " << dynamic_cast<GarbageCollection*>(GetWorldSubSystem("GarbageCollection"))->GCSweep() << " } objects have been Swept!" << std::endl;
-		return 2000;
-	});
 }
 
 void GameWorld::StartSimulation()
@@ -96,9 +87,10 @@ void GameWorld::Tick(double delta_time)
 
 void GameWorld::WorldDestroy()
 {
-	for (auto& it : world_subSystem)
+	auto subsystem = world_subsystem.GetAllSubSystem();
+	for (auto& it : subsystem)
 	{
-		it.second->DeInit();
+		it->DeInit();
 	}
 }
 

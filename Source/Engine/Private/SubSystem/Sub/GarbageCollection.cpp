@@ -1,4 +1,4 @@
-#include "Classes/SubSystem/Sub/GarbageCollection.hpp"
+#include "Classes/SubSystem/GarbageCollection.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
@@ -7,13 +7,21 @@
 
 GarbageCollection::GarbageCollection()
 {
-    
+    name = "GarbageCollection";
 }
 
 void GarbageCollection::GCMark(GCObject *gc_object)
 {
 	//对象不存在 or 已被标记
-	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
+	if (!gc_object || gc_object->bMarked) return;
+	if (gc_object->is_pending_kill)
+	{
+		for (auto parent : gc_object->referenced)
+		{
+			std::erase(parent->referencing,this);
+		}
+		return;
+	}
 	gc_object->bMarked = true;
 	for (auto child : gc_object->referencing)
 	{
@@ -23,33 +31,29 @@ void GarbageCollection::GCMark(GCObject *gc_object)
 
 int GarbageCollection::GCSweep()
 {
+	//清理标记
 	for (auto& obj : GCAllObjects)
 	{
-		obj->bMarked = false;
+		if (obj)
+		{
+			obj->bMarked = false;
+		}
 	}
-	GCMark(GetWorld());
-	std::vector<GCObject *> temp;
-	int size = GCAllObjects.size();
-	//temp.reserve(size);
+	GCMark(GetEngine());
 	int cnt = 0;
 
-	std::vector<GCObject*> to_delete;
-	to_delete.reserve(GCAllObjects.size());
-
 	for (auto& obj : GCAllObjects)
 	{
-		if (!obj->bMarked)
+		//不可达路径删除
+		if (obj && !obj->bMarked)
 		{
-			to_delete.emplace_back(obj);
+			//to_delete.emplace_back(obj);
+			std::cout << "移除了 " + obj->name << std::endl;
+			delete obj;
+			obj = nullptr;
 			cnt++;
 		}
-		else temp.emplace_back(obj);
 	}
-	for (int i = 0; i < to_delete.size(); i++)
-	{
-		delete to_delete[i];
-	}
-
-	GCAllObjects.swap(temp);
+	Block += cnt;
 	return cnt;
 }

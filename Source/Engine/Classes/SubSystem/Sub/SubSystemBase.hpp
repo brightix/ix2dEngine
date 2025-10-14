@@ -6,7 +6,7 @@ class SubSystemBase : public GCObject
 {
 public:
 	SubSystemBase();
-	virtual void Init();
-	virtual void DeInit();
+	virtual void Init(){}
+	virtual void DeInit(){}
 	virtual ~SubSystemBase() = default;
 };

@@ -5,7 +5,10 @@
 
 struct Texture : public Object
 {
-
+	Texture()
+	{
+		name = "Texture";
+	}
 };
 
 struct StaticTexture : public Texture
@@ -13,11 +16,11 @@ struct StaticTexture : public Texture
 	SDL_Texture* texture;
 	int w;
 	int h;
-	Vec2d<float> pivot;
+	Vec2<float> pivot;
 public:
     StaticTexture();
 
-	explicit StaticTexture(Vec2d<int> size, SDL_Color color = Color_White, bool is_fill = false);
+	explicit StaticTexture(Vec2<int> size, SDL_Color color = Color_White, bool is_fill = false);
 	StaticTexture(SDL_Texture* texture, SDL_TextureAccess texture_mode = SDL_TEXTUREACCESS_STREAMING);
 
 	StaticTexture(StaticTexture& other);
@@ -26,7 +29,7 @@ public:
 
 
 
-	void SetPivot(Vec2d<float> p);
+	void SetPivot(Vec2<float> p);
 
 	~StaticTexture();
 

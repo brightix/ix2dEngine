@@ -58,11 +58,11 @@ public:
 
 	void SetMobility(ActorMobility target_mobility);
 	//Add
-	void AddWorldLocation(Vec2d<float> dis);
+	void AddWorldLocation(Vec2<float> dis);
 
     //Get
     Location GetWorldLocation() const;
-    Vec2d<float> GetRelativeLocation();
+    Vec2<float> GetRelativeLocation();
 
 
 	Transform GetWorldTransform() const;
@@ -93,7 +93,7 @@ private:
 };
 
 template<typename T>
-std::ostream& operator<<(std::ostream & os, Vec2d<T> v)
+std::ostream& operator<<(std::ostream & os, Vec2<T> v)
 {
 	os << "x = " << v.x << " y = " << v.y;
 	//os << "x = " + to_string(v.x) + "y = " + to_string(v.y);

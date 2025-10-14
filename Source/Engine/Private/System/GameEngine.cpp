@@ -2,7 +2,7 @@
 
 #include "System/Font.hpp"
 #include "../../Structure/Texture.hpp"
-
+#include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 
 GameEngine::GameEngine() : delta_time(0)
 {
@@ -40,7 +40,7 @@ void GameEngine::Construct()
 {
 	//Object::Construct();
 	//将自己添加进全局GC
-	GCAllObjects.push_back(this);
+	GCAllObjects.emplace_back(this);
 	SysConfig = {120, {640, 480}};
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
@@ -54,6 +54,15 @@ void GameEngine::Construct()
 	// 	std::cout << "{ " << GCSweep() << " } objects have been Swept!" << std::endl;
 	// 	return 2000;
 	// });
+	engine_subsystem = NewObject<SubsystemManager<EngineSubSystem>>(new SubsystemManager<EngineSubSystem>());
+
+	engine_subsystem->CreateSubSystem<GarbageCollection>("GarbageCollection");
+	GarbageCollection* gc =  dynamic_cast<GarbageCollection*>(engine_subsystem->GetSubSystem("GarbageCollection"));
+	timer_system.SetTimer(2000,[gc]() {
+		gc->GCSweep();
+		// std::cout << "{ " <<  << " } objects have been Swept!" << std::endl;
+		return 2000;
+	});
 }
 
 void GameEngine::Tick()
@@ -117,48 +126,4 @@ GCPtr<GameWorld> GameEngine::GetGameWorld()
 void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)
 {
 	SDL_RenderTexture(renderer,texture.Get()->texture,nullptr,&location);
-}
-
-void GameEngine::GCMark(GCObject *gc_object)
-{
-	//对象不存在 or 已被标记
-	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
-	gc_object->bMarked = true;
-	for (auto child : gc_object->referencing)
-	{
-		GCMark(child);
-	}
-}
-
-int GameEngine::GCSweep()
-{
-	for (auto& obj : GCAllObjects)
-	{
-		obj->bMarked = false;
-	}
-	GCMark(this);
-	std::vector<GCObject *> temp;
-	int size = GCAllObjects.size();
-	//temp.reserve(size);
-	int cnt = 0;
-
-	std::vector<GCObject*> to_delete;
-	to_delete.reserve(GCAllObjects.size());
-
-	for (auto& obj : GCAllObjects)
-	{
-		if (!obj->bMarked)
-		{
-			to_delete.emplace_back(obj);
-			cnt++;
-		}
-		else temp.emplace_back(obj);
-	}
-	for (int i = 0; i < to_delete.size(); i++)
-	{
-		delete to_delete[i];
-	}
-
-	GCAllObjects.swap(temp);
-	return cnt;
 }

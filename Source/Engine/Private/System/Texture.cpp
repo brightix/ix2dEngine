@@ -2,11 +2,13 @@
 
 #include "../../Classes/Core/GameEngine.hpp"
 
-StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0) {
+StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0)
+{
+
 }
 
 
-StaticTexture::StaticTexture(const Vec2d<int> size, const SDL_Color color, const bool is_fill)
+StaticTexture::StaticTexture(const Vec2<int> size, const SDL_Color color, const bool is_fill)
 {
 	w = size.x;
 	h = size.y;
@@ -115,7 +117,7 @@ StaticTexture::StaticTexture(StaticTexture&& other)
 	other.texture = nullptr;
 }
 
-void StaticTexture::SetPivot(Vec2d<float> p)
+void StaticTexture::SetPivot(Vec2<float> p)
 {
 	pivot = p;
 }

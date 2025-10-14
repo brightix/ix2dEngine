@@ -5,14 +5,15 @@
 #include "Classes/GameModeBase.hpp"
 #include "Classes/Core/ThreadManager.hpp"
 #include "Classes/Core/TickManager.hpp"
-#include "Classes/SubSystem/WorldSubSystem.hpp"
+#include "../SubSystem/Sub/WorldSubSystem.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
 #include "Classes/Core/TimerSystem.hpp"
+#include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 
 class TickManager;
-
+class EngineSubSystem;
 class GameWorld : public Object
 {
 
@@ -34,7 +35,7 @@ class GameWorld : public Object
 
 	//子系统
 	TimerSystem timer_system;
-	std::unordered_map<uint32_t,GCPtr<WorldSubSystem>> world_subSystem;
+	SubsystemManager<WorldSubSystem> world_subsystem;
 public:
     GameWorld();
     ~GameWorld()= default;
@@ -78,29 +79,8 @@ public:
 
 
 
-	template<typename T>
-	void CreateWorldSubSystem(const std::string& subSys_name)
-	{
-		static_assert(std::is_base_of_v<WorldSubSystem, T>, "T 必须继承自 WorldSubSystem");
-		const uint32_t id = ix::Hash(subSys_name.c_str());
-		if (!world_subSystem.contains(id))
-		{
-			world_subSystem[id] = make_GCPtr<T>();
-		}
-		else
-		{
-			Log("重复添加子系统");
-		}
-	}
-	WorldSubSystem* GetWorldSubSystem(const std::string& subSys_name)
-	{
-		uint32_t id = ix::Hash(subSys_name.c_str());
-		if (world_subSystem.contains(id))
-		{
-			return world_subSystem[id].Get();
-		}
-		return nullptr;
-	}
+
+
 
 
 	//从类构建对象

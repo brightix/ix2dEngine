@@ -1,13 +1,6 @@
-#include "Classes/SubSystem/SubSystemBase.hpp"
+#include "../../Classes/SubSystem/Sub/SubSystemBase.hpp"
 
-SubSystemBase::SubSystemBase() 
+SubSystemBase::SubSystemBase()
 {
     
 }
-
-void SubSystemBase::Init()
-{
-
-}
-
-void SubSystemBase::DeInit() { }

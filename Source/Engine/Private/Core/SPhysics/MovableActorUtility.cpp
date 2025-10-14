@@ -1,6 +1,6 @@
 #include "Classes/Core/SPhysics/MovableActorUtility.hpp"
 
-void MovableActorUtility::AddVelocity(const Vec2d<float> addition_velocity)
+void MovableActorUtility::AddVelocity(const Vec2<float> addition_velocity)
 {
     velocity += addition_velocity;
 }
