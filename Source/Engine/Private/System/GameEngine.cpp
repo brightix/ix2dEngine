@@ -1,7 +1,8 @@
 #include "../../Classes/Core/GameEngine.hpp"
 
 #include "System/Font.hpp"
-#include "../../Structure/Texture.hpp"
+#include "../../Classes/Component/SenceComponent/Texture.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 
 GameEngine::GameEngine() : delta_time(0)
@@ -41,6 +42,7 @@ void GameEngine::Construct()
 	//Object::Construct();
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
+	GCRoot = this;
 	SysConfig = {120, {640, 480}};
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
@@ -121,6 +123,11 @@ GameEngine::~GameEngine()
 GCPtr<GameWorld> GameEngine::GetGameWorld()
 {
 	return game_world;
+}
+
+GCObject *GameEngine::GetGCRoot() const
+{
+	return GCRoot;
 }
 
 void GameEngine::RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location)

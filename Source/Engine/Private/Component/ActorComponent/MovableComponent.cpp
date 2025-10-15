@@ -1,4 +1,4 @@
-#include "Classes/ActorComponent/MovableComponent.hpp"
+#include "../../../Classes/Component/ActorComponent/MovableComponent.hpp"
 #include "Classes/Actor.hpp"
 #include "Classes/Pawn.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
@@ -11,10 +11,9 @@ MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_
 void MovableComponent::Construct()
 {
     ActorComponent::Construct();
-    if (auto t = Cast<Pawn>(owner);t.first)
+    if (auto t = Cast<Pawn>(owner))
     {
-        EnhancedInputSubSystem* enhanced_input_sub_system = t.second->GetEnhancedInputSubSystem();
-
+        EnhancedInputSubSystem* enhanced_input_sub_system = t->GetEnhancedInputSubSystem();
         enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[this](EnhancedInputParam<bool> eip) {
             auto f = eip.status;
             switch (f)
@@ -85,6 +84,7 @@ void MovableComponent::Construct()
             }
         });
     }
+    std::cout<< "增强输入子系统初始化完毕" << std::endl;
 }
 
 void MovableComponent::ActorComponentTick(double deltaTime)

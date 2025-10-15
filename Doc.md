@@ -60,3 +60,17 @@ classDiagram
 //绑定了GC关系，但ptr为局部变量，导致内存泄漏
 auto ptr = ConstructObjectFromClass(new Actor(Transform{{500,500}}));
 ```
+
+
+事件绑定
+```cpp
+//创建事件
+dispatcher_system.AddEventDispatcher("Event");
+
+//绑定事件固定传入 "std::optional<EventParams> e" 或使用宏 "TEventParams e"
+dispatcher_system.BindEventTo("TestDispatcher",this,Event("pawn",[this](std::optional<EventParams> e) {
+    //具体方法
+    std::cout << "Hello World" << std::endl;
+    //...
+}));
+```

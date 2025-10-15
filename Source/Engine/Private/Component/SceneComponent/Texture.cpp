@@ -1,6 +1,6 @@
-#include "../../Structure/Texture.hpp"
+#include "../../../Classes/Component/SenceComponent/Texture.hpp"
 
-#include "../../Classes/Core/GameEngine.hpp"
+#include "../../../Classes/Core/GameEngine.hpp"
 
 StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0)
 {
@@ -22,24 +22,17 @@ StaticTexture::StaticTexture(const Vec2<int> size, const SDL_Color color, const 
 	);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	auto r = GameEngine::Instance().GetRenderer();
-	SDL_SetRenderTarget(r, texture);
+
 
 	if (is_fill)
 	{
+		SDL_SetRenderTarget(r, texture);
 		const auto rect = SDL_FRect(0,0,w,h);
 		SDL_RenderFillRect(r,&rect);
 	}
 	else
 	{
-		// 清空背景
-		SDL_SetRenderDrawColor(r, 0, 0, 0, 0); // 透明背景
-		SDL_RenderClear(r);
-		SDL_SetRenderDrawColor(r, 0, 255, 255, 255); // 青色边框
-		int thickness = 3;
-		for (int i = 0; i < thickness; ++i) {
-			SDL_FRect rect = SDL_FRect(i,i, w - i * 2, h - i * 2);
-			SDL_RenderRect(r, &rect);
-		}
+
 	}
 
 	SDL_SetRenderTarget(r, nullptr);
@@ -152,4 +145,32 @@ void StaticTexture::Copy(StaticTexture& other)
 SDL_Texture* StaticTexture::GetTexture() const
 {
 	return texture;
+}
+
+Vec2<float> StaticTexture::GetSize()
+{
+	return Vec2<float>(w,h);
+}
+
+SDL_Texture * StaticTexture::CreateOutLine()
+{
+	texture = SDL_CreateTexture(
+	GameEngine::Instance().GetRenderer(),
+	SDL_PIXELFORMAT_RGBA8888,
+	SDL_TEXTUREACCESS_TARGET,
+	w,
+	h
+);
+	SDL_SetRenderTarget(r, texture);
+	auto r = GameEngine::Instance().GetRenderer();
+	// 清空背景
+	SDL_SetRenderDrawColor(r, 0, 0, 0, 0); // 透明背景
+	SDL_RenderClear(r);
+	SDL_SetRenderDrawColor(r, 0, 255, 255, 255); // 青色边框
+	int thickness = 3;
+	for (int i = 0; i < thickness; ++i) {
+		SDL_FRect rect = SDL_FRect(i,i, w - i * 2, h - i * 2);
+		SDL_RenderRect(r, &rect);
+	}
+	return
 }

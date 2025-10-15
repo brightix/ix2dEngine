@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Classes/Actor.hpp"
-#include "../../Source/Engine/Structure/Texture.hpp"
+#include "../../Source/Engine/Classes/Component/SenceComponent/Texture.hpp"
 
 class GameEngine;
 using namespace std;

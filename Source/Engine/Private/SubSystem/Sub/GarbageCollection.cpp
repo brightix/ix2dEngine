@@ -39,7 +39,7 @@ int GarbageCollection::GCSweep()
 			obj->bMarked = false;
 		}
 	}
-	GCMark(GetEngine());
+	GCMark(GetEngine()->GetGCRoot());
 	int cnt = 0;
 
 	for (auto& obj : GCAllObjects)

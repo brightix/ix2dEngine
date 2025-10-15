@@ -19,11 +19,11 @@ Controller::Controller() : show_mouse_cursor(false)
 	//input_map = make_GCPtr<InputMap>();
 }
 
-void Controller::Control(Pawn* pawn)
+void Controller::Control(GCPtr<Pawn> pawn)
 {
 
-	controlled_pawn = make_GCPtr<Pawn>(pawn);
-
+	//controlled_pawn = make_GCPtr<Pawn>(pawn);
+	controlled_pawn = pawn;
 }
 
 void Controller::Construct()
@@ -42,6 +42,8 @@ void Controller::Tick(double delta)
     while (SDL_PollEvent(&event))
     {
     	auto t = event.type;
+
+    	SDL_Scancode scancode = event.key.scancode;
 	    switch (t)
         {
 	        case SDL_EVENT_QUIT:
@@ -53,17 +55,17 @@ void Controller::Tick(double delta)
         	case SDL_EVENT_KEY_DOWN: // 键盘按下
         		if (controlled_pawn)
         		{
-			        SDL_Scancode scancode = event.key.scancode;
 					auto& key = keys_state[scancode];
         			if (key == Idle)
         			{
         				// Start
         				key = Start;
         				//cout << "start" << endl;
-        				EnhancedInputParam<bool> eip(input_map->key_map[scancode],true,key);
+        				EnhancedInputParam<bool> eip(input_map->Enhanced[scancode],true,key);
         				controlled_pawn->CallEnhancedInputEventBool(eip);
         			}
         		}
+	    		dispatcher_system.CallEvent(input_map->Normal[scancode].key_name);
         		break;
         	case SDL_EVENT_KEY_UP:   // 键盘松开
 	    		if (controlled_pawn)
@@ -74,7 +76,7 @@ void Controller::Tick(double delta)
 	    			auto& key = keys_state[scancode];
 	    			key = Complete;
 
-	    			EnhancedInputParam<bool> eip(input_map->key_map[scancode],false,Complete);
+	    			EnhancedInputParam<bool> eip(input_map->Enhanced[scancode],false,Complete);
 	    			controlled_pawn->CallEnhancedInputEventBool(eip);
 	    			key = Idle;
 	    		}
@@ -109,7 +111,7 @@ void Controller::Tick(double delta)
 				continue;
 			}
 			//cout << "triggered" << endl;
-			EnhancedInputParam<bool> eip(input_map->key_map[x.first],false,Triggered);
+			EnhancedInputParam<bool> eip(input_map->Enhanced[x.first],false,Triggered);
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
@@ -124,7 +126,7 @@ void Controller::Tick(double delta)
 	}
 }
 
-Pawn* Controller::GetControlledPawn() const
+GCPtr<Pawn> Controller::GetControlledPawn() const
 {
-	return controlled_pawn.Get();
+	return controlled_pawn;
 }

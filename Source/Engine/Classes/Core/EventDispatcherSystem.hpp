@@ -24,7 +24,7 @@ public:
     void AddEventDispatcher(const std::string& name);
 
 	//在这个事件系统里绑定其他对象的事件
-    void BindEventTo(std::string event_name,Object* obj, Event event);
+    void BindEventTo(std::string event_name, Object *obj, Event event);
 
 	void CallEvent(std::string event_name,std::optional<EventParams> event_params = std::nullopt);
 };

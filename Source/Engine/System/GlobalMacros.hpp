@@ -24,3 +24,7 @@
 #define Color_White SDL_Color(255,255,255,255)
 
 #define Color_Red SDL_Color(255,0,0,255)
+
+
+
+//#define AddComponent(name) AddActorComponent<x>(name, x)

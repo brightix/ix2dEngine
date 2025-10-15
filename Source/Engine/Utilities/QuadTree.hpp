@@ -1,6 +1,12 @@
 #pragma once
-#include "Types/FRect.hpp"
 
+#if 1
+// 如果定义了 DISABLE_THIS_FILE，就不编译下面内容
+#include <functional>
+#include <memory>
+
+#include "Types/FRect.hpp"
+#include <vector>
 
 class QuadTree
 {
@@ -10,14 +16,21 @@ class QuadTree
     int level;
     bool is_infinite;
     FRect boundary;
-    std::vector<SPhysicsUtilityBase*> objects;
+    std::vector<SPhysicsBaseUtility*> objects;
     std::unique_ptr<QuadTree> nw, ne, sw, se;
+    std::function<void(SPhysicsBaseUtility*,SPhysicsBaseUtility*)> collision_callback;
 public:
-    ~QuadTree();
+    QuadTree() : level(0), is_infinite(false)
+    {
+    }
 
-
+    void SetCollisionStrategy(const std::function<void(SPhysicsBaseUtility*,SPhysicsBaseUtility*)>& callback)
+    {
+        collision_callback = callback;
+    }
+    ~QuadTree(){}
     // 分裂四个子节点
-    void subdivide()
+    void Subdivide()
     {
         float x = boundary.rect.x;
         float y = boundary.rect.y;
@@ -35,78 +48,54 @@ public:
     {
     }
 
-    void insert(const Actor* obj)
+    void Insert(SPhysicsBaseUtility* obj)
     {
-        rect = obj->GetCollisionBox();
+        auto rect = obj->GetCollisionBox();
         if (!boundary.contains(rect) && !boundary.intersects(rect))
             return;
 
         if (objects.size() < MAX_OBJECTS || level >= MAX_LEVELS)
         {
-            objects.emplace_back(rect, obj);
+            objects.push_back(obj);
             return;
         }
 
-        if (!nw) subdivide();
+        if (!nw) Subdivide();
 
-        nw->insert(rect, obj);
-        ne->insert(rect, obj);
-        sw->insert(rect, obj);
-        se->insert(rect, obj);
+        nw->Insert(obj);
+        ne->Insert(obj);
+        sw->Insert(obj);
+        se->Insert(obj);
     }
 
     // 查询与 range 相交的对象
-    void query(const FRect& range, std::vector<Actor*>& found) const
+    // void query(const FRect& range, std::vector<Actor*>& found) const
+    // {
+    //     if (!boundary.intersects(range)) return;
+    //
+    //     for (auto& [objRect, obj] : objects)
+    //     {
+    //         if (range.intersects(objRect)) found.push_back(obj);
+    //     }
+    //
+    //     if (!nw) return;
+    //
+    //     nw->query(range, found);
+    //     ne->query(range, found);
+    //     sw->query(range, found);
+    //     se->query(range, found);
+    // }
+    void Query()
     {
-        if (!boundary.intersects(range)) return;
-
-        for (auto& [objRect, obj] : objects)
-        {
-            if (range.intersects(objRect)) found.push_back(obj);
-        }
-
-        if (!nw) return;
-
-        nw->query(range, found);
-        ne->query(range, found);
-        sw->query(range, found);
-        se->query(range, found);
-    }
-    void query()
-    {
-        int n = objects.size();
+        size_t n = objects.size();
         for (int i{}; i < n; ++i)
         {
             for (int j = i + 1; j < n; ++j)
             {
-                if (objects[i]->GetCollisionBox().intersects(objects[j]))
+                if (objects[i]->GetCollisionBox().intersects(objects[j]->GetCollisionBox()))
                 {
-                    SPhysics::OnRigidCollision(Objects[i]);
+                   collision_callback(objects[i],objects[j]);
                 }
-
-            }
-        }
-
-
-
-
-        for (auto& send : objects)//碰撞发起者
-            //std::unordered_map<Actor*,Actor*>
-            std::unordered_set<Actor*> send_collision_map;
-            for (auto& recv : objects)//碰撞接受者
-            {
-                std::unordered_set<Actor*> recv_collision_set;
-                if (send == recv || send_collision_map.contains(recv)) return;
-                std::unordered_map<Actor*,Actor*> recv_collision_map;
-                for (FRect*& rect : send->GetCollisionBoxGroup())//发起者的所有碰撞体{
-                {
-
-                }
-                if (send->GetCollisionBox)
-            }
-            boundary.intersects(obj->RenderCollisionBox())
-            {
-
             }
         }
     }
@@ -122,3 +111,5 @@ public:
         if (se) { se->clear(); se.reset(); }
     }
 };
+
+#endif

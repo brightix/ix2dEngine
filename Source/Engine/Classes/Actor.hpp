@@ -2,9 +2,11 @@
 #include <SDL3/SDL.h>
 
 #include "Object.hpp"
-#include "../Structure/Texture.hpp"
+#include "Component/SenceComponent/Texture.hpp"
+#include "Core/SPhysics/SPhysicsUtilityBase.hpp"
 #include "Types/Location.hpp"
 #include "Types/Transform.hpp"
+#include "Utilities/FuncLib/StaticCast.hpp"
 
 enum class ActorMobility;
 class ActorComponent;
@@ -13,7 +15,7 @@ class GameWorld;
 class Actor : public Object
 {
     //Attribution
-	GCPtr<StaticTexture> collision_box;
+	//GCPtr<StaticTexture> collision_box;
 
 
 	//Component
@@ -21,7 +23,6 @@ class Actor : public Object
 	bool is_active;
 	bool hidden_in_game;
 //每个actor内部有个计时器组件，用来定时处理事件
-	ActorMobility mobility;
 
 
 protected:
@@ -34,7 +35,11 @@ protected:
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	GCPtr<GameWorld> game_world;
-	std::unordered_map<std::string,GCPtr<ActorComponent>> components;
+
+	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
+	std::unordered_map<std::string,GCPtr<SceneComponent>> scene_components;
+	//可移动性
+	ActorMobility mobility;
 public:
 	bool is_pre_kill = false; // for render thread 防止悬空指正延迟删除
 public:
@@ -68,18 +73,35 @@ public:
 	Transform GetWorldTransform() const;
 
 
+	//组件
 	template<typename T>
-	GCPtr<T> SpawnActorFromSelf(T* actor)
+	void AddActorComponent(const std::string& component_name,T* component)
 	{
-		auto i = GCPtr<T>(actor, this);
-		auto a = static_cast<Actor*>(i.Get());
-		a->Construct();
-		AddToWorld(a);
-		this->dispatcher_system.BindEventTo("EventBegin",a,Event("EventBegin",[a](TEventParams) {
-			a->EventBegin();
-		}));
-		return i;
+		static_assert(std::is_base_of_v<ActorComponent, T>, "类必须继承自ActorComponent");
+		actor_components[component_name] = NewObject<T>(component);
+		component->SetOwner(this);
 	}
+
+	template<typename T>
+	T* GetActorComponent(const std::string& component_name)
+	{
+		return Cast<T>(actor_components[component_name].Get());
+	}
+
+	template<typename T>
+	void AddSceneComponent(const std::string& component_name,T* component)
+	{
+		static_assert(std::is_base_of_v<SceneComponent, T>, "类必须继承自SceneComponent");
+		scene_components[component_name] = NewObject<T>(component);
+		component->SetOwner(this);
+	}
+
+	template<typename T>
+	T* GetSceneComponent(const std::string& component_name)
+	{
+		return Cast<T>(scene_components[component_name].Get());
+	}
+
 //Sys
 	virtual void RenderOnScreen();
 
@@ -89,7 +111,7 @@ public:
 	bool IsVisible() const;
 
 private:
-	void AddToWorld(Actor* a) const;
+	void AddToWorld(GCPtr<Actor> a) const;
 };
 
 template<typename T>

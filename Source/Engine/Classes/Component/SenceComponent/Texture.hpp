@@ -1,9 +1,10 @@
 #pragma once
 #include <SDL3/SDL_render.h>
-#include "Classes/Object.hpp"
+
+#include "SceneComponent.hpp"
 #include "Types/Vec.hpp"
 
-struct Texture : public Object
+struct Texture : public SceneComponent
 {
 	Texture()
 	{
@@ -35,12 +36,13 @@ public:
 
 	void Copy(StaticTexture& other);
 	SDL_Texture* GetTexture() const ;
-
+	Vec2<float> GetSize();
 
 	SDL_Texture* operator()() const
 	{
 		return texture;
 	}
+	static SDL_Texture* CreateOutLine();
 };
 
 struct DynamicTexture : public Texture

@@ -1,5 +1,5 @@
 {
-  "InputAction": [
+  "EnhancedInputAction": [
     { "KeyName": "IA_W", "ScanCode": 26, "InputMode": 0 },
     { "KeyName": "IA_A", "ScanCode": 4,  "InputMode": 0 },
     { "KeyName": "IA_S", "ScanCode": 22, "InputMode": 0 },

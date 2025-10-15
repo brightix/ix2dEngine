@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "../Structure/Texture.hpp"
+#include "../Classes/Component/SenceComponent/Texture.hpp"
 #include "Classes/Object.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/DataStructure/LRUCache.hpp"

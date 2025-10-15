@@ -1,10 +1,10 @@
 #pragma once
 #include <atomic>
 #include <condition_variable>
-#include <SDL3/SDL_rect.h>
 
 #include "Classes/Object.hpp"
-#include "../../Structure/Texture.hpp"
+#include "../Component/SenceComponent/Texture.hpp"
+#include "Types/Transform.hpp"
 
 
 class Actor;

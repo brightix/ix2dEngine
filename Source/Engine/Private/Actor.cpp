@@ -1,11 +1,12 @@
 #include "Classes/Actor.hpp"
 
-#include <Classes/ActorComponent/ActorComponent.hpp>
+#include "Classes/Component/ActorComponent/ActorComponent.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "Enum/ActorEnum.hpp"
 
-Actor::Actor() : Actor(Transform()) {}
+Actor::Actor() : Actor(Transform()){}
 Actor::Actor(const Transform &tf) : transform(tf), isShowInGame(false), is_active(true), mobility(ActorMobility::Static), renderer(nullptr),
                              window(nullptr) {}
 
@@ -17,7 +18,8 @@ void Actor::Construct()
 	renderer = GameEngine::Instance().GetRenderer();
 	//默认生成一个200x200的矩形作为sprite
 	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
-	collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
+	AddActorComponent<Texture>("DefaultTexture",new Texture());
+	//collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
 void Actor::EventBegin()
@@ -32,7 +34,7 @@ void Actor::Tick(double delta_time) {}
 
 void Actor::ActorComponentTick(double delta_time)
 {
-	for (auto& c : components)
+	for (auto& c : actor_components)
 	{
 		c.second->ActorComponentTick(delta_time);
 	}
@@ -98,7 +100,7 @@ bool Actor::IsVisible() const
 	return !hidden_in_game;
 }
 
-void Actor::AddToWorld(Actor* a) const
+void Actor::AddToWorld(GCPtr<Actor> a) const
 {
 	game_world->AddToWorld(a);
 }

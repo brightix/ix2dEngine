@@ -5,6 +5,7 @@
 #include "InputMap.hpp"
 #include "Types/Vec.hpp"
 #include "../System/GlobalMacros.hpp"
+#include "Core/GameWorld.hpp"
 
 enum EnhancedInputParamStatus : int;
 class Object;
@@ -32,11 +33,15 @@ class Controller : public Actor
 public:
     Controller();
     ~Controller() override = default;
-	void Control(Pawn* pawn);
+	void Control(GCPtr<Pawn> pawn);
 	void Construct() override;
     void Tick(double delta) override;
 
 
-	Pawn* GetControlledPawn() const;
+    GCPtr<Pawn> GetControlledPawn() const;
 };
 
+static void BindNormalKeyEvent(const std::string& event_name, Object* obj, const Event &event)
+{
+	GetWorld()->GetController(0)->dispatcher_system.BindEventTo(event_name, obj, event);
+}

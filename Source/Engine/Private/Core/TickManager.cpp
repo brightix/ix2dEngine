@@ -1,24 +1,19 @@
 #include "Classes/Core/TickManager.hpp"
 
-#include "../../Classes/Core/GameEngine.hpp"
-#include "../../Classes/Core/GameWorld.hpp"
+#include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameWorld.hpp"
+#include "Classes/Controller.hpp"
 
 void TickManager::Tick(double delta_time)
 {
-    std::vector<Actor*> actors = GameEngine::Instance().GetGameWorld()->GetActors();
+    auto actors = GameEngine::Instance().GetGameWorld()->GetActors();
     std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
     switch (buffer_type)
     {
         case 1:
             //计算物理
-            for (auto& a : actors)
-            {
-                if (a->IsActive())
-                {
-                    a->PrePhysicsTick(delta_time);
-                }
-            }
+			world->physicsSys.simulation(delta_time);
             //映射物理
             for (auto& a : actors)
             {
@@ -52,7 +47,7 @@ void TickManager::Tick(double delta_time)
                 if (a->is_pre_kill)
                 {
                     a->is_pending_kill = true;
-                    world->RemoveActorByPtr(a);
+                    world->RemoveActorByGCPtr(a);
                 }
                 else if (a->IsActive())
                 {
@@ -113,7 +108,7 @@ void TickManager::Tick(double delta_time)
     			if (a->is_pre_kill)//
     			{
     				a->is_pending_kill = true;
-    				world->RemoveActorByPtr(a);
+    				world->RemoveActorByGCPtr(a);
     			}
     			else if (a->IsVisible())
     			{

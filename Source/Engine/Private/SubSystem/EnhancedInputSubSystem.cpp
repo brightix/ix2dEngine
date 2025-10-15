@@ -4,7 +4,6 @@
 
 EnhancedInputSubSystem::EnhancedInputSubSystem() 
 {
-	std::cout<< "增强输入子系统初始化完毕" << std::endl;
 }
 
 void EnhancedInputSubSystem::AddInputEventBool(SDL_Scancode scancode, std::function<void(EnhancedInputParam<bool>)> func)
@@ -23,8 +22,8 @@ void EnhancedInputSubSystem::ExecuteBool(EnhancedInputParam<bool> param)
 	{
 		it->second(param);
 	}
-	else
-	{
-		Log("没有找到增强输入方法");
-	}
+	// else
+	// {
+	// 	Log("没有找到增强输入方法");
+	// }
 }
