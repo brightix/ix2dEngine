@@ -1,12 +1,14 @@
 #include "Classes/Actor.hpp"
 
-#include <Classes/ActorComponent/ActorComponent.hpp>
+#include "Classes/Component/ActorComponent/ActorComponent.hpp"
+#include "Classes/Component/ActorComponent/RootComponent.h"
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "Enum/ActorEnum.hpp"
 
-Actor::Actor() : Actor(Transform()) {}
-Actor::Actor(const Transform &tf) : transform(tf), isShowInGame(false), is_active(true), mobility(ActorMobility::Static), renderer(nullptr),
+Actor::Actor() : Actor(Transform()){}
+Actor::Actor(const Transform &tf) : isShowInGame(false), is_active(true), mobility(ActorMobility::Static),
                              window(nullptr) {}
 
 Actor::~Actor() = default;
@@ -14,10 +16,13 @@ Actor::~Actor() = default;
 void Actor::Construct()
 {
 	name = NAME("Actor");
-	renderer = GameEngine::Instance().GetRenderer();
+	//renderer = GameEngine::Instance().GetRenderer();
 	//默认生成一个200x200的矩形作为sprite
 	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
-	collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
+	//AddSceneComponent<RootComponent>("Root", new RootComponent(Transform{{500,500}}));
+	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
+	AddSceneComponent<StaticTexture>("DefaultTexture", new StaticTexture({500,500}));
+	//collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
 void Actor::EventBegin()
@@ -32,9 +37,9 @@ void Actor::Tick(double delta_time) {}
 
 void Actor::ActorComponentTick(double delta_time)
 {
-	for (auto& c : components)
+	for (auto& it : actor_components)
 	{
-		c.second->ActorComponentTick(delta_time);
+		it.second->ActorComponentTick(delta_time);
 	}
 }
 
@@ -56,14 +61,19 @@ void Actor::SetMobility(const ActorMobility target_mobility)
 }
 
 
-void Actor::AddWorldLocation(Vec2<float> dis)
+void Actor::AddActorWorldLocation(Vec2<float> dis)
 {
-	transform.location+=dis;
+	//transform.location+=dis;
+	Root->AddComponentWorldLocation(dis);
+	// for (auto& component : scene_components)
+	// {
+	// 	component.second->AddComponentWorldLocation(dis);
+	// }
 }
 
 Location Actor::GetWorldLocation() const
 {
-	return transform.location;
+	return Root->GetComponentTransform().location;
 }
 
 Vec2<float> Actor::GetRelativeLocation()
@@ -73,20 +83,22 @@ Vec2<float> Actor::GetRelativeLocation()
 
 Transform Actor::GetWorldTransform() const
 {
-	return transform;
+	return Root->GetComponentTransform();
 }
 
 void Actor::RenderOnScreen()
 {
-	// auto& i = GameEngine::Instance();
-	// auto t = static_texture;
-	//GameEngine::Instance().RenderTexture(collision_box,{transform.location.x,transform.location.y,static_cast<float>(collision_box->w),static_cast<float>(collision_box->h)});
+	Root->ForRender();
+	// for (auto& it : scene_components)
+	// {
+	// 	it.second->ComponentRender();
+	// }
 }
 
-void Actor::RenderCollisionBox() const
-{
-	GameEngine::Instance().RenderTexture(collision_box,SDL_FRect(transform.location.x,transform.location.y,collision_box->w,collision_box->h));
-}
+// void Actor::RenderCollisionBox() const
+// {
+// 	GameEngine::Instance().RenderTexture(collision_box,SDL_FRect(transform.location.x,transform.location.y,collision_box->w,collision_box->h));
+// }
 
 bool Actor::IsActive() const
 {
@@ -98,7 +110,7 @@ bool Actor::IsVisible() const
 	return !hidden_in_game;
 }
 
-void Actor::AddToWorld(Actor* a) const
+void Actor::AddToWorld(GCPtr<Actor> a) const
 {
 	game_world->AddToWorld(a);
 }

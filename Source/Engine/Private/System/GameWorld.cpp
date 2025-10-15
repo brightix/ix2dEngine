@@ -2,8 +2,9 @@
 #include "../../Classes/Core/GameEngine.hpp"
 #include "TestActor.h"
 #include "Classes/Pawn.hpp"
-#include "../../Classes/SubSystem/GarbageCollection.hpp"
+#include "Classes/GameModeBase.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
+
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
@@ -28,10 +29,10 @@ void GameWorld::StartSimulation()
 
 
 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
-	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
-		dd->DestroyActor();
-		return -1;
-	});
+	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
+	// 	dd->DestroyActor();
+	// 	return -1;
+	// });
 }
 
 std::vector<GCPtr<Controller>> GameWorld::GetControllers()
@@ -39,12 +40,21 @@ std::vector<GCPtr<Controller>> GameWorld::GetControllers()
 	return controllers;
 }
 
-std::vector<Actor *> GameWorld::GetActors()
+Controller * GameWorld::GetController(int id)
+{
+	if (id >= 0 && id < controllers.size())
+	{
+		return controllers[id].Get();
+	}
+	return nullptr;
+}
+
+std::vector<GCPtr<Actor>> &GameWorld::GetActors()
 {
 	return actors;
 }
 
-void GameWorld::RemoveActorByPtr(Actor *actor)
+void GameWorld::RemoveActorByGCPtr(GCPtr<Actor>& actor)
 {
 	std::erase(actors, actor);
 }
@@ -63,9 +73,9 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 	return {};
 }
 
-void GameWorld::AddToWorld(Actor* actor)
+void GameWorld::AddToWorld(GCPtr<Actor> actor)
 {
-	actors.push_back(actor);
+	actors.emplace_back(actor);
 }
 
 void GameWorld::PrintString(std::string, int exist_time, SDL_Color color)

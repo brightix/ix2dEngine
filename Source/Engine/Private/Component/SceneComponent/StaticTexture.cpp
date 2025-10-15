@@ -1,13 +1,11 @@
-#include "../../Structure/Texture.hpp"
+#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
-#include "../../Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameEngine.hpp"
 
-StaticTexture::StaticTexture() : texture(nullptr), w(0), h(0)
+StaticTexture::StaticTexture() 
 {
-
+    name = "StaticTexture";
 }
-
-
 StaticTexture::StaticTexture(const Vec2<int> size, const SDL_Color color, const bool is_fill)
 {
 	w = size.x;
@@ -21,28 +19,17 @@ StaticTexture::StaticTexture(const Vec2<int> size, const SDL_Color color, const 
 		h
 	);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	auto r = GameEngine::Instance().GetRenderer();
-	SDL_SetRenderTarget(r, texture);
+
 
 	if (is_fill)
 	{
-		const auto rect = SDL_FRect(0,0,w,h);
-		SDL_RenderFillRect(r,&rect);
+		CreateFilledTexture({0,0,w,h});
 	}
 	else
 	{
-		// 清空背景
-		SDL_SetRenderDrawColor(r, 0, 0, 0, 0); // 透明背景
-		SDL_RenderClear(r);
-		SDL_SetRenderDrawColor(r, 0, 255, 255, 255); // 青色边框
-		int thickness = 3;
-		for (int i = 0; i < thickness; ++i) {
-			SDL_FRect rect = SDL_FRect(i,i, w - i * 2, h - i * 2);
-			SDL_RenderRect(r, &rect);
-		}
+		CreateOutLineTexture({0,0,w,h});
 	}
 
-	SDL_SetRenderTarget(r, nullptr);
 // 	if (!texture)
 // 	{
 // 		SDL_Log("Failed to create texture: %s", SDL_GetError());
@@ -102,54 +89,36 @@ StaticTexture::StaticTexture(const Vec2<int> size, const SDL_Color color, const 
 // 	}
 // 	SDL_UnlockTexture(texture);
 }
-
-StaticTexture::StaticTexture(SDL_Texture* texture, SDL_TextureAccess texture_mode) : texture(texture), w(texture->w), h(texture->h) {}
-StaticTexture::StaticTexture(StaticTexture& other) {
-	texture = other.texture;
-	w = other.w;
-	h = other.h;
-}
-StaticTexture::StaticTexture(StaticTexture&& other)
- noexcept {
-	texture = other.texture;
-	w = other.w;
-	h = other.h;
-	other.texture = nullptr;
-}
-
-void StaticTexture::SetPivot(Vec2<float> p)
+StaticTexture::StaticTexture(SDL_Texture* texture, SDL_TextureAccess texture_mode) : Texture(texture) {}
+StaticTexture::StaticTexture(const StaticTexture& other)
 {
-	pivot = p;
+	texture = other.texture;
+	w = other.w;
+	h = other.h;
+	pivot = other.pivot;
 }
+
+TextureType StaticTexture::GetTextureType()
+{
+	return TextureType::StaticTexture;
+}
+
+void StaticTexture::ComponentRender()
+{
+	SDL_Renderer* renderer = GameEngine::Instance().GetRenderer();
+	SDL_FRect dst(transform.location.x,transform.location.y, h, w);
+	SDL_RenderTexture(renderer,texture,nullptr,&dst);
+}
+
+// StaticTexture::StaticTexture(StaticTexture&& other)
+//  noexcept {
+// 	texture = other.texture;
+// 	w = other.w;
+// 	h = other.h;
+// 	other.texture = nullptr;
+// }
 
 StaticTexture::~StaticTexture()
 {
 	if (texture) SDL_DestroyTexture(texture);
-}
-
-void StaticTexture::Copy(StaticTexture& other)
-{
-	w = other.w;
-	h = other.h;
-	auto renderer = GameEngine::Instance().GetRenderer();
-	SDL_Texture* newTexture = SDL_CreateTexture(renderer,
-	SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-	w, h);
-	// 保存原渲染目标
-	SDL_Texture* origTarget = SDL_GetRenderTarget(renderer);
-
-	// 设置新纹理为渲染目标
-	SDL_SetRenderTarget(renderer, newTexture);
-
-	// 渲染原纹理到新纹理
-	SDL_RenderTexture(renderer, other.texture, nullptr, nullptr);
-
-	// 恢复原渲染目标
-	SDL_SetRenderTarget(renderer, origTarget);
-
-}
-
-SDL_Texture* StaticTexture::GetTexture() const
-{
-	return texture;
 }

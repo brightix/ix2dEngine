@@ -1,19 +1,19 @@
 #pragma once
 #include "Classes/Actor.hpp"
 #include "SubSystem/EnhancedInputSubSystem.hpp"
-#include "../Structure/Texture.hpp"
+#include "Component/SenceComponent/Texture.hpp"
 
 class MovableComponent;
 
 class Pawn : public Actor
 {
 	using Actor::Actor;
-	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
 	//Vec2d<float> player_input_Vec;
 	float base_move_speed;
 	//GCPtr<> sprite;
 protected:
 public:
+	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
     Pawn();
     ~Pawn() override;
 	void Construct() override;

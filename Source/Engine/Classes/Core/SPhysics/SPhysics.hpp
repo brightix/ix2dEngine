@@ -2,9 +2,10 @@
 #include <unordered_set>
 
 #include "SPhysicsUtilityBase.hpp"
+#include "Utilities/QuadTree.hpp"
 
 
-class MovableActorUtility;
+class MovableUtility;
 
 struct WorldPhysics
 {
@@ -17,16 +18,18 @@ class SPhysics
     WorldPhysics world_physics;
     float GravityForce = -1.f;
     //std::vector<SPhysicsTypeBase*> actors;
-    std::unordered_set<SPhysicsUtilityBase*> actors;
-
+    std::unordered_set<SPhysicsBaseUtility*> actors;
+    QuadTree collision_tree;
 public:
     SPhysics();
 
 
     ~SPhysics()= default;
 
-    void Register(SPhysicsUtilityBase *actor);
+    void Register(SPhysicsBaseUtility *actor);
     void simulation(float delta_time);
     void HandleVelocity(float delta_time);
+    static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);
+
 };
 

@@ -22,7 +22,9 @@ struct InputAction
 
 struct InputMap : public Object
 {
-	std::unordered_map<SDL_Scancode,InputAction> key_map;
+	std::unordered_map<SDL_Scancode,InputAction> Enhanced;
+	std::unordered_map<SDL_Scancode,InputAction> Normal;
 	InputMap();
+	void Construct() override;
 };
 

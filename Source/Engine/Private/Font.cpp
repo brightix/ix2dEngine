@@ -4,6 +4,7 @@
 #include "Utilities/Exception.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../Classes/Core/GameEngine.hpp"
+#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 void FontRenderer::Init()
 {

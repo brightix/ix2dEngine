@@ -4,6 +4,15 @@
 #include <cxxabi.h>
 inline std::vector<GCObject*> GCAllObjects;
 
+#include <functional>
+
+template<typename T>
+struct std::hash<GCPtr<T>> {
+	size_t operator()(const GCPtr<T>& Ptr) const noexcept {
+		return std::hash<T*>()(Ptr.Get()); // 使用裸指针地址做哈希
+	}
+};
+
 template<typename T>
 class GCPtr
 {
@@ -37,10 +46,12 @@ public:
 		return *this;
 	}
 
+	template<typename U, typename = std::enable_if_t<std::is_base_of_v<U, T>>>
+	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {} // 支持向上转换
 
 	//派生->基类  gc链不变，有释放风险
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {}
+	GCPtr(GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {}
 
 	// //给outer添加新对象引用
 	// GCPtr(const GCPtr& other, GCObject* outer)
@@ -51,7 +62,7 @@ public:
 	// }
 
 	/// 以下弱引用 会导致被GC回收,所以不要使用这个方法初始化值，要用类自带的Spawn 或 Construct
-	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(other.outer) {}
+	GCPtr(GCPtr& other) : ptr(other.Get()), outer(other.outer) {}
 	GCPtr& operator=(const GCPtr& other)
 	{
 		ptr = other.ptr;
@@ -60,11 +71,16 @@ public:
 	}
 	//
 	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr& operator=(const GCPtr<U>& other) {
+	GCPtr& operator=(GCPtr<U>& other)
+	{
 		ptr = other.Get();
 		outer = other.GetOuter();
 		return *this;
 	}
+
+	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(other.outer) {}
+	template<typename U>
+	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {}
 	// //移动构造 [废弃] GC不安全
 	// GCPtr(GCPtr&& other) noexcept
 	// {
@@ -89,7 +105,7 @@ public:
 	{
 		return ptr != nullptr;
 	}
-	void SetOwner(GCObject* owner)
+	void SetOuter(GCObject* owner)
 	{
 		outer = owner;
 		GCLink(ptr,owner);
@@ -106,7 +122,7 @@ public:
 		child->referenced.push_back(parent);
 		parent->referencing.push_back(child);
 	}
-	static void GCUnLink(GCObject* child, GCObject* parent)
+	void GCUnLink(GCObject* child, GCObject* parent)
 	{
 		if (!child || !parent)
 		{
@@ -121,6 +137,10 @@ public:
 		// 从 child->referenced 移除 parent
 		auto& parents = child->referenced;
 		std::erase(parents, parent);
+	}
+	bool operator==(const GCPtr& other) const
+	{
+		return ptr == other.ptr;
 	}
 };
 

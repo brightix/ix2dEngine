@@ -12,7 +12,7 @@ void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
 }
 
 //在这个事件系统里绑定其他对象的事件
-void EventDispatcherSystem::BindEventTo(std::string event_name, Object *obj, Event event)
+void EventDispatcherSystem::BindEventTo(std::string event_name, Object* obj, Event event)
 {
     auto it = bound_dispatcher.find(event_name);
     if (it == bound_dispatcher.end())
@@ -36,9 +36,9 @@ void EventDispatcherSystem::CallEvent(std::string event_name, std::optional<Even
             Log("执行了  "+ event_name + "  的事件！");
         }
     }
-    else
-    {
-        Log("没有名为  "+ event_name + "  的事件！");
-    }
+    // else
+    // {
+    //     Log("没有名为  "+ event_name + "  的事件！");
+    // }
 }
 

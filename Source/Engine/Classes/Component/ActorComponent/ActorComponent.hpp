@@ -1,14 +1,13 @@
 #pragma once
 #include "Classes/Object.hpp"
+#include "Classes/Component/Component.hpp"
 class Actor;
 
-class ActorComponent : public Object
+class ActorComponent : public Component
 {
-protected:
-    Actor* owner;
 public:
-    ActorComponent();
-    ActorComponent(Actor* owner);
+	using Component::Component;
+    virtual void EventBegin(){}
     void Construct() override;
     virtual void ActorComponentTick(double delta_time){}
 };

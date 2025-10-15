@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "Classes/Actor.hpp"
+#include "SPhysics/SPhysics.hpp"
 
 
 struct PhysicsBufferShot
@@ -22,7 +23,6 @@ class TickManager : public Object
     std::atomic<bool> is_stop;
     std::mutex mtx;
     std::condition_variable cv;
-
     int buffer_type;
     int write_head = 0;
 public:

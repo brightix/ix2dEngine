@@ -1,8 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include "Classes/Core/GameWorld.hpp"
-#include "../../Structure/Texture.hpp"
+#include "../Component/SenceComponent/Texture.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
@@ -10,6 +9,9 @@
 #include "Utilities/ExternalWrapper.hpp"
 #include "Utilities/GCPtr.hpp"
 #include "Classes/SubSystem/GarbageCollection.hpp"
+#include "Classes/SubSystem/Sub/SubsystemManager.hpp"
+
+class GameWorld;
 
 class GameEngine : public Object
 {
@@ -31,6 +33,7 @@ class GameEngine : public Object
     //类型转换
     ConverterRegistry reg;
 
+    mutable GCObject* GCRoot;
 	//组件
 	GCPtr<GameWorld> game_world;
 
@@ -56,27 +59,25 @@ public:
     {
         running = false;
     }
-    ~GameEngine();
+    ~GameEngine() override;
 //Get
     Vec2<double> GetViewportSize() { return SysConfig.ViewportSize; }
     SDL_Renderer* GetRenderer() { return renderer; }
     GCPtr<GameWorld> GetGameWorld();
+
+    GCObject *GetGCRoot() const;
 //Render
-	void RenderTexture(GCPtr<StaticTexture> texture, SDL_FRect location);
+	void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
 
     //Sys
-    void GCMark(GCObject* gc_object);
-
-    int GCSweep();
 };
 
 
-inline GameWorld* GetWorld()
-{
-	return GameEngine::Instance().GetGameWorld().Get();
-}
 
-inline GameEngine* GetEngine()
+
+inline const GameEngine* GetEngine()
 {
 	return &GameEngine::Instance();
 }
+
+inline const SDL_Renderer* GetRenderer();

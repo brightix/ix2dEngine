@@ -4,10 +4,12 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "../Structure/Texture.hpp"
+#include "../Classes/Component/SenceComponent/Texture.hpp"
 #include "Classes/Object.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/DataStructure/LRUCache.hpp"
+
+struct StaticTexture;
 
 class FontRenderer : public Object
 {
@@ -26,7 +28,7 @@ public:
     //无缓存 加载字体
     bool LoadFont(std::string fontName,size_t size);
 
-    StaticTexture *GetTextTexture(std::string str, std::string fontName = "simkai", size_t fontSize = 24,
+    StaticTexture* GetTextTexture(std::string str, std::string fontName = "simkai", size_t fontSize = 24,
                                   SDL_Color col = {255, 255, 255, 255});
 
     void UpdateTextTexture(SDL_Texture *texture, const std::string &str, const std::string &fontName = "simkai", size_t fontSize = 24, SDL_Color

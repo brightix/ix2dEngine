@@ -34,12 +34,12 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActorFromSelf(new Pawn());
+	auto_generate_pawn = SpawnActor(new Pawn());
 	//auto_generate_pawn->EventBegin();
 
 	this->dispatcher_system.CallEvent("EventBegin");
 
-	controller->Control(auto_generate_pawn.Get());
+	controller->Control(auto_generate_pawn);
 }
 
 GCPtr<Controller> GameModeBase::CreateController() const
