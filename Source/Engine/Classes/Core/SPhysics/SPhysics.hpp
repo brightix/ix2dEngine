@@ -27,5 +27,6 @@ public:
     void Register(SPhysicsUtilityBase *actor);
     void simulation(float delta_time);
     void HandleVelocity(float delta_time);
+    void OnRigidCollision(SPhysicsUtilityBase* A,SPhysicsUtilityBase* B);
 };
 
