@@ -5,7 +5,7 @@
 
 class MovableComponent : public ActorComponent
 {
-    Vec2d<float> player_input_Vec;
+    Vec2<float> player_input_Vec;
 public:
     float base_move_speed;
 

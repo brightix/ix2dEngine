@@ -5,7 +5,7 @@
 
 class CanvasWidget : public Widget
 {
-	Vec2d<float> Size;
+	Vec2<float> Size;
 public:
 
     CanvasWidget();

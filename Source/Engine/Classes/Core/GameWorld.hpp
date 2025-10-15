@@ -5,12 +5,15 @@
 #include "Classes/GameModeBase.hpp"
 #include "Classes/Core/ThreadManager.hpp"
 #include "Classes/Core/TickManager.hpp"
+#include "../SubSystem/Sub/WorldSubSystem.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
-
+#include "Utilities/FuncLib/SystemLib.hpp"
+#include "Classes/Core/TimerSystem.hpp"
+#include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 
 class TickManager;
-
+class EngineSubSystem;
 class GameWorld : public Object
 {
 
@@ -29,6 +32,10 @@ class GameWorld : public Object
 	GCPtr<Timer> GC_timer;
 
 	std::vector<GCPtr<Controller>> controllers;
+
+	//子系统
+	TimerSystem timer_system;
+	SubsystemManager<WorldSubSystem> world_subsystem;
 public:
     GameWorld();
     ~GameWorld()= default;
@@ -56,13 +63,29 @@ public:
 	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
 
 	void Tick(double delta_time);
-
+	//作用在切换关卡
+	void WorldDestroy();
 	bool IsServer() const;
 	bool IsClient() const;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//从类构建对象
 	template<typename T,typename...Args>
-	GCPtr<T> SpawnActorToWorld(Args...args)
+	GCPtr<T> SpawnActor(Args...args)
 	{
 		GCPtr<T> i = make_GCPtr<T>(std::forward<Args>(args)...);
 		auto a = static_cast<Actor*>(i.Get());
@@ -71,16 +94,27 @@ public:
 		return i;
 	}
 	template<typename T>
-	GCPtr<T> SpawnActorToWorld(T* actor_raw)
+	GCPtr<T> SpawnActor(T* actor_raw)
 	{
 		auto i = GCPtr<T>(actor_raw, this);
 		auto a = static_cast<Actor*>(i.Get());
 		a->Construct();
 		actors.emplace_back(a);
-		//AddToWorld(a);
+		if (is_simulation)
+		{
+			a->EventBegin();
+		}
+		else
+		{
+			dispatcher_system.BindEventTo("EventBegin",a,Event("EventBegin",[a](TEventParams) {
+				a->EventBegin();
+			}));
+		}
 		return i;
 	}
 
 };
+
+
 
 

@@ -3,7 +3,7 @@
 #include "../System/Font.hpp"
 #include "Utilities/Exception.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "../System/GameEngine.hpp"
+#include "../Classes/Core/GameEngine.hpp"
 
 void FontRenderer::Init()
 {
@@ -20,7 +20,6 @@ void FontRenderer::Init()
         }
     };
 
-    //������������
     std::string path = "Source/Engine/System/Fonts/";
     for(const auto& entry : std::filesystem::directory_iterator(path))
     {
@@ -37,6 +36,8 @@ void FontRenderer::Init()
         }
     }
     default_font = TTF_OpenFont(path.c_str(), 64);
+	//GCAllObjects.push_back(this);
+	name = "FontRenderer";
 }
 
 FontRenderer::FontRenderer() : fontCache(3)

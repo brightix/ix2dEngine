@@ -13,8 +13,8 @@ Pawn::~Pawn()= default;
 void Pawn::Construct()
 {
 	Actor::Construct();
-	enhanced_input_sub_system = ConstructObjectFromClass(new EnhancedInputSubSystem());
-	components["movable"] = ConstructObjectFromClass(new MovableComponent(this));
+	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem());
+	components["movable"] = NewObject(new MovableComponent(this));
 	base_move_speed = 200.f;
 	name = "ix";
 	event_system.AddEvent(Event("test",[this](std::optional<EventParams> event_params) {

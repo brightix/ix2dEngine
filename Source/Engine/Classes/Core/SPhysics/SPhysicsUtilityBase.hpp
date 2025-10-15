@@ -10,12 +10,13 @@ enum class PhysicsType
 
 class SPhysicsUtilityBase
 {
-    Vec2d<float> velocity;
+protected:
+    Vec2<float> velocity;
     float quality = 10.f;
     float force_attenuation = 1.0f;
 public:
     SPhysicsUtilityBase();
-    virtual ~SPhysicsUtilityBase();
+    virtual ~SPhysicsUtilityBase(){}
     virtual PhysicsType GetPhysicsType()= 0;
     virtual void HandleVelocity(float delta_time){}
 };

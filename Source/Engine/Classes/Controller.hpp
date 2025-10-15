@@ -12,7 +12,7 @@ class Pawn;
 
 
 
-using EnhancedInputParamVariant = std::variant<bool,float,Vec2d<double>,Vec<double>>;
+using EnhancedInputParamVariant = std::variant<bool,float,Vec2<double>,Vec<double>>;
 
 class Controller : public Actor
 {

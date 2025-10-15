@@ -1,5 +1,5 @@
 #pragma once
-#include "System/GCObject.hpp"
+#include "../Classes/Core/GCObject.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include <cxxabi.h>
 inline std::vector<GCObject*> GCAllObjects;
@@ -24,38 +24,6 @@ public:
 		GCAllObjects.push_back(ptr);
 		//AddToObject();
 	}
-	//获取新引用
-	//explicit GCPtr(T* p) : ptr(p), outer(nullptr) {}
-
-	//派生->基类  同样会造成GC回收
-	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(nullptr) {}
-
-	//给outer添加新对象引用
-	GCPtr(const GCPtr& other, GCObject* outer)
-	{
-		ptr = other.ptr;
-		this->outer = outer;
-		GCLink(ptr,outer);
-	}
-	/// 以下弱引用 会导致被GC回收,所以不要使用这个方法初始化值，要用类自带的Spawn 或 Construct
-	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(nullptr) {}
-
-	GCPtr& operator=(const GCPtr& other)
-	{
-		GCUnLink(ptr,outer);
-		ptr = other.ptr;
-		GClink(ptr,outer);
-		return *this;
-	}
-	//
-	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr& operator=(const GCPtr<U>& other) {
-		GCUnLink(ptr,outer);
-		ptr = other.Get();
-		GCLink(ptr,outer);
-		return *this;
-	}
 	// 移动赋值 [强引用] 给make_GCPtr用的 专门给构造赋值用
 	GCPtr& operator=(GCPtr&& other) noexcept
 	{
@@ -66,15 +34,43 @@ public:
 			outer = other.outer;
 			GCLink(ptr,outer);
 		}
-
 		return *this;
 	}
-	//移动构造 [废弃] GC不安全
-	GCPtr(GCPtr&& other) noexcept
+
+
+	//派生->基类  gc链不变，有释放风险
+	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+	GCPtr(const GCPtr<U>& other) : ptr(other.Get()), outer(other.GetOuter()) {}
+
+	// //给outer添加新对象引用
+	// GCPtr(const GCPtr& other, GCObject* outer)
+	// {
+	// 	ptr = other.ptr;
+	// 	this->outer = outer;
+	// 	GCLink(ptr,outer);
+	// }
+
+	/// 以下弱引用 会导致被GC回收,所以不要使用这个方法初始化值，要用类自带的Spawn 或 Construct
+	GCPtr(const GCPtr& other) : ptr(other.Get()), outer(other.outer) {}
+	GCPtr& operator=(const GCPtr& other)
 	{
 		ptr = other.ptr;
 		outer = other.outer;
-	} // noexcept : ptr(other.ptr) ,outer(nullptr) {}
+		return *this;
+	}
+	//
+	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+	GCPtr& operator=(const GCPtr<U>& other) {
+		ptr = other.Get();
+		outer = other.GetOuter();
+		return *this;
+	}
+	// //移动构造 [废弃] GC不安全
+	// GCPtr(GCPtr&& other) noexcept
+	// {
+	// 	ptr = other.ptr;
+	// 	outer = other.outer;
+	// } // noexcept : ptr(other.ptr) ,outer(nullptr) {}
 
 
 	//assets

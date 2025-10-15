@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Classes/Actor.hpp"
-#include "System/Texture.hpp"
+#include "../../Source/Engine/Structure/Texture.hpp"
 
 class GameEngine;
 using namespace std;
@@ -26,7 +26,7 @@ public:
 		});
     	AddCustomEvent("testMethod",std::move(e));
     	CallEvent("testMethod",epp);
-    	texture = ConstructObjectFromClass(new StaticTexture({120,120},{255,255,255,255}));
+    	texture = NewObject(new StaticTexture({120,120},{255,255,255,255}));
 
     	rect = { 100, 250, 100, 100 };
     }

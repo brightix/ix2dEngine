@@ -1,19 +1,16 @@
-#include "System/GameWorld.hpp"
-#include "System/GameEngine.hpp"
+#include "../../Classes/Core/GameWorld.hpp"
+#include "../../Classes/Core/GameEngine.hpp"
 #include "TestActor.h"
 #include "Classes/Pawn.hpp"
-
+#include "../../Classes/SubSystem/GarbageCollection.hpp"
+#include "Utilities/FuncLib/SystemLib.hpp"
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
 {
+	name = NAME("World");
 	auto game = game_mode;
 	is_server = true;
-	//Actor a(Transform(Vec2d<float>(50.0,50.0),{}));
-	//actors.push_back(make_GCPtr<Pawn>(new Pawn()));
-	//GCPtr<TestActor> c = make_GCPtr<TestActor>(1);
-	// auto g = SpawnActorFromClass<TestActor>(new TestActor(1));
-	// auto g2 = SpawnActorFromClass<TestActor>(1);
 }
 
 void GameWorld::StartSimulation()
@@ -30,7 +27,7 @@ void GameWorld::StartSimulation()
 	is_simulation = true;
 
 
-	auto dd = SpawnActorToWorld(new Actor(Transform{{500,500}}));
+	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
 		dd->DestroyActor();
 		return -1;
@@ -82,10 +79,19 @@ void GameWorld::Tick(double delta_time)
 	{
 		return;
 	}
-
+	timer_system.Run();
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
 	tick_manager.Tick(delta_time);
+}
+
+void GameWorld::WorldDestroy()
+{
+	auto subsystem = world_subsystem.GetAllSubSystem();
+	for (auto& it : subsystem)
+	{
+		it->DeInit();
+	}
 }
 
 bool GameWorld::IsServer() const
@@ -97,5 +103,7 @@ bool GameWorld::IsClient() const
 {
 	return !is_server;
 }
+
+
 
 

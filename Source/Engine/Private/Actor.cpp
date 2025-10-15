@@ -2,7 +2,7 @@
 
 #include <Classes/ActorComponent/ActorComponent.hpp>
 
-#include "../System/GameEngine.hpp"
+#include "Classes/Core/GameEngine.hpp"
 #include "Enum/ActorEnum.hpp"
 
 Actor::Actor() : Actor(Transform()) {}
@@ -13,10 +13,11 @@ Actor::~Actor() = default;
 
 void Actor::Construct()
 {
+	name = NAME("Actor");
 	renderer = GameEngine::Instance().GetRenderer();
 	//默认生成一个200x200的矩形作为sprite
 	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
-	collision_box = ConstructObjectFromClass(new StaticTexture({200,200},{255,255,255,255}));
+	collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
 void Actor::EventBegin()
@@ -55,7 +56,7 @@ void Actor::SetMobility(const ActorMobility target_mobility)
 }
 
 
-void Actor::AddWorldLocation(Vec2d<float> dis)
+void Actor::AddWorldLocation(Vec2<float> dis)
 {
 	transform.location+=dis;
 }
@@ -65,7 +66,7 @@ Location Actor::GetWorldLocation() const
 	return transform.location;
 }
 
-Vec2d<float> Actor::GetRelativeLocation()
+Vec2<float> Actor::GetRelativeLocation()
 {
 	return {};
 }

@@ -9,7 +9,7 @@ struct Rotation  : var_type
     double Angle;
     FPoint Point;
     Rotation() : Angle(0.0){}
-    Rotation(Vec2d<float> Point_, float Angle_) : Point(Point_), Angle(Angle_){}
+    Rotation(Vec2<float> Point_, float Angle_) : Point(Point_), Angle(Angle_){}
     std::string str()
     {
         return "Rotation(" + std::to_string(Angle) + "),Point(" + Point.str();

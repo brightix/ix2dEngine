@@ -1,36 +1,36 @@
 #pragma once
 #include <cmath>
 template<typename T>
-struct Vec2d
+struct Vec2
 {
     T x;
     T y;
-    Vec2d() :x(0), y(0) {}
+    Vec2() :x(0), y(0) {}
 
-    Vec2d(T x,T y)
+    Vec2(T x,T y)
     {
         this->x = x;
         this->y = y;
     }
     
     template<typename U>
-    explicit Vec2d(Vec2d<U>& V)
+    explicit Vec2(Vec2<U>& V)
     {
         x = static_cast<T>(V.x);
         y = static_cast<T>(V.y);
     }
 	//template<type>
-	void operator+=(Vec2d<T> other)
+	void operator+=(Vec2<T> other)
     {
 	    x+=other.x;
     	y+=other.y;
     }
 	template<typename U>
-	Vec2d<U> operator*(U val)
+	Vec2<U> operator*(U val)
     {
-	    return Vec2d<U>(x*val,y*val);
+	    return Vec2<U>(x*val,y*val);
     }
-	Vec2d<float> operator/(float val)
+	Vec2<float> operator/(float val)
     {
     	if constexpr (std::is_fundamental_v<T>)
     	{
@@ -45,7 +45,7 @@ struct Vec2d
     }
 
 	//algorithm
-	Vec2d<float> Normalize()
+	Vec2<float> Normalize()
     {
     	float len = Length();
     	if (len == 0)
