@@ -1,4 +1,5 @@
 #include "../../../Classes/Component/SenceComponent/CollisionBox.hpp"
+
 #include <SDL3/SDL_render.h>
 
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
@@ -18,7 +19,9 @@ void CollisionBox::ComponentRender()
     SDL_Renderer* renderer = GameEngine::Instance().GetRenderer();
     FRect rect(transform.location.x,transform.location.y, w, h);
 	SDL_Texture* texture_T = Texture::CreateOutLineTexture(rect);
-	StaticTexture t(texture_T);
+	StaticTexture t;
+	t.SetStaticTexture(texture_T);
+	t.SetComponentWorldLocation(transform.location);
 	t.ComponentRender();
 }
 

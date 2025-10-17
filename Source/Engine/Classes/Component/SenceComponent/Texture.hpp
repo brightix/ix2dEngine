@@ -11,13 +11,23 @@ enum class TextureType : int
 	DynamicTexture
 };
 
+
+
 struct Texture : public SceneComponent
 {
-	SDL_Texture* texture;
+	struct SDLTextureDeleter
+	{
+		void operator()(SDL_Texture* t) const
+		{
+			if (t) SDL_DestroyTexture(t);
+		}
+	};
+	std::shared_ptr<SDL_Texture> in_texture;
+
 	int w;
 	int h;
 	Vec2<float> pivot;
-	Texture() : texture(nullptr), w(0), h(0)
+	Texture() : w(0), h(0)
 	{
 		name = "Texture";
 	}
@@ -34,4 +44,7 @@ struct Texture : public SceneComponent
 	Vec2<float> GetSize() const;
 
 	virtual TextureType GetTextureType()= 0;
+	static void SafeDestroyTexture(SDL_Texture* texture);
+
+	void SetStaticTexture(SDL_Texture* new_texture);
 };

@@ -138,6 +138,10 @@ public:
 		auto& parents = child->referenced;
 		std::erase(parents, parent);
 	}
+	bool IsValid()
+	{
+		return ptr != nullptr;
+	}
 	bool operator==(const GCPtr& other) const
 	{
 		return ptr == other.ptr;

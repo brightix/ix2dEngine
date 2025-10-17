@@ -17,17 +17,17 @@ public:
 
 	void Construct() override
     {
-    	this->name = "ixActor";
-    	EventParams epp;
-    	epp.Add("name",name);
-    	EventMethod e([](std::optional<EventParams> ep) {
-			std::cout << *ep->Get<string>("name") << std::endl;
-		});
-    	AddCustomEvent("testMethod",std::move(e));
-    	CallEvent("testMethod",epp);
-    	texture = NewObject(new StaticTexture({120,120},{255,255,255,255}));
-
-    	rect = { 100, 250, 100, 100 };
+  //   	this->name = "ixActor";
+  //   	EventParams epp;
+  //   	epp.Add("name",name);
+  //   	EventMethod e([](std::optional<EventParams> ep) {
+		// 	std::cout << *ep->Get<string>("name") << std::endl;
+		// });
+  //   	AddCustomEvent("testMethod",std::move(e));
+  //   	CallEvent("testMethod",epp);
+  //   	texture = NewObject(new StaticTexture({120,120},{255,255,255,255}));
+	 //
+  //   	rect = { 100, 250, 100, 100 };
     }
     void Tick(double delta) override
     {

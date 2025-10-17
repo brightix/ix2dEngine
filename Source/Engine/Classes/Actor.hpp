@@ -36,7 +36,6 @@ protected:
 
 	GCPtr<SceneComponent> Root;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
-	std::unordered_map<std::string,GCPtr<SceneComponent>> scene_components;
 	//可移动性
 	ActorMobility mobility;
 public:
@@ -53,7 +52,7 @@ public:
 
 	virtual void Tick(double delta_time);
 	virtual void PostPhysicsTick(double delta_time){}
-	virtual void ActorComponentTick(double delta_time);
+	virtual void RootComponentTick(double delta_time);
     virtual void EventEnd(){}
 
 
@@ -72,6 +71,12 @@ public:
 	Transform GetWorldTransform() const;
 
 
+
+
+
+
+
+
 	//组件
 	template<typename T>
 	void AddActorComponent(const std::string& component_name,T* component)
@@ -87,24 +92,25 @@ public:
 		return Cast<T>(actor_components[component_name].Get());
 	}
 
-	template<typename T>
-	void AddSceneComponent(const std::string& component_name,T* component, const std::string& parent_component_name = "")
-	{
-		static_assert(std::is_base_of_v<SceneComponent, T>, "类必须继承自SceneComponent");
-		if (parent_component_name == "")
-		{
+	// template<typename T>
+	// void AddSceneComponent(const std::string& component_name,T* component, const std::string& parent_component_name = "")
+	// {
+	// 	static_assert(std::is_base_of_v<SceneComponent, T>, "类必须继承自SceneComponent");
+	// 	if (parent_component_name == "")
+	// 	{
+	//
+	// 	}
+	// 	scene_components[component_name] = NewObject<T>(component);
+	// 	component->SetOwner(this);
+	// }
+	//
+	// template<typename T>
+	// T* GetSceneComponent(const std::string& component_name)
+	// {
+	// 	return Cast<T>(scene_components[component_name].Get());
+	// }
 
-		}
-		scene_components[component_name] = NewObject<T>(component);
-		component->SetOwner(this);
-	}
-
-	template<typename T>
-	T* GetSceneComponent(const std::string& component_name)
-	{
-		return Cast<T>(scene_components[component_name].Get());
-	}
-
+	//void AddToRoot(GCPtr<SceneComponent> parent, GCPtr<SceneComponent> child_component);
 //Sys
 	virtual void RenderOnScreen();
 

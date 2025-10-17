@@ -28,7 +28,7 @@ void TickManager::Tick(double delta_time)
                 if (a->IsActive())
                 {
                     a->Tick(delta_time);
-                    a->ActorComponentTick(delta_time);
+                    a->RootComponentTick(delta_time);
                 }
             }
 
@@ -71,7 +71,7 @@ void TickManager::Tick(double delta_time)
     			if (a->IsActive())
     			{
     				a->Tick(delta_time);
-    				a->ActorComponentTick(delta_time);
+    				a->RootComponentTick(delta_time);
     			}
     		}
 
@@ -114,7 +114,7 @@ void TickManager::Tick(double delta_time)
     			{
     				//将任务交给渲染线程
     				//a->RenderOnScreen();
-
+    				a->RenderOnScreen();
     			}
     		}
 

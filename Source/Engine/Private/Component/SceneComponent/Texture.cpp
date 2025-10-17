@@ -4,7 +4,13 @@
 #include "Types/FRect.hpp"
 
 
-Texture::Texture(SDL_Texture* texture, SDL_TextureAccess texture_mode) : texture(texture), w(texture->w), h(texture->h) { }
+Texture::Texture(SDL_Texture* texture_, SDL_TextureAccess texture_mode)
+{
+	if (texture_)
+	{
+		SetStaticTexture(texture_);
+	}
+}
 
 void Texture::SetPivot(Vec2<float> p)
 {
@@ -27,7 +33,7 @@ void Texture::Copy(Texture& other)
 	SDL_SetRenderTarget(renderer, newTexture);
 
 	// 渲染原纹理到新纹理
-	SDL_RenderTexture(renderer, other.texture, nullptr, nullptr);
+	SDL_RenderTexture(renderer, other.in_texture.get(), nullptr, nullptr);
 
 	// 恢复原渲染目标
 	SDL_SetRenderTarget(renderer, origTarget);
@@ -36,12 +42,35 @@ void Texture::Copy(Texture& other)
 
 SDL_Texture* Texture::GetTexture() const
 {
-	return texture;
+	return in_texture.get();
 }
 
 Vec2<float> Texture::GetSize() const
 {
 	return Vec2<float>(w,h);
+}
+
+void Texture::SafeDestroyTexture(SDL_Texture* texture)
+{
+	if (texture->refcount == 1)
+	{
+		SDL_DestroyTexture(texture);
+	}
+}
+
+void Texture::SetStaticTexture(SDL_Texture* new_texture)
+{
+	in_texture = std::shared_ptr<SDL_Texture>(new_texture,SDLTextureDeleter());
+	if (new_texture)
+	{
+		w = new_texture->w;
+		h = new_texture->h;
+	}
+	else
+	{
+		w = 0;
+		h = 0;
+	}
 }
 
 SDL_Texture * Texture::CreateOutLineTexture(const FRect& rect)

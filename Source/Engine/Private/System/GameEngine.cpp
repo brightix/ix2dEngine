@@ -72,7 +72,8 @@ void GameEngine::Tick()
 	tick_timer->Start(); // 关键：第一次先 Start
 
 	auto* fpsTex = FontRenderer::Instance().GetTextTexture("            ");
-	auto tex = StaticTexture({500,100});
+	auto tex = StaticTexture();
+	tex.LoadDefaultTexture({500,100});
 	//FontRenderer::Instance().UpdateTextTexture(&tex, "test");
 	//SDL_FRect dst = {0,0,(float)tex.w,(float)tex.h};
 
@@ -135,7 +136,7 @@ void GameEngine::RenderTexture(GCPtr<Texture> texture, SDL_FRect location)
 	switch (texture->GetTextureType())
 	{
 		case TextureType::StaticTexture:
-			SDL_RenderTexture(renderer,texture.Get()->texture,nullptr,&location);
+			SDL_RenderTexture(renderer,texture->in_texture.get(),nullptr,&location);
 			break;
 		default: ;
 	}

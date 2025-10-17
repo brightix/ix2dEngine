@@ -14,3 +14,13 @@ Actor* Component::GetOwner() const
 {
 	return owner;
 }
+
+std::string Component::GetComponentName()
+{
+	return component_name;
+}
+
+void Component::SetComponentName(const std::string& new_name)
+{
+	component_name = new_name;
+}

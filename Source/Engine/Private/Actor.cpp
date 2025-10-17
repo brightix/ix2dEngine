@@ -20,8 +20,10 @@ void Actor::Construct()
 	//默认生成一个200x200的矩形作为sprite
 	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
 	//AddSceneComponent<RootComponent>("Root", new RootComponent(Transform{{500,500}}));
+	//场景默认根组件
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
-	AddSceneComponent<StaticTexture>("DefaultTexture", new StaticTexture({500,500}));
+
+	//AddSceneComponent<StaticTexture>("DefaultTexture", new StaticTexture({500,500}));
 	//collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
@@ -35,12 +37,13 @@ void Actor::EventBegin()
 //所有重写tick都在PreTick内
 void Actor::Tick(double delta_time) {}
 
-void Actor::ActorComponentTick(double delta_time)
+void Actor::RootComponentTick(double delta_time)
 {
 	for (auto& it : actor_components)
 	{
 		it.second->ActorComponentTick(delta_time);
 	}
+	Root->SceneComponentTick(delta_time);
 }
 
 

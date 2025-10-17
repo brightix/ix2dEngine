@@ -88,7 +88,8 @@ StaticTexture* FontRenderer::GetTextTexture(std::string str, std::string fontNam
         TTF_Font* font = GetFont(fontName,fontSize);
         SDL_Surface* surface = TTF_RenderText_Blended(font, str.c_str(), str.length(), col);
         SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND); // 启用混合模式
-        StaticTexture* texture = new StaticTexture(SDL_CreateTextureFromSurface(renderer, surface));
+        StaticTexture* texture = new StaticTexture();
+    	texture->SetStaticTexture(SDL_CreateTextureFromSurface(renderer, surface));
         SDL_DestroySurface(surface); // 清除CPU缓存
         return texture;
     }catch(const Exception& e){

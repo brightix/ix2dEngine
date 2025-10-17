@@ -39,8 +39,16 @@ void Pawn::Construct()
 	// BindNormalKeyEvent("Key_R", this, Event("Key_W", [](TEventParams e) {
 	// 	std::cout << std::string("Normal Key ") + "R" << std::endl;
 	// }));
-	AddSceneComponent<CollisionBox>("碰撞箱",new CollisionBox());
-	GetSceneComponent<CollisionBox>("碰撞箱")->SetBoundBox(GetSceneComponent<StaticTexture>("DefaultTexture")->GetSize());
+
+	auto s = NewObject(new StaticTexture()) ;
+	s->LoadDefaultTexture({500,500});
+	s->SetComponentName("DTexture");
+	Root->MountedComponent(s);
+	auto collision = NewObject(new CollisionBox());
+	collision->SetComponentName("碰撞箱");
+	Root->MountedComponent(collision);
+	Cast<CollisionBox>(Root->GetSceneComponentByName("碰撞箱").Get())
+		->SetBoundBox(Cast<StaticTexture>(Root->GetSceneComponentByName("DTexture").Get())->GetSize());
 }
 
 void Pawn::EventBegin()
