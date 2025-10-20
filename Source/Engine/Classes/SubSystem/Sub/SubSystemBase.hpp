@@ -1,12 +1,10 @@
 #pragma once
-#include "Classes/Core/GCObject.hpp"
+#include "Classes/Object.hpp"
 
-
-class SubSystemBase : public GCObject
+class SubSystemBase : public Object
 {
 public:
 	SubSystemBase();
 	virtual void Init(){}
 	virtual void DeInit(){}
-	virtual ~SubSystemBase() = default;
 };

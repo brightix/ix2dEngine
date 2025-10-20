@@ -25,6 +25,16 @@ void EventSystem::CallEvent(const std::string& event_name, std::optional<EventPa
 	}
 }
 
+std::optional<Event> EventSystem::GetEventByName(const std::string& event_name)
+{
+	auto it = events.find(event_name);
+	if (it != events.end())
+	{
+		return it->second;
+	}
+	return std::nullopt;
+}
+
 void EventSystem::TickEvent(double delta_time)
 {
 	// for (auto& it : tick_events)

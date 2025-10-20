@@ -13,6 +13,5 @@ public:
 	void GCMark(GCObject *gc_object);
     int GCSweep();
 
-    ~GarbageCollection() = default;
 };
 

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 # 工程源码
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
-        ${CMAKE_SOURCE_DIR}/Source/Content/Private/*.cpp
+        ${CMAKE_SOURCE_DIR}/Content/Private/*.cpp
 #        ${CMAKE_SOURCE_DIR}/Source/Content/Public/ActorComponent/*.cpp
 )
 add_executable(ix2d
@@ -18,6 +18,7 @@ add_executable(ix2d
 target_include_directories(ix2d PRIVATE
         "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/include"
         "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/include"
+        "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/include"
         "${CMAKE_SOURCE_DIR}/Source/Engine"
         "${CMAKE_SOURCE_DIR}/Content/Public"
 )
@@ -26,11 +27,13 @@ target_include_directories(ix2d PRIVATE
 link_directories(
         "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/lib"
         "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/lib"
+        "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/lib"
 )
 
 find_library(SDL3_LIB SDL3 PATHS "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/lib")
 find_library(SDL3TTF_LIB SDL3_ttf PATHS "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/lib")
-
+find_library(SDL3IMAGE_LIB SDL3_image PATHS "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/lib"
+)
 set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
@@ -39,6 +42,7 @@ set_target_properties(ix2d PROPERTIES
 target_link_libraries(ix2d PRIVATE
         ${SDL3_LIB}
         ${SDL3TTF_LIB}
+        ${SDL3IMAGE_LIB}
         winmm
 )
 

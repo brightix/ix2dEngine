@@ -4,7 +4,7 @@
 #include "Actor.hpp"
 #include "InputMap.hpp"
 #include "Types/Vec.hpp"
-#include "../System/GlobalMacros.hpp"
+#include "../Utilities/FuncLib/GlobalMacros.hpp"
 #include "Core/GameWorld.hpp"
 
 enum EnhancedInputParamStatus : int;
@@ -17,7 +17,7 @@ using EnhancedInputParamVariant = std::variant<bool,float,Vec2<double>,Vec<doubl
 
 class Controller : public Actor
 {
-    GCPtr<Pawn> controlled_pawn;
+    GCWeakPtr<Pawn> controlled_pawn;
     //std::unordered_map<std::string,std::function<void()>>;
     std::unordered_map<std::string,EventMethod> enhancedInput;
 
@@ -28,7 +28,7 @@ class Controller : public Actor
     bool show_mouse_cursor;
 
 	//Debug
-	GCPtr<StaticTexture> pawn_location_tex;
+	//GCPtr<StaticTexture> pawn_location_tex;
 
 public:
     Controller();
@@ -37,11 +37,10 @@ public:
 	void Construct() override;
     void Tick(double delta) override;
 
-
-    GCPtr<Pawn> GetControlledPawn() const;
+    GCWeakPtr<Pawn> GetControlledPawn() const;
 };
 
-static void BindNormalKeyEvent(const std::string& event_name, Object* obj, const Event &event)
+static void BindNormalKeyEvent(Object* obj, const std::string& event_name, const Event &event)
 {
-	GetWorld()->GetController(0)->dispatcher_system.BindEventTo(event_name, obj, event);
+	GetWorld()->GetController(0)->dispatcher_system.BindEventTo(obj, event_name, event);
 }

@@ -36,7 +36,8 @@ public:
 //调用事件
     void CallEvent(const std::string& event_name,std::optional<EventParams> params = std::nullopt);
 
-	void SetTimerEvent();
+	//void SetTimerEvent();
+	std::optional<Event> GetEventByName(const std::string& event_name);
 //带时间的轮训事件
 	void TickEvent(double delta_time);
     ~EventSystem()= default;

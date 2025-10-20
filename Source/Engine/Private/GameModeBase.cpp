@@ -1,8 +1,7 @@
 #include "Classes/GameModeBase.hpp"
 
+#include "TestPawn.hpp"
 #include "Classes/Core/GameWorld.hpp"
-
-#include "Classes/Pawn.hpp"
 
 GameModeBase::GameModeBase()
 {
@@ -34,10 +33,8 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActor(new Pawn());
+	auto_generate_pawn = SpawnActor(new TestPawn());
 	//auto_generate_pawn->EventBegin();
-
-	this->dispatcher_system.CallEvent("EventBegin");
 
 	controller->Control(auto_generate_pawn);
 }

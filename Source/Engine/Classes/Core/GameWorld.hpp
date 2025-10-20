@@ -3,9 +3,8 @@
 
 #include "GameEngine.hpp"
 #include "Classes/Actor.hpp"
-#include "Classes/Core/ThreadManager.hpp"
+#include "Classes/Core/RendererCenter.hpp"
 #include "Classes/Core/TickManager.hpp"
-#include "../SubSystem/Sub/WorldSubSystem.hpp"
 #include "Classes/Widget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
@@ -14,7 +13,7 @@
 
 class Controller;
 class GameModeBase;
-class TickManager;
+class TickSubSystem;
 class EngineSubSystem;
 class GameWorld : public Object
 {
@@ -23,8 +22,6 @@ class GameWorld : public Object
 	GCPtr<GameModeBase> game_mode;
 
 
-	TickManager tick_manager;
-	ThreadManager thread_manager;
 	//
 	bool is_server;
 	//调试面板
@@ -35,9 +32,9 @@ class GameWorld : public Object
 
 	//子系统
 	TimerSystem timer_system;
-	SubsystemManager<WorldSubSystem> world_subsystem;
+	GCPtr<SubSystemManager> world_subsystem;
 public:
-
+	TickSubSystem* tick_SubSystem;
 	SPhysics physicsSys;
 	bool is_simulation;
 
@@ -132,7 +129,7 @@ GCPtr<T> SpawnActor(T* actor)
 	}
 	else
 	{
-		world->dispatcher_system.BindEventTo("EventBegin",a.Get(),Event("EventBegin",[a](TEventParams) {
+		world->dispatcher_system.BindEventTo(a.Get(), "EventBegin",Event("EventBegin",[a](TEventParams) {
 			a->EventBegin();
 		}));
 	}

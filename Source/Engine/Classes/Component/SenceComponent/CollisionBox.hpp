@@ -9,5 +9,5 @@ public:
     ~CollisionBox(){}
     void Construct() override;
     void ComponentRender() override;
-    void SetBoundBox(Vec2<float> size);
+    void SetBoundBox(const Vec2<float>& size);
 };

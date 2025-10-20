@@ -1,11 +1,12 @@
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Types/RenderData.hpp"
 
 
 StaticTexture::StaticTexture()
 {
-	component_name = NAME("StaticTexture");
+	NAME;
 }
 
 
@@ -18,6 +19,12 @@ StaticTexture::StaticTexture(const StaticTexture& other)
 	pivot = other.pivot;
 }
 
+void StaticTexture::Construct()
+{
+	Texture::Construct();
+
+}
+
 
 TextureType StaticTexture::GetTextureType()
 {
@@ -26,36 +33,44 @@ TextureType StaticTexture::GetTextureType()
 
 void StaticTexture::ComponentRender()
 {
-	SDL_Renderer* renderer = GameEngine::Instance().GetRenderer();
+	SDL_Renderer* renderer = GetRenderer();
 	const SDL_FRect dst(transform.location.x,transform.location.y, h, w);
 	SDL_RenderTexture(renderer,in_texture.get(),nullptr,&dst);
 }
 
-void StaticTexture::LoadDefaultTexture(const Vec2<int> size, const SDL_Color color, const bool is_fill)
+// void StaticTexture::LoadDefaultTexture(const Vec2<int> size, const SDL_Color color, const bool is_fill)
+// {
+// 	RendererCenter::AddRendererTask(RenderTask([&](SDL_Renderer* r) {
+// 		w = size.x;
+// 		h = size.y;
+//
+// 		auto texture = SDL_CreateTexture(
+// 			r,
+// 			SDL_PIXELFORMAT_RGBA8888,
+// 			SDL_TEXTUREACCESS_TARGET,
+// 			w,
+// 			h
+// 		);
+// 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+//
+//
+// 		if (is_fill)
+// 		{
+// 			RendererCenter::CreateFilledTexture({0,0,w,h});
+// 		}
+// 		else
+// 		{
+// 			RendererCenter::CreateOutLineTexture({0,0,w,h});
+// 		}
+// 		SetStaticTexture(texture);
+// 	}));
+// }
+
+void StaticTexture::OfferRenderData(std::vector<RenderData>& data)
 {
-	w = size.x;
-	h = size.y;
-
-	auto texture = SDL_CreateTexture(
-		GameEngine::Instance().GetRenderer(),
-		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET,
-		w,
-		h
-	);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-
-	if (is_fill)
-	{
-		CreateFilledTexture({0,0,w,h});
-	}
-	else
-	{
-		CreateOutLineTexture({0,0,w,h});
-	}
-	SetStaticTexture(texture);
+	data.emplace_back(RenderData(in_texture, transform, {}, SDL_FRect(transform.location.x,transform.location.y, w, h)));
 }
+
 // StaticTexture::StaticTexture(StaticTexture&& other)
 //  noexcept {
 // 	texture = other.texture;
@@ -63,15 +78,6 @@ void StaticTexture::LoadDefaultTexture(const Vec2<int> size, const SDL_Color col
 // 	h = other.h;
 // 	other.texture = nullptr;
 // }
-
-StaticTexture::~StaticTexture()
-{
-	//防止同时多个实例引用这个纹理
-	// if (in_texture)
-	// {
-	// 	SDL_DestroyTexture(in_texture);
-	// }
-}
 
 
 

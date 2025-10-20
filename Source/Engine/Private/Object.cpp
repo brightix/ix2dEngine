@@ -2,11 +2,8 @@
 
 #include <iostream>
 using namespace std;
-Object::Object() : Self(this) {}
-
-Object* Object::GetSelfPtr()
+Object::Object()
 {
-    return this;
 }
 
 void Object::AddCustomEvent(const std::string& event_name, EventMethod&& event_method)
@@ -24,8 +21,6 @@ void Object::AddEventDispatcher(const std::string& event_name, EventMethod&& eve
     dispatcher_system.AddEventDispatcher(event_name);
 }
 
-void Object::BindEvent(std::string dispatcher_name, EventMethod method)
-{
-	//dispatcher_system.
-}
+
+
 

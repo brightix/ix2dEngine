@@ -2,27 +2,28 @@
 
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
 #include "Classes/Component/ActorComponent/RootComponent.h"
+#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Enum/ActorEnum.hpp"
 
 Actor::Actor() : Actor(Transform()){}
-Actor::Actor(const Transform &tf) : isShowInGame(false), is_active(true), mobility(ActorMobility::Static),
-                             window(nullptr) {}
+Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
+                                    window(nullptr),
+                                    mobility(ActorMobility::Static) { }
 
 Actor::~Actor() = default;
 
 void Actor::Construct()
 {
-	name = NAME("Actor");
-	//renderer = GameEngine::Instance().GetRenderer();
-	//默认生成一个200x200的矩形作为sprite
-	//SDL_Texture* t = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,200,200);
-	//AddSceneComponent<RootComponent>("Root", new RootComponent(Transform{{500,500}}));
+	NAME;
 	//场景默认根组件
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
-
+	auto default_image = NewObject(new StaticTexture());
+	default_image->name = "default_texture";
+	default_image->AsyncLoadOutLine();
+	Root->MountedComponent(default_image);
 	//AddSceneComponent<StaticTexture>("DefaultTexture", new StaticTexture({500,500}));
 	//collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
@@ -64,14 +65,9 @@ void Actor::SetMobility(const ActorMobility target_mobility)
 }
 
 
-void Actor::AddActorWorldLocation(Vec2<float> dis)
+void Actor::AddActorWorldLocation(Vec2<float> dis) const
 {
-	//transform.location+=dis;
 	Root->AddComponentWorldLocation(dis);
-	// for (auto& component : scene_components)
-	// {
-	// 	component.second->AddComponentWorldLocation(dis);
-	// }
 }
 
 Location Actor::GetWorldLocation() const
@@ -96,6 +92,11 @@ void Actor::RenderOnScreen()
 	// {
 	// 	it.second->ComponentRender();
 	// }
+}
+
+void Actor::ForRenderOrder(std::vector<RenderData>& data) const
+{
+	Root->ForRenderData(data);
 }
 
 // void Actor::RenderCollisionBox() const

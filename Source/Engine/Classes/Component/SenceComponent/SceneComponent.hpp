@@ -1,6 +1,9 @@
 #pragma once
 #include "Classes/Component/Component.hpp"
 #include "Types/Transform.hpp"
+#include "Types/Enums/ActorVisibility.hpp"
+
+struct RenderData;
 
 class SceneComponent : public Component
 {
@@ -10,6 +13,7 @@ protected:
     int h;
     Vec2<float> pivot;
 	std::unordered_map<std::string, GCPtr<SceneComponent>> mounted_components;
+	ComponentVisibility visibility = ComponentVisibility::Visible;
 public:
     SceneComponent();
 
@@ -17,11 +21,19 @@ public:
 	Transform GetComponentTransform();
 	void AddComponentWorldLocation(Vec2<float> v);
 	void SetComponentWorldLocation(const Location& new_loc);
-    virtual void ComponentRender();
 
+
+	//可视性
+	void SetVisibility(ComponentVisibility new_visibility);
+	ComponentVisibility GetVisibility();
+	bool IsVisible() const;
+
+	//单线程用
+    virtual void ComponentRender();
 	virtual void SceneComponentTick(double delta_time);
 	//挂载子场景组件
 	void MountedComponent(GCPtr<SceneComponent> child_component);
+
 
 
 	//Danger performance 递归找节点
@@ -29,7 +41,7 @@ public:
 	{
 		for (const auto& component : mounted_components | std::views::values)
 		{
-			if (component->component_name == searched_component_name)
+			if (component->name == searched_component_name)
 			{
 				return component;
 			}
@@ -41,4 +53,6 @@ public:
 		return {};
 	}
     void ForRender();
+	void ForRenderData(std::vector<RenderData>& data);
+    virtual void OfferRenderData(std::vector<RenderData>& data);
 };

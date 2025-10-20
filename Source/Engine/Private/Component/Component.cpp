@@ -17,7 +17,7 @@ Actor* Component::GetOwner() const
 
 std::string Component::GetComponentName()
 {
-	return component_name;
+	return name;
 }
 
 void Component::SetComponentName(const std::string& new_name)

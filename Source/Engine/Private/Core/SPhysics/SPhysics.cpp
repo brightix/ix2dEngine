@@ -15,7 +15,7 @@ void SPhysics::Register(SPhysicsBaseUtility* actor)
     actors.insert(actor);
 }
 
-void SPhysics::simulation(float delta_time)//注意tunneling
+void SPhysics::simulation(double delta_time)//注意tunneling
 {
     collision_tree.clear();
     for (auto it = actors.begin(); it != actors.end(); ++it)

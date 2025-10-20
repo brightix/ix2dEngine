@@ -13,38 +13,32 @@ enum class TextureType : int
 
 
 
+
 struct Texture : public SceneComponent
 {
-	struct SDLTextureDeleter
-	{
-		void operator()(SDL_Texture* t) const
-		{
-			if (t) SDL_DestroyTexture(t);
-		}
-	};
 	std::shared_ptr<SDL_Texture> in_texture;
 
 	int w;
 	int h;
 	Vec2<float> pivot;
-	Texture() : w(0), h(0)
-	{
-		name = "Texture";
-	}
-	Texture(SDL_Texture* texture, SDL_TextureAccess texture_mode = SDL_TEXTUREACCESS_STREAMING);
+	Texture();
+
+void Construct() override;
 
 	void SetPivot(Vec2<float> p);
-
-	static SDL_Texture* CreateOutLineTexture(const FRect& rect);
-
-	static SDL_Texture* CreateFilledTexture(const FRect& rect);
-
 	void Copy(Texture& other);
-	SDL_Texture* GetTexture() const;
+
+
+	std::shared_ptr<SDL_Texture> GetTexture() const;
 	Vec2<float> GetSize() const;
 
-	virtual TextureType GetTextureType()= 0;
+	virtual TextureType GetTextureType();
 	static void SafeDestroyTexture(SDL_Texture* texture);
 
-	void SetStaticTexture(SDL_Texture* new_texture);
+	void SetStaticTexture(std::shared_ptr<SDL_Texture> new_texture);
+
+	void AsyncSetTextureFromSurface(std::shared_ptr<SDL_Surface> new_surface);
+
+	void AsyncSetTexture(SDL_Texture* new_texture);
+	void AsyncLoadOutLine();
 };

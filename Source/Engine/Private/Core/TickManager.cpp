@@ -3,173 +3,105 @@
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Controller.hpp"
+#include "Types/RenderData.hpp"
 
-void TickManager::Tick(double delta_time)
+void TickSubSystem::Tick(double delta_time)
 {
     auto actors = GameEngine::Instance().GetGameWorld()->GetActors();
     std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
-    switch (buffer_type)
+
+	std::vector<RenderData> render_data;
+	render_data.reserve(actors.size());
+	if (buffer_type == 1)
+	{
+		//计算物理
+		world->physicsSys.simulation(delta_time);
+		//映射物理
+		for (auto& a : actors)
+		{
+			if (a->IsActive())
+			{
+				a->PostPhysicsTick(delta_time);
+			}
+		}
+		//普通Tick
+		for (auto& a : actors)
+		{
+			if (a->IsActive())
+			{
+				a->Tick(delta_time);
+				a->RootComponentTick(delta_time);
+			}
+		}
+		//渲染纹理
+		for (auto& a : actors)
+		{
+			if (a->is_pre_kill)
+			{
+				a->is_pending_kill = true;
+				world->RemoveActorByGCPtr(a);
+			}
+			else if (a->IsActive())
+			{
+				a->RenderOnScreen();
+			}
+		}
+
+
+		for (auto& controller : controllers)
+		{
+			controller->Tick(delta_time);
+		}
+	}
+    else if (buffer_type == 2)//  双缓冲  ---------------------------------------------------------------------------------
     {
-        case 1:
-            //计算物理
-			world->physicsSys.simulation(delta_time);
-            //映射物理
-            for (auto& a : actors)
-            {
-                if (a->IsActive())
-                {
-                    a->PostPhysicsTick(delta_time);
-                }
-            }
-            //普通Tick
-            for (auto& a : actors)
-            {
-                if (a->IsActive())
-                {
-                    a->Tick(delta_time);
-                    a->RootComponentTick(delta_time);
-                }
-            }
+	    //PreTick
 
-            //渲染
-        //碰撞箱
-            // for (auto& a : actors)
-            // {
-            //     if (!a->is_pre_kill && a->IsActive())
-            //     {
-            //         //a->RenderCollisionBox();
-            //     }
-            // }
-        //渲染纹理
-            for (auto& a : actors)
-            {
-                if (a->is_pre_kill)
-                {
-                    a->is_pending_kill = true;
-                    world->RemoveActorByGCPtr(a);
-                }
-                else if (a->IsActive())
-                {
-                    a->RenderOnScreen();
-                }
-            }
-
-
-            for (auto& controller : controllers)
-            {
-                controller->Tick(delta_time);
-            }
-            break;
-        case 2:
-
-    		//PreTick
-
-    		//普通Tick
-    		for (auto& a : actors)
+    	//普通Tick
+    	for (auto& a : actors)
+    	{
+    		if (a->IsActive())
     		{
-    			if (a->IsActive())
-    			{
-    				a->Tick(delta_time);
-    				a->RootComponentTick(delta_time);
-    			}
+    			a->Tick(delta_time);
+    			a->RootComponentTick(delta_time);
     		}
+    	}
+    	//提交渲染线程命令
+    	for (auto& a : actors)
+    	{
+    		if (a->is_pre_kill)//
+    		{
+    			a->is_pending_kill = true;
+    			world->RemoveActorByGCPtr(a);
+    		}
+    		else if (a->IsVisible())
+    		{
+    			a->ForRenderOrder(render_data);
+    		}
+    	}
 
-    		//Post
-    		//计算物理
-    		for (auto& a : actors)
-    		{
-    			if (a->IsActive())
-    			{
-    				a->PrePhysicsTick(delta_time);
-    			}
-    		}
-    		//映射物理 使用四叉树碰撞检测
-    		for (auto& a : actors)
-    		{
-    			if (a->IsActive())
-    			{
-    				a->PostPhysicsTick(delta_time);
-    			}
-    		}
+    	for (auto& controller : controllers)
+    	{
+    		controller->Tick(delta_time);
+    	}
+    	EventParams render_data_ready_p;
+    	render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
 
-    		//渲染
-    		//碰撞箱
-    		// for (auto& a : actors)
-    		// {
-    		// 	if (!a->is_pre_kill && a->IsActive())
-    		// 	{
-    		// 		a->RenderCollisionBox();
-    		// 	}
-    		// }
-    		//渲染纹理
-    		for (auto& a : actors)
-    		{
-    			if (a->is_pre_kill)//
-    			{
-    				a->is_pending_kill = true;
-    				world->RemoveActorByGCPtr(a);
-    			}
-    			else if (a->IsVisible())
-    			{
-    				//将任务交给渲染线程
-    				//a->RenderOnScreen();
-    				a->RenderOnScreen();
-    			}
-    		}
+    	dispatcher_system.CallDispatcher("RenderDataReady", render_data_ready_p);
 
 
-    		for (auto& controller : controllers)
-    		{
-    			controller->Tick(delta_time);
-    		}
-            break;
-        case 3:
-            break;
-        default: break;
+    	dispatcher_system.CallDispatcher("synchronization");
+
+
     }
 }
 
-TickManager::TickManager() : buffer_type(1) {}
-
-void TickManager::CreateWorker(std::function<void()> task)
+void TickSubSystem::Init()
 {
-    thread.emplace_back(task);
+	NAME;
+	dispatcher_system.AddEventDispatcher("RenderDataReady");
 }
 
-void TickManager::PhysicsBuffer(std::vector<Actor*> actors)
-{
-    int current = write_head % 3;
-    RenderBufferShot buffer_shot;
-    for (int i = 0; i < actors.size(); i++)
-    {
-        auto& actor = actors[i];
-        buffer_shot.actors.emplace_back(actor);
-        buffer_shot.transforms.emplace_back(actor->GetWorldTransform());
-    }
-        fence[current].store(true,std::memory_order_release);
-}
 
-void TickManager::Render()
-{
-    int current = (write_head+2) % 3;
-
-    // if (fence[current].load(std::memory_order_acquire))
-    // {
-    //     //auto& buffer_shot = render_buffer[current];
-    //     int n =  buffer_shot.actors.size();
-    //     for (int i = 0; i < n; i++)
-    //     {
-    //         auto& actor = buffer_shot.actors[i];
-    //         if (actor->is_pre_kill)
-    //         {
-    //             actor->is_pending_kill = true;
-    //         }
-    //         else
-    //         {
-    //             actor->RenderOnScreen();
-    //         }
-    //     }
-    // }
-    fence[current].store(false);
-}
+void TickSubSystem::SetBufferType(int type) { buffer_type = type; }

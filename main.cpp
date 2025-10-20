@@ -15,13 +15,11 @@ int main()
 #endif
     auto& game_engine = GameEngine::Instance();
 
-    game_engine.Construct();
+	game_engine.Construct();
 
 	game_engine.EventBegin();
 
-
-    game_engine.Tick();
-
+	game_engine.Tick();
 
     return 0;
 }

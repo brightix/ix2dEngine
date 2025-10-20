@@ -27,7 +27,7 @@ public:
     ~SPhysics()= default;
 
     void Register(SPhysicsBaseUtility *actor);
-    void simulation(float delta_time);
+    void simulation(double delta_time);
     void HandleVelocity(float delta_time);
     static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);
 

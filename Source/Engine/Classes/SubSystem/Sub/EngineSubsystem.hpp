@@ -4,7 +4,5 @@
 class EngineSubSystem : public SubSystemBase
 {
 public:
-	EngineSubSystem(){}
-
-	~EngineSubSystem() = default;
+	//static void ForEngineInit();
 };

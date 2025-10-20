@@ -9,9 +9,17 @@ GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
 {
-	name = NAME("World");
+	NAME;
 	auto game = game_mode;
 	is_server = true;
+
+	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
+
+	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
+	tick_SubSystem->SetBufferType(2);
+	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");
+	//world_subsystem->ForAllSubSystemInit();
+	dispatcher_system.AddEventDispatcher("EventBegin");
 }
 
 void GameWorld::StartSimulation()
@@ -20,19 +28,20 @@ void GameWorld::StartSimulation()
 	game_mode = make_GCPtr<GameModeBase>(new GameModeBase());
 	game_mode->EventBegin();
 
-	for (const auto& a : actors)
-	{
-		a->EventBegin();
-	}
+	// for (const auto& a : actors)
+	// {
+	// 	a->EventBegin();
+	// }
 	//GC_timer->Start();
 	is_simulation = true;
-
 
 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
 	// 	dd->DestroyActor();
 	// 	return -1;
 	// });
+
+	dispatcher_system.CallDispatcher("EventBegin");
 }
 
 std::vector<GCPtr<Controller>> GameWorld::GetControllers()
@@ -68,7 +77,6 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 		t->Construct();
 		t->EventBegin();
 		return t;
-
 	}
 	return {};
 }
@@ -76,11 +84,6 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 void GameWorld::AddToWorld(GCPtr<Actor> actor)
 {
 	actors.emplace_back(actor);
-}
-
-void GameWorld::PrintString(std::string, int exist_time, SDL_Color color)
-{
-	//debug_viewport->AddChild();
 }
 
 void GameWorld::Tick(double delta_time)
@@ -92,15 +95,17 @@ void GameWorld::Tick(double delta_time)
 	timer_system.Run();
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
-	tick_manager.Tick(delta_time);
+	tick_SubSystem->Tick(delta_time);
 }
 
 void GameWorld::WorldDestroy()
 {
-	auto subsystem = world_subsystem.GetAllSubSystem();
-	for (auto& it : subsystem)
+	for (const auto subsystem = world_subsystem->GetAllSubSystem(); auto& it : subsystem)
 	{
-		it->DeInit();
+		if (const auto ret = it.Peek())
+		{
+			ret->DeInit();
+		}
 	}
 }
 

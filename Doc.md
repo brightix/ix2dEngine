@@ -55,8 +55,15 @@ classDiagram
     Actor <|-- Pawn
     Actor <|-- GameModeBase
 ```
-典型的无异议构造
+
+典型的无异议构造（已修复）
 ```cpp
 //绑定了GC关系，但ptr为局部变量，导致内存泄漏
 auto ptr = ConstructObjectFromClass(new Actor(Transform{{500,500}}));
+```
+
+```cpp
+//使用最直接的方法在指定场景组件下挂载组件，推荐使用变量存储常用的组件
+Cast<CollisionBox>(Root->GetSceneComponentByName("碰撞箱").Get())
+    ->SetBoundBox(Cast<StaticTexture>(Root->GetSceneComponentByName("DTexture").Get())->GetSize());
 ```

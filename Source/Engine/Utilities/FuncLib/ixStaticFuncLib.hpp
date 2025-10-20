@@ -7,7 +7,7 @@
 #include "Utilities/magic_enum.hpp"
 #include "Enum/LogLevel.h"
 #include "Utilities/json.hpp"
-#include "System/GlobalMacros.hpp"
+#include "GlobalMacros.hpp"
 
 #define Log(msg) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__))
 #define LogWithLevel(msg,level) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__), level)

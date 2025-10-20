@@ -3,6 +3,7 @@
 #include <SDL3/SDL_render.h>
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Types/RenderData.hpp"
 
 SceneComponent::SceneComponent() : SceneComponent(Transform{}){ }
 SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
@@ -26,6 +27,21 @@ void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 	transform.location.y = new_loc.y;
 }
 
+void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
+{
+	visibility = new_visibility;
+}
+
+ComponentVisibility SceneComponent::GetVisibility()
+{
+	return visibility;
+}
+
+bool SceneComponent::IsVisible() const
+{
+	return visibility == ComponentVisibility::Visible || visibility == ComponentVisibility::OnlyDraw;
+}
+
 void SceneComponent::ComponentRender() {}
 void SceneComponent::SceneComponentTick(double delta_time)
 {
@@ -42,11 +58,30 @@ void SceneComponent::MountedComponent(GCPtr<SceneComponent> child_component)
 }
 
 
+
+//递归调用接口
 void SceneComponent::ForRender()
 {
 	ComponentRender();
-	for (auto& component : mounted_components)
+	for (const auto& child : mounted_components | std::views::values)
 	{
-		component.second->ForRender();
+		child->ForRender();
+	}
+}
+
+void SceneComponent::OfferRenderData(std::vector<RenderData>& data)
+{}
+
+
+//递归调用接口
+void SceneComponent::ForRenderData(std::vector<RenderData>& data)
+{
+	OfferRenderData(data);
+	for (const auto& child : mounted_components | std::views::values)
+	{
+		if (child->IsVisible())
+		{
+			child->ForRenderData(data);
+		}
 	}
 }

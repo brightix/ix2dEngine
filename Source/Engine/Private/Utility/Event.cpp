@@ -9,6 +9,11 @@ Event::Event(const std::string& event_name, std::function<void(std::optional<Eve
 	  interval(0),
 	  elapsed(0) {}
 
+// Event::Event(Event& other)
+// {
+//
+// }
+
 void Event::Execute() {
 	if (event_func)
 		event_func(std::nullopt);

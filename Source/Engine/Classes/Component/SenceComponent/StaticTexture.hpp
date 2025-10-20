@@ -17,11 +17,12 @@ struct StaticTexture : public Texture
 	//StaticTexture(StaticTexture& other);
 
 	//StaticTexture(StaticTexture&& other) noexcept ;
+	void Construct() override;
 	TextureType GetTextureType() override;
 	void ComponentRender() override;
 
-	void LoadDefaultTexture(Vec2<int> size, SDL_Color color = {255,255,255,255}, bool is_fill = false);
+	//void LoadDefaultTexture(Vec2<int> size, SDL_Color color = {255,255,255,255}, bool is_fill = false);
 
-	~StaticTexture() override;
+	void OfferRenderData(std::vector<RenderData>& data) override;
 };
 

@@ -2,8 +2,12 @@
 
 #include "System/Font.hpp"
 #include "../../Classes/Component/SenceComponent/Texture.hpp"
+#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
+#include "Types/FontStyle.hpp"
+#include "Types/RenderData.hpp"
+#include "Utilities/FuncLib/Deleter.hpp"
 
 GameEngine::GameEngine() : delta_time(0)
 {
@@ -12,68 +16,68 @@ GameEngine::GameEngine() : delta_time(0)
 		LogWithLevel("SDL_Init Error", LogLevel::FatalError);
 		return;
 	}
-	// 创建窗口
-	window = SDL_CreateWindow(
-		"Hello SDL3",        // 标题
-		1200, 1000,            // 宽高
-		SDL_WINDOW_RESIZABLE // 可拉伸
-	);
-	if (!window)
-	{
-		Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
-		SDL_Quit();
-		return;
-	}
-
-	// 创建渲染器
-	renderer = SDL_CreateRenderer(window, nullptr);
-	if (!renderer)
-	{
-		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
-		SDL_DestroyWindow(window);
-		SDL_Quit();
-		return;
-	}
 	timeBeginPeriod(1);
+	font_manager = &FontRenderer::Instance();
 }
 
 void GameEngine::Construct()
 {
-	//Object::Construct();
+	//最先启动GPU
+
+	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
+	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
+	renderer_center->StartRenderThread();
+
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
 	GCRoot = this;
 	SysConfig = {120, {640, 480}};
+
 	game_world = make_GCPtr<GameWorld>(new GameWorld());
 	game_world->Construct();
 
 	tick_timer = make_GCPtr<NewTimer>(new NewTimer());
 	consume_timer = make_GCPtr<NewTimer>();
-	running = true;
-	game_world->StartSimulation();
-	//临时测试 垃圾回收 系统
-	// timer_system.SetTimer(2000,[this]() {
-	// 	std::cout << "{ " << GCSweep() << " } objects have been Swept!" << std::endl;
-	// 	return 2000;
-	// });
-	engine_subsystem = NewObject<SubsystemManager<EngineSubSystem>>(new SubsystemManager<EngineSubSystem>());
 
 	engine_subsystem->CreateSubSystem<GarbageCollection>("GarbageCollection");
-	GarbageCollection* gc =  dynamic_cast<GarbageCollection*>(engine_subsystem->GetSubSystem("GarbageCollection"));
-	timer_system.SetTimer(2000,[gc]() {
-		gc->GCSweep();
-		// std::cout << "{ " <<  << " } objects have been Swept!" << std::endl;
-		return 2000;
-	});
+	texture_store = engine_subsystem->CreateSubSystem<TextureStoreSubSystem>("TextureStoreSubSystem");
+
+
+	//thread_sub_system->dispatcher_system.BindEventTo("RenderDataReady",);
+	// game_world->tick_manager.dispatcher_system.BindEventTo("RenderDataReady",game_world.Get(),Event("HandleRenderDataReady",[](TEventParams e) {
+	//
+	// }));
 }
+
+
+void GameEngine::EventBegin()
+{
+	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
+	// timer_system.SetTimer(2000,[gc]() {
+	// 	if (auto p = gc.Peek())
+	// 	{
+	// 		p->GCSweep();
+	// 	}
+	// 	// std::cout << "{ " <<  << " } objects have been Swept!" << std::endl;
+	// 	return 2000;
+	// });
+	//tick管理器 绑定到 渲染线程
+	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center, "RenderDataReady", *renderer_center->event_system.GetEventByName("HandleRenderDataReady"));
+	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center,"synchronization",Event("synchronization",[this](TEventParams e) {
+		this->renderer_center->ReadLeftCallback();
+	}));
+	//
+	game_world->StartSimulation();
+}
+
 
 void GameEngine::Tick()
 {
 	tick_timer->Start(); // 关键：第一次先 Start
 
-	auto* fpsTex = FontRenderer::Instance().GetTextTexture("            ");
-	auto tex = StaticTexture();
-	tex.LoadDefaultTexture({500,100});
+	auto fps_surface = font_manager->GetTextSurface("            ",{});
+	auto fpsTex = NewObject(new StaticTexture());
+	RendererCenter::AsyncGetTextureFromSurface(fpsTex,fps_surface);
 	//FontRenderer::Instance().UpdateTextTexture(&tex, "test");
 	//SDL_FRect dst = {0,0,(float)tex.w,(float)tex.h};
 
@@ -83,41 +87,41 @@ void GameEngine::Tick()
 		delta_time = tick_timer->Click();       // 重置计时
 		//delta_time = tick_timer->Click();
 		//printf("%f\n",delta_time);
-		// 清屏
-		SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
-		SDL_RenderClear(renderer);
+
 
 		// 场景逻辑
 		game_world->Tick(delta_time);
 		timer_system.Run();
 
 		double fps = 1.0 / delta_time;
-		FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture(), std::to_string(fps));
+		FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
 
 		// FPS 显示
-		SDL_RenderTexture(renderer, fpsTex->GetTexture(), nullptr, &dst);
+		// RenderTask t;
+		// t.task = []() {
+		// 	EventParams e;
+		// 	e.Add("new_texture",);
+		// 	return e;
+		// };
+		//UMG
+		// RendererCenter::AddRendererTask(RenderTask([fpsTex,dst](SDL_Renderer* renderer) {
+		// 	SDL_RenderTexture(renderer, fpsTex->GetTexture().get(), nullptr, &dst);
+		// }));
 
-		// 显示到窗口
-		SDL_RenderPresent(renderer);
+		//主线程查看回调函数 通知任务完成
+		renderer_center->ReadLeftCallback();
 
 		// 控制帧率
 		tick_timer->Delay((1.0 / SysConfig.TargetFps) - consume_timer->End());
 	}
+	game_world->WorldDestroy();
 }
 
-
-
-void GameEngine::EventBegin()
-{
-
-}
 
 GameEngine::~GameEngine()
 {
 	// 清理
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+	engine_subsystem->DeInitAllSubSystem();
 	timeEndPeriod(1);
 }
 
@@ -131,18 +135,8 @@ GCObject *GameEngine::GetGCRoot() const
 	return GCRoot;
 }
 
-void GameEngine::RenderTexture(GCPtr<Texture> texture, SDL_FRect location)
-{
-	switch (texture->GetTextureType())
-	{
-		case TextureType::StaticTexture:
-			SDL_RenderTexture(renderer,texture->in_texture.get(),nullptr,&location);
-			break;
-		default: ;
-	}
-}
 
-const SDL_Renderer* GetRenderer()
+void GameEngine::Quit()
 {
-	return GameEngine::Instance().GetRenderer();
+	running = false;
 }

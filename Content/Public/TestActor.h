@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Classes/Actor.hpp"
 
+struct StaticTexture;
 class GameEngine;
 using namespace std;
 class TestActor : public Actor

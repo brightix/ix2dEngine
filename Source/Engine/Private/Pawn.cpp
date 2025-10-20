@@ -19,36 +19,8 @@ void Pawn::Construct()
 {
 	Actor::Construct();
 	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem());
-	actor_components["movable"] = NewObject(new MovableComponent(this));
+	actor_components.emplace("movable",NewObject(new MovableComponent(this)));
 	base_move_speed = 200.f;
-	name = "ix";
-	event_system.AddEvent(Event("test",[this](std::optional<EventParams> event_params) {
-		std::cout << name << std::endl;
-	}));
-
-	// dispatcher_system.AddEventDispatcher("EnhancedInput_CallBool");
-	// dispatcher_system.BindEventTo("EnhancedInput_CallBool",this,Event("pawn",[this](std::optional<EventParams> e) {
-	// 	enhanced_input_sub_system->ExecuteBool(std::move(param));
-	// }));
-	dispatcher_system.AddEventDispatcher("TestDispatcher");
-	dispatcher_system.BindEventTo("TestDispatcher",this,Event("pawn",[this](std::optional<EventParams> e) {
-		std::cout << *e->Get<std::string>("name") << std::endl;
-	}));
-	mobility = ActorMobility::Movable;
-
-	// BindNormalKeyEvent("Key_R", this, Event("Key_W", [](TEventParams e) {
-	// 	std::cout << std::string("Normal Key ") + "R" << std::endl;
-	// }));
-
-	auto s = NewObject(new StaticTexture()) ;
-	s->LoadDefaultTexture({500,500});
-	s->SetComponentName("DTexture");
-	Root->MountedComponent(s);
-	auto collision = NewObject(new CollisionBox());
-	collision->SetComponentName("碰撞箱");
-	Root->MountedComponent(collision);
-	Cast<CollisionBox>(Root->GetSceneComponentByName("碰撞箱").Get())
-		->SetBoundBox(Cast<StaticTexture>(Root->GetSceneComponentByName("DTexture").Get())->GetSize());
 }
 
 void Pawn::EventBegin()

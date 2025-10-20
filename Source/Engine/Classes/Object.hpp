@@ -4,23 +4,19 @@
 #include "Core/EventDispatcherSystem.hpp"
 #include "Core/EventSystem.hpp"
 #include "Core/GCObject.hpp"
-#include "Utilities/GCPtr.hpp"
+
 class Object : public GCObject
 {
 protected:
-    Object* Self;
     //事件分发器
     //EventDelegateSystem delegate_system;
-	//事件系统
-    EventSystem event_system;
 
 public:
-
 	//委托
 	EventDispatcherSystem dispatcher_system;
-
+	//事件系统
+	EventSystem event_system;
     Object();
-    Object* GetSelfPtr();
 
 	virtual void Construct(){}
 	//生命周期类
@@ -38,6 +34,5 @@ public:
 		it->Construct();
 		return it;
 	}
-	void BindEvent(std::string dispatcher_name, EventMethod method);
     ~Object() override = default;
 };

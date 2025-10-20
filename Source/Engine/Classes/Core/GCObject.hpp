@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-
-static int glo_id;
+static size_t glo_id;
 template<typename T>
 class GCPtr;
 struct GCObject
@@ -10,14 +9,10 @@ struct GCObject
     std::string name = "未命名";
 	bool bMarked = false;
 	bool is_pending_kill = false;
-	int id;
+	size_t id;
 	std::vector<GCObject*> referenced;
 	std::vector<GCObject*> referencing;
-	GCObject()
-	{
-		//printf("s\n");
-		id = glo_id++;
-	}
+	GCObject();
 
 	//GC安全
 	template<typename T, typename ...Args>
@@ -32,8 +27,6 @@ struct GCObject
 	}
 
 
-	virtual ~GCObject()
-	{
-	}
+	virtual ~GCObject()= default;
 };
 

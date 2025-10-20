@@ -1,15 +1,28 @@
 #include "Classes/Component/SenceComponent/Texture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
-#include "Types/FRect.hpp"
+#include "Classes/SubSystem/TextureStoreSubSystem.hpp"
+#include "Utilities/FuncLib/Deleter.hpp"
 
 
-Texture::Texture(SDL_Texture* texture_, SDL_TextureAccess texture_mode)
+Texture::Texture()
 {
-	if (texture_)
-	{
-		SetStaticTexture(texture_);
-	}
+	//先引用默认渲染图
+	NAME;
+	in_texture = GetEngine()->renderer_center->DefaultTexture;
+	name = "Texture";
+	w = in_texture->w;
+	h = in_texture->h;
+	// if (texture_)
+	// {
+	// 	SetStaticTexture(texture_);
+	// }
+}
+
+void Texture::Construct()
+{
+	SceneComponent::Construct();
+	//in_texture = GameEngine::Instance().renderer_center->DefaultTexture;
 }
 
 void Texture::SetPivot(Vec2<float> p)
@@ -20,34 +33,46 @@ void Texture::SetPivot(Vec2<float> p)
 
 void Texture::Copy(Texture& other)
 {
-	w = other.w;
-	h = other.h;
-	auto renderer = GameEngine::Instance().GetRenderer();
-	SDL_Texture* newTexture = SDL_CreateTexture(renderer,
-	SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-	w, h);
-	// 保存原渲染目标
-	SDL_Texture* origTarget = SDL_GetRenderTarget(renderer);
-
-	// 设置新纹理为渲染目标
-	SDL_SetRenderTarget(renderer, newTexture);
-
-	// 渲染原纹理到新纹理
-	SDL_RenderTexture(renderer, other.in_texture.get(), nullptr, nullptr);
-
-	// 恢复原渲染目标
-	SDL_SetRenderTarget(renderer, origTarget);
-
+	// auto task = RenderTask();
+	// task.task = [this,other]() {
+	// 	EventParams e;
+	// 	w = other.w;
+	// 	h = other.h;
+	// 	auto t = SDL_CreateTexture(GetRenderer(),
+	// 	SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+	// 	w, h);
+	//
+	// 	// 保存原渲染目标
+	// 	SDL_Texture* origTarget = SDL_GetRenderTarget(r);
+	//
+	// 	// 设置新纹理为渲染目标
+	// 	SDL_SetRenderTarget(r, tex.get());
+	//
+	// 	// 渲染原纹理到新纹理
+	// 	SDL_RenderTexture(r, other.in_texture.get(), nullptr, nullptr);
+	//
+	// 	// 恢复原渲染目标
+	// 	SDL_SetRenderTarget(r, origTarget);
+	// 	return e;
+	// };
+	// task.callback = [this](EventParams e) {
+	// 	SetStaticTexture(*e.Get<std::shared_ptr<SDL_Texture>("new_texture"));
+	// };
 }
 
-SDL_Texture* Texture::GetTexture() const
+std::shared_ptr<SDL_Texture> Texture::GetTexture() const
 {
-	return in_texture.get();
+	return in_texture;
 }
 
 Vec2<float> Texture::GetSize() const
 {
 	return Vec2<float>(w,h);
+}
+
+TextureType Texture::GetTextureType()
+{
+	return TextureType::StaticTexture;
 }
 
 void Texture::SafeDestroyTexture(SDL_Texture* texture)
@@ -58,9 +83,9 @@ void Texture::SafeDestroyTexture(SDL_Texture* texture)
 	}
 }
 
-void Texture::SetStaticTexture(SDL_Texture* new_texture)
+void Texture::SetStaticTexture(std::shared_ptr<SDL_Texture> new_texture)
 {
-	in_texture = std::shared_ptr<SDL_Texture>(new_texture,SDLTextureDeleter());
+	in_texture = new_texture;
 	if (new_texture)
 	{
 		w = new_texture->w;
@@ -73,42 +98,35 @@ void Texture::SetStaticTexture(SDL_Texture* new_texture)
 	}
 }
 
-SDL_Texture * Texture::CreateOutLineTexture(const FRect& rect)
-{
-	SDL_Texture* texture_T = SDL_CreateTexture(
-		GameEngine::Instance().GetRenderer(),
-		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET,
-		rect.w,
-		rect.h
-	);
-	auto r = GameEngine::Instance().GetRenderer();
-	SDL_SetRenderTarget(r, texture_T);
-	// 清空背景
-	SDL_SetRenderDrawColor(r, 0, 0, 0, 0); // 透明背景
-	SDL_RenderClear(r);
-	SDL_SetRenderDrawColor(r, 0, 255, 255, 255); // 青色边框
-	int thickness = 3;
-	for (int i = 0; i < thickness; ++i) {
-		SDL_FRect rect_bound = SDL_FRect(i,i, rect.w - i * 2, rect.h - i * 2);
-		SDL_RenderRect(r, &rect_bound);
-	}
-	SDL_SetRenderTarget(r,nullptr);
-	return texture_T;
-}
-SDL_Texture * Texture::CreateFilledTexture(const FRect& rect)
-{
-	auto r = GameEngine::Instance().GetRenderer();
-	SDL_Texture* texture_T = SDL_CreateTexture(
-		GameEngine::Instance().GetRenderer(),
-		SDL_PIXELFORMAT_RGBA8888,
-		SDL_TEXTUREACCESS_TARGET,
-		rect.w,
-		rect.h
-	);
-	SDL_SetRenderTarget(r, texture_T);
-	const auto rect_T = SDL_FRect(0, 0, rect.w, rect.h);
-	SDL_RenderFillRect(r,&rect_T);
-	SDL_SetRenderTarget(r, nullptr);
-	return texture_T;
-}
+// void Texture::AsyncSetTextureFromSurface(std::shared_ptr<SDL_Surface> new_surface)
+// {
+// 	auto temp = TTexture(nullptr);
+//
+// 	RenderTask task;
+// 	task.task = [new_surface, temp](SDL_Renderer* r) mutable{
+// 		temp.reset(SDL_CreateTextureFromSurface(r, new_surface.get()),SDLTextureDeleter());
+// 	};
+// 	task.callback = [this, temp]() {
+//
+// 		SetStaticTexture(temp);
+// 	};
+// 	NewRendererTask(task);
+// }
+//
+// void Texture::AsyncLoadOutLine()
+// {
+// 	auto task = RenderTask();
+// 	auto tex = TTexture(nullptr);
+// 	task.task = [this,&tex](SDL_Renderer* r) {
+// 		if (!w || !h)
+// 		{
+// 			w = 500;
+// 			h = 500;
+// 		}
+// 		tex = RendererCenter::CreateOutLineTexture({0,0,w,h});
+// 	};
+// 	task.callback = [this,tex]() {
+// 		SetStaticTexture(tex);
+// 	};
+// }
+

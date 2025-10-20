@@ -9,7 +9,7 @@
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../Classes/Core/GameEngine.hpp"
 #include "System/Font.hpp"
-
+#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -21,8 +21,6 @@ Controller::Controller() : show_mouse_cursor(false)
 
 void Controller::Control(GCPtr<Pawn> pawn)
 {
-
-	//controlled_pawn = make_GCPtr<Pawn>(pawn);
 	controlled_pawn = pawn;
 }
 
@@ -31,7 +29,10 @@ void Controller::Construct()
 	Actor::Construct();
 
 	input_map = NewObject<InputMap>(new InputMap());
-	pawn_location_tex = NewObject<StaticTexture>(FontRenderer::Instance().GetTextTexture("                    "));
+	auto st = NewObject<StaticTexture>(new StaticTexture);
+	st->AsyncSetTextureFromSurface(FontRenderer::GetTextSurface("                    "));
+	Root->MountedComponent(st);
+
 }
 
 void Controller::Tick(double delta)
@@ -65,7 +66,7 @@ void Controller::Tick(double delta)
         				controlled_pawn->CallEnhancedInputEventBool(eip);
         			}
         		}
-	    		dispatcher_system.CallEvent(input_map->Normal[scancode].key_name);
+	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name);
         		break;
         	case SDL_EVENT_KEY_UP:   // 键盘松开
 	    		if (controlled_pawn)
@@ -116,17 +117,21 @@ void Controller::Tick(double delta)
 		}
 	}
 
-	if (controlled_pawn)
-	{
-		FontRenderer::Instance().UpdateTextTexture(pawn_location_tex->GetTexture(),controlled_pawn->GetWorldLocation().str());
-		//FontRenderer::Instance().UpdateTextTexture(pawn_location_tex.Get(),controlled_pawn->GetWorldLocation().str());
-
-		auto dst = SDL_FRect(0,200,pawn_location_tex->w,pawn_location_tex->h);
-		SDL_RenderTexture(GameEngine::Instance().GetRenderer(), pawn_location_tex->GetTexture(), nullptr, &dst);
-	}
+	// if (controlled_pawn)
+	// {
+	// 	auto task = RenderTask();
+	// 	task.task = [this](SDL_Renderer* r) {
+	// 		SDL_RenderTexture(pawn_location_tex->GetTexture(),controlled_pawn->GetWorldLocation().str());
+	// 		//FontRenderer::Instance().UpdateTextTexture(pawn_location_tex.Get(),controlled_pawn->GetWorldLocation().str());
+	//
+	// 		auto dst = SDL_FRect(0,200,pawn_location_tex->w,pawn_location_tex->h);
+	// 		SDL_RenderTexture(r, pawn_location_tex->GetTexture(), nullptr, &dst);
+	// 	};
+	// }
+	// 	ToRender(task);
 }
 
-GCPtr<Pawn> Controller::GetControlledPawn() const
+GCWeakPtr<Pawn> Controller::GetControlledPawn() const
 {
 	return controlled_pawn;
 }

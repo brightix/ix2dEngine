@@ -3,10 +3,10 @@
 
 #include "Object.hpp"
 #include "Component/SenceComponent/Texture.hpp"
-#include "Core/SPhysics/SPhysicsUtilityBase.hpp"
 #include "Types/Location.hpp"
 #include "Types/Transform.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
+#include "Classes/Component/ActorComponent/ActorComponent.hpp"
 
 enum class ActorMobility;
 class ActorComponent;
@@ -61,7 +61,7 @@ public:
 
 	void SetMobility(ActorMobility target_mobility);
 	//Add
-	void AddActorWorldLocation(Vec2<float> dis);
+	void AddActorWorldLocation(Vec2<float> dis) const;
 
     //Get
     Location GetWorldLocation() const;
@@ -87,32 +87,21 @@ public:
 	}
 
 	template<typename T>
-	T* GetActorComponent(const std::string& component_name)
+	T* GetComponent(const std::string& component_name)
 	{
 		return Cast<T>(actor_components[component_name].Get());
 	}
+	template<typename T>
+	GCWeakPtr<T> GetSceneComponent(const std::string& component_name)
+	{
+		auto c = Root->GetSceneComponentByName(component_name);
+		return GCWeakPtr<T>(dynamic_cast<T*>(c.Get()));
+	}
 
-	// template<typename T>
-	// void AddSceneComponent(const std::string& component_name,T* component, const std::string& parent_component_name = "")
-	// {
-	// 	static_assert(std::is_base_of_v<SceneComponent, T>, "类必须继承自SceneComponent");
-	// 	if (parent_component_name == "")
-	// 	{
-	//
-	// 	}
-	// 	scene_components[component_name] = NewObject<T>(component);
-	// 	component->SetOwner(this);
-	// }
-	//
-	// template<typename T>
-	// T* GetSceneComponent(const std::string& component_name)
-	// {
-	// 	return Cast<T>(scene_components[component_name].Get());
-	// }
-
-	//void AddToRoot(GCPtr<SceneComponent> parent, GCPtr<SceneComponent> child_component);
 //Sys
 	virtual void RenderOnScreen();
+
+    void ForRenderOrder(std::vector<RenderData>& data) const;
 
     //void RenderCollisionBox() const;
 

@@ -11,10 +11,10 @@ struct LRUCache
     size_t capacity;
     std::list<std::pair<K, V>> cacheList;
     std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> cacheMap;
-    std::function<void(V&)> onEvict;  // 注意使用引用，避免值拷贝
+    std::function<void(V&)> OnEvict;  // 注意使用引用，避免值拷贝
 
-    LRUCache(size_t cap)
-        : capacity(cap), onEvict(nullptr) {}
+    LRUCache(size_t cap = 3)
+        : capacity(cap), OnEvict(nullptr) {}
 
     std::optional<V> get(const K& key)
     {
@@ -39,12 +39,26 @@ struct LRUCache
             if(cacheList.size() == capacity)
             {
                 auto del = cacheList.back();
-                if(onEvict) onEvict(del.second);  // 调用回调释放资源
+                if(OnEvict) OnEvict(del.second);  // 调用回调释放资源
                 cacheMap.erase(del.first);
                 cacheList.pop_back();
             }
             cacheList.emplace_front(key, val);
             cacheMap[key] = cacheList.begin();
         }
+    }
+	void clear()
+    {
+    	if (OnEvict)
+    	{
+    		for (auto& [key, value] : cacheList)
+    		{
+    			OnEvict(value);
+    		}
+    	}
+
+    	// 清空容器
+    	cacheList.clear();
+    	cacheMap.clear();
     }
 };
