@@ -1,11 +1,10 @@
 #pragma once
 #include "var_type.hpp"
 
-class Scaling : var_type
+struct Scaling : var_type
 {
     float horizontal;
     float vertical;
-public:
     Scaling() : horizontal(1.0f), vertical(1.0f) {}
     Scaling(const float hor, const float vert) : horizontal(hor), vertical(vert) {}
     std::string str()

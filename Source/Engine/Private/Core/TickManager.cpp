@@ -34,6 +34,8 @@ void TickSubSystem::Tick(double delta_time)
 				a->RootComponentTick(delta_time);
 			}
 		}
+
+
 		//渲染纹理
 		for (auto& a : actors)
 		{
@@ -44,9 +46,27 @@ void TickSubSystem::Tick(double delta_time)
 			}
 			else if (a->IsActive())
 			{
-				a->RenderOnScreen();
+				//a->RenderOnScreen();
+				a->ForRenderOrder(render_data);
 			}
 		}
+		EventParams render_data_ready_p;
+		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
+
+		dispatcher_system.CallDispatcher("RenderDataReady", render_data_ready_p);
+
+		//UMG
+		auto& widgets = world->GetWidgets();
+		for (auto& widget : widgets)
+		{
+			if (widget->dirty)
+			{
+				widget->flush();
+			}
+		}
+
+
+
 
 
 		for (auto& controller : controllers)
@@ -54,7 +74,7 @@ void TickSubSystem::Tick(double delta_time)
 			controller->Tick(delta_time);
 		}
 	}
-    else if (buffer_type == 2)//  双缓冲  ---------------------------------------------------------------------------------
+    else if (buffer_type == 2)//  双缓冲(好像对于SDL无意义，暂时作废)  ---------------------------------------------------------------------------------
     {
 	    //PreTick
 
@@ -85,10 +105,6 @@ void TickSubSystem::Tick(double delta_time)
     	{
     		controller->Tick(delta_time);
     	}
-    	EventParams render_data_ready_p;
-    	render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
-
-    	dispatcher_system.CallDispatcher("RenderDataReady", render_data_ready_p);
 
 
     	dispatcher_system.CallDispatcher("synchronization");

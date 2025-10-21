@@ -1,6 +1,7 @@
 #include "Classes/SubSystem/TextureStoreSubSystem.hpp"
-#include <SDL_image.h>
 
+
+#include <SDL_image.h>
 #include "Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 
@@ -37,7 +38,7 @@ SDL_Texture* TextureStoreSubSystem::GetTexture(const std::string& texture_name)
 SDL_Texture* TextureStoreSubSystem::LoadInCache(const std::string& texture_name)
 {
 	std::string file_path = "Content/Textures" + texture_name;
-	auto texture = IMG_LoadTexture(GetRenderer(), file_path.c_str());
+	SDL_Texture* texture;// = IMG_LoadTexture(GetRenderer(), file_path.c_str());
 	if (texture)
 	{
 		cached_texture.put(texture_name, texture);

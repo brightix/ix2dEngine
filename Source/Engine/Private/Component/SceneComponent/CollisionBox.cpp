@@ -11,7 +11,7 @@ void CollisionBox::Construct()
 {
     SceneComponent::Construct();
 	auto texture = NewObject<StaticTexture>(new StaticTexture);
-	RendererCenter::AsyncLoadOutLine();
+	//RendererCenter::AsyncLoadOutLine();
 	mounted_components.emplace("OutLine", texture);
 }
 
@@ -29,8 +29,6 @@ void CollisionBox::ComponentRender()
 
 void CollisionBox::SetBoundBox(const Vec2<float>& size)
 {
-    collision_box.w = size.x;
-    collision_box.h = size.y;
 	w = static_cast<int>(size.x);
 	h = static_cast<int>(size.y);
 }

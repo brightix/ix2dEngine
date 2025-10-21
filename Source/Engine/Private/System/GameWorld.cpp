@@ -1,9 +1,7 @@
 #include "../../Classes/Core/GameWorld.hpp"
 #include "../../Classes/Core/GameEngine.hpp"
-#include "TestActor.h"
-#include "Classes/Pawn.hpp"
+#include "public/TestActor.h"
 #include "Classes/GameModeBase.hpp"
-#include "Utilities/FuncLib/SystemLib.hpp"
 
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
@@ -16,7 +14,7 @@ void GameWorld::Construct()
 	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
 
 	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
-	tick_SubSystem->SetBufferType(2);
+	tick_SubSystem->SetBufferType(1);
 	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");
 	//world_subsystem->ForAllSubSystemInit();
 	dispatcher_system.AddEventDispatcher("EventBegin");
@@ -63,6 +61,11 @@ std::vector<GCPtr<Actor>> &GameWorld::GetActors()
 	return actors;
 }
 
+std::set<GCPtr<Widget>> & GameWorld::GetWidgets()
+{
+	return widgets;
+}
+
 void GameWorld::RemoveActorByGCPtr(GCPtr<Actor>& actor)
 {
 	std::erase(actors, actor);
@@ -96,6 +99,7 @@ void GameWorld::Tick(double delta_time)
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
 	tick_SubSystem->Tick(delta_time);
+
 }
 
 void GameWorld::WorldDestroy()

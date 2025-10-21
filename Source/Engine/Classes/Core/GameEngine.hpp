@@ -14,7 +14,10 @@
 #include "Classes/SubSystem/TextureStoreSubSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "System/Font.hpp"
+#include "Types/EngineState.hpp"
 
+class CanvasWidget;
+class Widget;
 class RendererCenter;
 class TickSubSystem;
 class GameWorld;
@@ -26,30 +29,29 @@ class GameEngine final : public Object
     SystemConfig SysConfig{};
 
     double delta_time;
-    //std::vector<std::shared_ptr<UserWidget>> Actors;
 
     //Tick计时器
     GCPtr<NewTimer> tick_timer;
     GCPtr<NewTimer> consume_timer;
 
 
-    //类型转换
-    ConverterRegistry reg;
-
     mutable GCObject* GCRoot;
+
+
 	//组件
 	GCPtr<GameWorld> game_world;
 
 	//子系统
 	GCPtr<SubSystemManager> engine_subsystem;
+	std::unordered_set<GCPtr<Widget>> widgets;
 private:
     //只放全局变量初始化
     GameEngine();
 public:
-	RendererCenter* renderer_center;
-	FontRenderer* font_manager;
+	GCWeakPtr<RendererCenter> renderer_center;
+	GCWeakPtr<FontRenderer> font_manager;
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
-	TextureStoreSubSystem* texture_store;
+	GCWeakPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
 public:
 
@@ -63,16 +65,23 @@ public:
 	void EventBegin();
     void Quit();
     ~GameEngine() override;
-//Get
-    Vec2<double> GetViewportSize() { return SysConfig.ViewportSize; }
+//base
     //SDL_Renderer* GetRenderer() { return renderer; }
     GCPtr<GameWorld> GetGameWorld();
-
     GCObject *GetGCRoot() const;
 //Render
 	void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
 
     //Sys
+
+//Widget
+
+	GCWeakPtr<CanvasWidget> GetViewport();
+	Vec2<double> GetViewportSize() { return SysConfig.ViewportSize; }
+
+    GCWeakPtr<Widget> AddWidgetToViewport(Widget *widget);
+	//属性
+	EngineState GetEngineAttribution() const;
 };
 
 
@@ -92,3 +101,5 @@ inline bool IsValid(const size_t id)
 {
 	return Global_GCObject_Registry.contains(id) && !Global_GCObject_Registry[id]->is_pending_kill;
 }
+
+inline GCWeakPtr<Widget> AddToViewport(Widget* new_widget);

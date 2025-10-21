@@ -40,7 +40,6 @@ public:
     }
 	TickSubSystem() : buffer_type(0) { }
 
-
     void Tick(double delta_time);
 
 

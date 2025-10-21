@@ -67,3 +67,5 @@ auto ptr = ConstructObjectFromClass(new Actor(Transform{{500,500}}));
 Cast<CollisionBox>(Root->GetSceneComponentByName("碰撞箱").Get())
     ->SetBoundBox(Cast<StaticTexture>(Root->GetSceneComponentByName("DTexture").Get())->GetSize());
 ```
+
+widget提供slot数量和自身尺寸，计算slot的大小，slot将大小传递给包裹的widget，递归

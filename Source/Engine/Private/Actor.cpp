@@ -22,10 +22,7 @@ void Actor::Construct()
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
 	auto default_image = NewObject(new StaticTexture());
 	default_image->name = "default_texture";
-	default_image->AsyncLoadOutLine();
 	Root->MountedComponent(default_image);
-	//AddSceneComponent<StaticTexture>("DefaultTexture", new StaticTexture({500,500}));
-	//collision_box = NewObject(new StaticTexture({200,200},{255,255,255,255}));
 }
 
 void Actor::EventBegin()

@@ -1,11 +1,5 @@
 #include <iostream>
-#include <SDL3/SDL.h>
-#include "Classes/Actor.hpp"
-#include "Types/Vec.hpp"
 #include "Source/Engine/Classes/Core/GameEngine.hpp"
-#include <fcntl.h>
-
-#include "Classes/Pawn.hpp"
 using namespace std;
 int main()
 {
@@ -17,6 +11,7 @@ int main()
 
 	game_engine.Construct();
 
+	int a = 0;
 	game_engine.EventBegin();
 
 	game_engine.Tick();

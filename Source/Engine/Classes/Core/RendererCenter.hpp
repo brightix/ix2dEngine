@@ -95,14 +95,20 @@ public:
 	 ~RendererCenter();
 
 	//收到新数据我就渲染上一帧
-	void RenderScene();
+	void RenderScene(std::vector<RenderData> &clips);
+
+	void RenderUMG(std::unordered_set<GCPtr<Widget>> *clips);
 
 	static std::shared_ptr<SDL_Texture> CreateOutLineTexture(const FRect& rect);
 
 	static SDL_Texture* CreateFilledTexture(const FRect& rect);
 	// TODO 添加AsyncSetTexture();
-	static void AsyncSetTextureFromSurface(Texture* t, SDL_Surface* new_surface);
+	static void SetTextureFromSurface(Texture *t, std::shared_ptr<SDL_Surface> new_surface);
 	static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
 	void ReadLeftCallback();
+
+	void InitSDL();
+
+	void DeInitSDL() const;
 };
 

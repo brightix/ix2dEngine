@@ -1,20 +1,34 @@
 #pragma once
+#include <SDL3/SDL_rect.h>
+
 #include "Classes/Component/Component.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Enums/ActorVisibility.hpp"
+#include "Types/Enums/LayerHierachy.hpp"
 
 struct RenderData;
 
 class SceneComponent : public Component
 {
 protected:
+
+	/**
+     * 逻辑变换
+     */
     Transform transform;
     int w;
     int h;
+
+	/**
+     * 渲染枢轴
+     */
     Vec2<float> pivot;
+
+
 	std::unordered_map<std::string, GCPtr<SceneComponent>> mounted_components;
 	ComponentVisibility visibility = ComponentVisibility::Visible;
 public:
+	LayerHierarchy layer;
     SceneComponent();
 
     explicit SceneComponent(const Transform& trans);
@@ -55,4 +69,21 @@ public:
     void ForRender();
 	void ForRenderData(std::vector<RenderData>& data);
     virtual void OfferRenderData(std::vector<RenderData>& data);
+
+
+	SDL_FRect GetComponentRenderRect() const;
+	/**
+	 *
+	 * @return 返回组件的渲染缩放
+	 */
+	Vec2<float> GetComponentVisibleScale() const;
+    /**
+	 *
+	 * @return 返回Actor的渲染位置
+	 */
+	Vec2<float> GetComponentRenderLocation() const;
+/// DebugOnly
+public:
+
+	virtual void Debug_RenderOutline(std::vector<RenderData>& data);
 };

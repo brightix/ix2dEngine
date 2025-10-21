@@ -16,93 +16,115 @@ RendererCenter::RendererCenter() : window(nullptr)
 
 void RendererCenter::Init()
 {
-	// 创建窗口
-	window = SDL_CreateWindow(
-		"Hello SDL3",        // 标题
-		1200, 1000,            // 宽高
-		SDL_WINDOW_RESIZABLE // 可拉伸
-	);
-	if (!window)
+	if (is_multithreading)
 	{
-		Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
-		SDL_Quit();
-		return;
+		StartRenderThread();
 	}
-	renderer = SDL_CreateRenderer(window, nullptr);
-	if (!renderer)
+	else
 	{
-		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
-		SDL_DestroyWindow(window);
-		SDL_Quit();
-		return;
+		InitSDL();
+		event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
+			auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
+			RenderScene(clips);
+		}));
+		DefaultTexture = CreateOutLineTexture(FRect(0,0,10,10));
 	}
-	//回应渲染包准备完成
-	event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
-		//最新帧为true
-		int current = render_idx.load() % 2;
-		render_fence[current].store(true);
-		auto ep = *e->Get<std::vector<RenderData>>("render_data");
-		render_list[current] = ep;
-		RenderScene();
-		//最新帧位置++
-		render_idx.store(render_idx.load()+1);
-	}));
-	DefaultTexture = CreateOutLineTexture(FRect(0,0,10,10));
 }
 
 void RendererCenter::DeInit()
 {
-	EngineSubSystem::DeInit();
-	Quit();
+	//多线程下会自己调用反初始化
+	if (is_multithreading)
+	{
+		Quit();
+	}
+	else
+	{
+		//主线程需要主动调用
+		DeInitSDL();
+	}
 	if (render_thread.joinable())
 	{
 		render_thread.join();
 	}
 }
 
-
 void RendererCenter::StartRenderThread()
 {
-	is_multithreading = true;
-	render_thread = std::thread([this]() {
-		while (!is_stop.load())
+	if (is_multithreading)
+	{
+		//回应渲染包准备完成
+		event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
+			//最新帧为true
+			int current = render_idx.load() % 2;
+			render_fence[current].store(true);
+			auto ep = *e->Get<std::vector<RenderData>>("render_data");
+			render_list[current] = ep;
+
+			if (!render_fence[(render_idx+1) % 2].load())
+			{
+				return;
+			}
+			auto clips = std::move(render_list[current]);
+
+			RenderScene(clips);
+
+			//标记当前渲染完的帧可以被覆写
+			render_fence[current].store(false);
+
+			//最新帧位置++
+			render_idx.store(render_idx.load()+1);
+		}));
+
+
+
+		render_thread = std::thread([this]()
 		{
+			InitSDL();
+			while (!is_stop.load())
 			{
-				std::unique_lock lock(render_mtx);
-				//等待第二帧数据准备完成
-				render_cv.wait(lock, [this] {
-					bool flag = is_stop.load();
-					{
-						std::lock_guard<std::mutex> lock(RendererTask_MTX);
-						flag |= !priority_task.empty();
-					}
-					return render_fence[(render_idx+1) % 2].load() || flag;
-				});
-			}
-			if (is_stop.load())
-			{
-				break;  // ✅ 一旦收到退出信号，立刻跳出，别再用renderer
-			}
-			{
-				RenderTask task;
 				{
-					std::lock_guard lock(RendererTask_MTX);
-					if (priority_task.empty())
-						break;
-					task = priority_task.top();
-					priority_task.pop();
+					std::unique_lock lock(render_mtx);
+					//等待第二帧数据准备完成
+					render_cv.wait(lock, [this] {
+						bool flag = is_stop.load();
+						{
+							std::lock_guard<std::mutex> lock(RendererTask_MTX);
+							flag |= !priority_task.empty();
+						}
+						return render_fence[(render_idx+1) % 2].load() || flag;
+					});
 				}
-				auto e = task();
-				if (task.callback)
+				if (is_stop.load())
 				{
+					break;  // ✅ 一旦收到退出信号，立刻跳出，别再用renderer
+				}
+				{
+					RenderTask task;
 					{
-						std::lock_guard lock(left_callback_mtx);
-						left_callback.emplace(std::move(task.callback),e);
+						std::lock_guard lock(RendererTask_MTX);
+						if (priority_task.empty())
+							break;
+						task = priority_task.top();
+						priority_task.pop();
+					}
+					auto e = task();
+					if (task.callback)
+					{
+						{
+							std::lock_guard lock(left_callback_mtx);
+							left_callback.emplace(std::move(task.callback),e);
+						}
 					}
 				}
 			}
-		}
-	});
+			DeInitSDL();
+		});
+	}
+	else
+	{
+		LogWithLevel("未开启多线程渲染也使用了GPU线程",FatalError);
+	}
 }
 
 void RendererCenter::PushRenderData(const std::vector<RenderData>& render_data)
@@ -130,6 +152,7 @@ void RendererCenter::AddRendererTask(RenderTask task)
 	}
 	else
 	{
+
 		if (task.callback)
 		{
 			task.callback(task());
@@ -155,20 +178,13 @@ void RendererCenter::Quit()
 
 RendererCenter::~RendererCenter()
 {
-	SDL_GetError();
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+
 }
 
-void RendererCenter::RenderScene()
+void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 {
-	if (!render_fence[(render_idx+1) % 2].load())
-	{
-		return;
-	}
-	int current = render_idx.load() % 2;
-	auto& clips = render_list[current];
-
+	//数据预处理
+	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer < B.layer;});
 	// 清屏
 	SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
 	SDL_RenderClear(renderer);
@@ -185,12 +201,21 @@ void RendererCenter::RenderScene()
 			SDL_RenderTexture(renderer,clip.texture.get(),src,dst);
 		}
 	}
-	//标记当前渲染完的帧可以被覆写
-	render_fence[current].store(false);
 	// 显示到窗口
 	SDL_RenderPresent(renderer);
 }
 
+void RendererCenter::RenderUMG(std::unordered_set<GCPtr<Widget>>* clips)
+{
+	std::unordered_set<GCPtr<Widget>>& widgets = *clips;
+	for (auto& widget : widgets)
+	{
+		if (widget->dirty)
+		{
+			widget->WidgetRender();
+		}
+	}
+}
 
 std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const FRect& rect)
 {
@@ -234,18 +259,25 @@ SDL_Texture * RendererCenter::CreateFilledTexture(const FRect& rect)
 	return texture_T;
 }
 
-void RendererCenter::AsyncSetTextureFromSurface(Texture* t, SDL_Surface* new_surface)
+void RendererCenter::SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface)
 {
-	RenderTask task;
-	task.task = [new_surface]() mutable -> EventParams {
-		EventParams e;
-		e.Add("new_texture", TTexture(SDL_CreateTextureFromSurface(renderer, new_surface)));
-		return e;
-	};
-	task.callback = [t](EventParams e) {
-		t->SetStaticTexture(*e.Get<std::shared_ptr<SDL_Texture>>("new_texture"));
-	};
-	NewRendererTask(task);
+	if (is_multithreading)
+	{
+		RenderTask task;
+		task.task = [new_surface]() mutable -> EventParams {
+			EventParams e;
+			e.Add("new_texture", TTexture(SDL_CreateTextureFromSurface(renderer, new_surface.get())));
+			return e;
+		};
+		task.callback = [t](EventParams e) {
+			t->SetStaticTexture(*e.Get<std::shared_ptr<SDL_Texture>>("new_texture"));
+		};
+		NewRendererTask(task);
+	}
+	else
+	{
+		t->in_texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, new_surface.get()),SDLTextureDeleter());
+	}
 }
 
 void RendererCenter::AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface)
@@ -287,3 +319,37 @@ void RendererCenter::ReadLeftCallback()
 		callback.first(callback.second);
 	}
 }
+
+
+void RendererCenter::InitSDL()
+{
+
+	window = SDL_CreateWindow(
+		"Hello SDL3",        // 标题
+		1200, 1000,            // 宽高
+		SDL_WINDOW_RESIZABLE // 可拉伸
+	);
+	if (!window)
+	{
+		Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
+		SDL_Quit();
+		return;
+	}
+	renderer = SDL_CreateRenderer(window, nullptr);
+	if (!renderer)
+	{
+		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+	}
+}
+
+void RendererCenter::DeInitSDL() const
+{
+	SDL_GetError();
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+}
+
+
+//单线程专用

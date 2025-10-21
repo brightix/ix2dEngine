@@ -1,7 +1,7 @@
 #include "Classes/GameModeBase.hpp"
 
-#include "TestPawn.hpp"
 #include "Classes/Core/GameWorld.hpp"
+#include "Public/TestPawn.hpp"
 
 GameModeBase::GameModeBase()
 {

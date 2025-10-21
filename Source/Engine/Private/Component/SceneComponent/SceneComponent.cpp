@@ -72,6 +72,27 @@ void SceneComponent::ForRender()
 void SceneComponent::OfferRenderData(std::vector<RenderData>& data)
 {}
 
+SDL_FRect SceneComponent::GetComponentRenderRect() const
+{
+	return SDL_FRect(transform.location.x - w * pivot.x, transform.location.y - h * pivot.y, w * transform.scaling.horizontal, h * transform.scaling.vertical);
+}
+
+Vec2<float> SceneComponent::GetComponentVisibleScale() const
+{
+	return {w * transform.scaling.horizontal, h * transform.scaling.vertical};
+}
+
+Vec2<float> SceneComponent::GetComponentRenderLocation() const
+{
+	return {transform.location.x - w * pivot.x, transform.location.y - h * pivot.y};
+}
+
+void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
+{
+	//单线程
+	data.emplace_back(RenderData{RendererCenter::CreateOutLineTexture({0,0,w,h}),transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
+}
+
 
 //递归调用接口
 void SceneComponent::ForRenderData(std::vector<RenderData>& data)

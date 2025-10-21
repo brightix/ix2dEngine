@@ -36,9 +36,4 @@ void Construct() override;
 	static void SafeDestroyTexture(SDL_Texture* texture);
 
 	void SetStaticTexture(std::shared_ptr<SDL_Texture> new_texture);
-
-	void AsyncSetTextureFromSurface(std::shared_ptr<SDL_Surface> new_surface);
-
-	void AsyncSetTexture(SDL_Texture* new_texture);
-	void AsyncLoadOutLine();
 };

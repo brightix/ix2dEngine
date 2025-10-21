@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL3/SDL_render.h>
-
 #include "Sub/EngineSubsystem.hpp"
 #include "Utilities/DataStructure/LRUCache.hpp"
 

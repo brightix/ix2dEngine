@@ -34,5 +34,13 @@ public:
 		it->Construct();
 		return it;
 	}
+	template<typename T>
+	GCPtr<T> NewObjectNoOuter(T* object)
+	{
+		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
+		auto it = GCPtr<T>(object,nullptr);
+		it->Construct();
+		return it;
+	}
     ~Object() override = default;
 };

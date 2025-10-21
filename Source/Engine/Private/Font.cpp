@@ -84,6 +84,8 @@ std::shared_ptr<SDL_Surface> FontRenderer::GetTextSurface(const std::string& str
 	return surface;
 }
 
+
+//可以加入多线程豪华套餐
 void FontRenderer::UpdateTextTexture(SDL_Texture *texture,
                                      const std::string &str,
                                      FontStyle style)

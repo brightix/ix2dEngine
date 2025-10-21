@@ -6,58 +6,36 @@ set(CMAKE_CXX_STANDARD 23)
 # 工程源码
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
+        ${CMAKE_SOURCE_DIR}/Source/Content/Private/*.cpp
         ${CMAKE_SOURCE_DIR}/Content/Private/*.cpp
-#        ${CMAKE_SOURCE_DIR}/Source/Content/Public/ActorComponent/*.cpp
 )
 add_executable(ix2d
         ${ENGINE_SOURCES}
         ${CMAKE_SOURCE_DIR}/main.cpp
 )
-
-# 头文件搜索路径
-target_include_directories(ix2d PRIVATE
-        "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/include"
-        "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/include"
-        "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/include"
-        "${CMAKE_SOURCE_DIR}/Source/Engine"
-        "${CMAKE_SOURCE_DIR}/Content/Public"
-)
-
-# 链接库目录
-link_directories(
-        "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/lib"
-        "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/lib"
-        "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/lib"
-)
-
-find_library(SDL3_LIB SDL3 PATHS "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/lib")
-find_library(SDL3TTF_LIB SDL3_ttf PATHS "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/lib")
-find_library(SDL3IMAGE_LIB SDL3_image PATHS "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/lib"
-)
 set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
+# 头文件搜索路径
+target_include_directories(ix2d PRIVATE
+        "E:/ix/SDL3_ttf-3.2.2/x86_64-w64-mingw32/include"
+        "E:/ix/SDL3-3.2.24/x86_64-w64-mingw32/include"
+        "${CMAKE_SOURCE_DIR}/Source/SDL_Lib/SDL3_image/include"
+        "${CMAKE_SOURCE_DIR}/Source/Engine"
+        "${CMAKE_SOURCE_DIR}/Content"
+)
+
+find_library(SDL3_LIB SDL3 PATHS "E:/ix/SDL3-3.2.24/x86_64-w64-mingw32/lib")
+find_library(SDL3TTF_LIB SDL3_ttf PATHS "E:/ix/SDL3_ttf-3.2.2/x86_64-w64-mingw32/lib")
+#find_library(SDL3IMAGE_LIB SDL3_image PATHS "E:/ix/ix2dEngine-main/ix2dEngine/Source/SDL_Lib/SDL3_image/lib")
+#
+find_library(SDL3IMAGE_LIB SDL3_image PATHS "E:/ix/SDL3_image-3.2.4/x86_64-w64-mingw32/lib")
+
 
 # 链接库
 target_link_libraries(ix2d PRIVATE
+        ${SDL3IMAGE_LIB}
         ${SDL3_LIB}
         ${SDL3TTF_LIB}
-        ${SDL3IMAGE_LIB}
         winmm
 )
-
-add_custom_command(TARGET ix2d POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/visual studio code/SDL3-3.2.20/x86_64-w64-mingw32/bin/SDL3.dll"        $<TARGET_FILE_DIR:ix2d>
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "D:/visual studio code/SDL3_ttf-3.1.0/x86_64-w64-mingw32/bin/SDL3_ttf.dll"
-        $<TARGET_FILE_DIR:ix2d>
-)
-
-
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Types"
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Classes"
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Utilities"
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Enum"
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Structure"
-#        "${CMAKE_SOURCE_DIR}/Source/Engine/Window"

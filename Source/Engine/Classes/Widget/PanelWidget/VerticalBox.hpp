@@ -1,5 +1,5 @@
 #pragma once
-#include "Widget.hpp"
+#include "../Widget.hpp"
 
 
 class VerticalBox : public Widget

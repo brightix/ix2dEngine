@@ -30,9 +30,8 @@ void Controller::Construct()
 
 	input_map = NewObject<InputMap>(new InputMap());
 	auto st = NewObject<StaticTexture>(new StaticTexture);
-	st->AsyncSetTextureFromSurface(FontRenderer::GetTextSurface("                    "));
+	RendererCenter::SetTextureFromSurface(st.Get(),FontRenderer::GetTextSurface("                    "));
 	Root->MountedComponent(st);
-
 }
 
 void Controller::Tick(double delta)

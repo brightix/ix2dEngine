@@ -26,7 +26,7 @@ void GameEngine::Construct()
 
 	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
 	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
-	renderer_center->StartRenderThread();
+	//renderer_center->StartRenderThread();
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
@@ -62,8 +62,8 @@ void GameEngine::EventBegin()
 	// 	return 2000;
 	// });
 	//tick管理器 绑定到 渲染线程
-	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center, "RenderDataReady", *renderer_center->event_system.GetEventByName("HandleRenderDataReady"));
-	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center,"synchronization",Event("synchronization",[this](TEventParams e) {
+	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr, "RenderDataReady", *renderer_center->event_system.GetEventByName("HandleRenderDataReady"));
+	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr,"synchronization",Event("synchronization",[this](TEventParams e) {
 		this->renderer_center->ReadLeftCallback();
 	}));
 	//
@@ -77,7 +77,7 @@ void GameEngine::Tick()
 
 	auto fps_surface = font_manager->GetTextSurface("            ",{});
 	auto fpsTex = NewObject(new StaticTexture());
-	RendererCenter::AsyncGetTextureFromSurface(fpsTex,fps_surface);
+	RendererCenter::SetTextureFromSurface(fpsTex.Get(),fps_surface);
 	//FontRenderer::Instance().UpdateTextTexture(&tex, "test");
 	//SDL_FRect dst = {0,0,(float)tex.w,(float)tex.h};
 
@@ -97,16 +97,18 @@ void GameEngine::Tick()
 		FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
 
 		// FPS 显示
-		// RenderTask t;
-		// t.task = []() {
-		// 	EventParams e;
-		// 	e.Add("new_texture",);
-		// 	return e;
-		// };
+
+		 // RenderTask t;
+		 // t.task = []() {
+		 // 	EventParams e;
+		 // 	e.Add("new_texture",);
+		 // 	return e;
+		 // };
 		//UMG
-		// RendererCenter::AddRendererTask(RenderTask([fpsTex,dst](SDL_Renderer* renderer) {
-		// 	SDL_RenderTexture(renderer, fpsTex->GetTexture().get(), nullptr, &dst);
-		// }));
+		RendererCenter::RenderUMG(widgets);
+		RendererCenter::AddRendererTask(RenderTask([fpsTex,dst](SDL_Renderer* renderer) {
+			SDL_RenderTexture(renderer, fpsTex->GetTexture().get(), nullptr, &dst);
+		}));
 
 		//主线程查看回调函数 通知任务完成
 		renderer_center->ReadLeftCallback();
@@ -130,13 +132,35 @@ GCPtr<GameWorld> GameEngine::GetGameWorld()
 	return game_world;
 }
 
+GCWeakPtr<Widget> GameEngine::AddWidgetToViewport(Widget *widget)
+{
+	auto ret = NewObject(widget);
+	widgets.emplace(ret);
+	return GCWeakPtr<Widget>(ret);
+}
+
+EngineState GameEngine::GetEngineAttribution() const
+{
+	EngineState engine_state;
+	engine_state.DeltaTime = delta_time;
+	return engine_state;
+}
+
 GCObject *GameEngine::GetGCRoot() const
 {
 	return GCRoot;
 }
 
-
 void GameEngine::Quit()
 {
 	running = false;
 }
+
+
+
+GCWeakPtr<Widget> AddToViewport(Widget* new_widget)
+{
+	return GameEngine::Instance().AddWidgetToViewport(new_widget);
+}
+
+

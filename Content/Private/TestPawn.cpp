@@ -1,4 +1,4 @@
-#include "TestPawn.hpp"
+#include "public/TestPawn.hpp"
 
 #include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"

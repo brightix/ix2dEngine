@@ -1,11 +1,12 @@
 #pragma once
+#include <set>
 #include <vector>
 
 #include "GameEngine.hpp"
 #include "Classes/Actor.hpp"
 #include "Classes/Core/RendererCenter.hpp"
 #include "Classes/Core/TickManager.hpp"
-#include "Classes/Widget/CanvasWidget.hpp"
+#include "../Widget/PanelWidget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
 #include "Classes/Core/TimerSystem.hpp"
@@ -33,8 +34,9 @@ class GameWorld : public Object
 	//子系统
 	TimerSystem timer_system;
 	GCPtr<SubSystemManager> world_subsystem;
+	std::set<GCPtr<Widget>> widgets;
 public:
-	TickSubSystem* tick_SubSystem;
+	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	SPhysics physicsSys;
 	bool is_simulation;
 
@@ -52,7 +54,7 @@ public:
 	std::vector<GCPtr<Controller>> GetControllers();
 	Controller* GetController(int id);
 	std::vector<GCPtr<Actor>> &GetActors();
-
+	std::set<GCPtr<Widget>> &GetWidgets();
 	void RemoveActorByGCPtr(GCPtr<Actor> &actor);
 
 	//Set

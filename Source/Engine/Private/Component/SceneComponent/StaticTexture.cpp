@@ -22,7 +22,7 @@ StaticTexture::StaticTexture(const StaticTexture& other)
 void StaticTexture::Construct()
 {
 	Texture::Construct();
-
+	in_texture = GameEngine::Instance().texture_store->GetDefaultTexture();
 }
 
 
