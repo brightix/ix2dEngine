@@ -1,9 +1,7 @@
 #pragma once
-#include <unordered_set>
 #include "Classes/Object.hpp"
+
 enum class WidgetVisibility;
-
-
 
 class Widget : public Object
 {
@@ -16,30 +14,40 @@ class Widget : public Object
 public:
 	bool dirty;
     Widget();
+
+	void Construct() override;
+
+
+
+
+
+
 	virtual void AddChild(GCPtr<Widget> UI){}
 	WidgetVisibility GetVisibility();
 	void SetVisibility(WidgetVisibility new_Visibility);
 
+	virtual void WidgetEventBegin(){}
+
+
+
 	void RemoveFromParent();
-	void RemoveChild(Widget* UI);
+	virtual void RemoveChild(Widget* UI){}
 
 
 	int GetLayerId() const;
 
-	// template<typename T>
+    void MakeDirty();
+
+    // template<typename T>
 	// GCPtr<T> CreateWidget(T* new_widget)
 	// {
 	// 	return GCPtr<>
 	// }
 	virtual void flush(){}
 	virtual void WidgetRender()= 0;
-};
+	Widget(const Widget&) = default;             // 显式允许拷贝
+	Widget(Widget&&) noexcept = default;         // 显式允许移动
+	~Widget() = default;
 
-struct WidgetIDHash
-{
-	size_t operator()(const Widget& key) const noexcept
-	{
-		return std::hash<std::string>()(key.name) ^ (std::hash<size_t>()(key.id) << 1);
-	}
 };
 

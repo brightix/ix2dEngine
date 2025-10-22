@@ -1,11 +1,13 @@
 #include "Classes/Core/RendererCenter.hpp"
 
+#include <set>
 #include <thread>
 #include <SDL3/SDL_render.h>
 #include "Types/RenderData.hpp"
 #include "../../Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
-
+#include "Classes/Widget/Widget.hpp"
+#include <vector>
 std::condition_variable RendererCenter::render_cv;
 std::atomic<bool> RendererCenter::is_stop = false;
 SDL_Renderer* RendererCenter::renderer = nullptr;
@@ -26,6 +28,10 @@ void RendererCenter::Init()
 		event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
 			auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
 			RenderScene(clips);
+		}));
+		event_system.AddEvent(Event("HandleWidgetDataReady",[&](TEventParams e) {
+			std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
+			RenderWidget(clips);
 		}));
 		DefaultTexture = CreateOutLineTexture(FRect(0,0,10,10));
 	}
@@ -201,19 +207,18 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 			SDL_RenderTexture(renderer,clip.texture.get(),src,dst);
 		}
 	}
-	// 显示到窗口
-	SDL_RenderPresent(renderer);
 }
 
-void RendererCenter::RenderUMG(std::unordered_set<GCPtr<Widget>>* clips)
+void RendererCenter::RenderWidget(std::vector<GCWeakPtr<Widget>>& widgets)
 {
-	std::unordered_set<GCPtr<Widget>>& widgets = *clips;
+	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
 	for (auto& widget : widgets)
 	{
 		if (widget->dirty)
 		{
-			widget->WidgetRender();
+			widget->flush();
 		}
+		widget->WidgetRender();
 	}
 }
 
@@ -276,7 +281,8 @@ void RendererCenter::SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surfa
 	}
 	else
 	{
-		t->in_texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, new_surface.get()),SDLTextureDeleter());
+		auto new_texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, new_surface.get()),SDLTextureDeleter());
+		t->SetNewTexture(new_texture);
 	}
 }
 

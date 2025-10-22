@@ -63,6 +63,8 @@ void GameEngine::EventBegin()
 	// });
 	//tick管理器 绑定到 渲染线程
 	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr, "RenderDataReady", *renderer_center->event_system.GetEventByName("HandleRenderDataReady"));
+	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr, "WidgetDataReady", *renderer_center->event_system.GetEventByName("HandleWidgetDataReady"));
+
 	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr,"synchronization",Event("synchronization",[this](TEventParams e) {
 		this->renderer_center->ReadLeftCallback();
 	}));
@@ -105,10 +107,10 @@ void GameEngine::Tick()
 		 // 	return e;
 		 // };
 		//UMG
-		RendererCenter::RenderUMG(widgets);
-		RendererCenter::AddRendererTask(RenderTask([fpsTex,dst](SDL_Renderer* renderer) {
-			SDL_RenderTexture(renderer, fpsTex->GetTexture().get(), nullptr, &dst);
-		}));
+		// RendererCenter::Render(widgets);
+		// RendererCenter::AddRendererTask(RenderTask([fpsTex,dst](SDL_Renderer* renderer) {
+		// 	SDL_RenderTexture(renderer, fpsTex->GetTexture().get(), nullptr, &dst);
+		// }));
 
 		//主线程查看回调函数 通知任务完成
 		renderer_center->ReadLeftCallback();
@@ -162,5 +164,6 @@ GCWeakPtr<Widget> AddToViewport(Widget* new_widget)
 {
 	return GameEngine::Instance().AddWidgetToViewport(new_widget);
 }
+
 
 

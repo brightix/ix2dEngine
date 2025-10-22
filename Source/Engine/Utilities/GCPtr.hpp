@@ -132,6 +132,8 @@ public:
 	}
 };
 
+
+
 template<typename T>
 GCPtr<T> share_GCPtr(T* ptr, GCObject* owner)
 {

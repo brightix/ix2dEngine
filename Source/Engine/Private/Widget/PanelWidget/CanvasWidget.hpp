@@ -1,8 +1,9 @@
 #pragma once
+#include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 
-class CanvasWidget
+class CanvasWidget : public PanelWidget
 {
 public:
-    CanvasWidget();
-    ~CanvasWidget();
+    CanvasWidget(){}
+    ~CanvasWidget(){}
 };

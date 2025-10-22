@@ -17,8 +17,12 @@ struct Event
 	double interval;
 	double elapsed;
 
+	Event(const std::string &event_name, const std::function<void(std::optional<EventParams>)> &event_func);
+
 	Event();
-	Event(const std::string& event_name, std::function<void(std::optional<EventParams>)> event_func);
+
+	Event(const std::function<void(std::optional<EventParams>)> &event_func);
+
 	//Event(Event& other);
 	void Execute();
 

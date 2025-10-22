@@ -2,6 +2,8 @@
 #include "../../Classes/Core/GameEngine.hpp"
 #include "public/TestActor.h"
 #include "Classes/GameModeBase.hpp"
+#include "Classes/SubSystem/ViewportSubSystem.hpp"
+#include "Public/TestFpsWidget.hpp"
 
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
@@ -12,11 +14,18 @@ void GameWorld::Construct()
 	is_server = true;
 
 	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
-
+	//窗口
+	viewport = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
+	//tick管理器
 	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
 	tick_SubSystem->SetBufferType(1);
-	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");
+	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");//可以加在该子系统的构造函数内
+
 	//world_subsystem->ForAllSubSystemInit();
+
+
+
+
 	dispatcher_system.AddEventDispatcher("EventBegin");
 }
 
@@ -25,14 +34,10 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 	game_mode = make_GCPtr<GameModeBase>(new GameModeBase());
 	game_mode->EventBegin();
-
-	// for (const auto& a : actors)
-	// {
-	// 	a->EventBegin();
-	// }
-	//GC_timer->Start();
 	is_simulation = true;
 
+
+	AddToViewport(new TestFpsWidget());
 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
 	// 	dd->DestroyActor();
@@ -56,17 +61,22 @@ Controller * GameWorld::GetController(int id)
 	return nullptr;
 }
 
-std::vector<GCPtr<Actor>> &GameWorld::GetActors()
+std::vector<GCPtr<Actor>> *GameWorld::GetActors()
 {
-	return actors;
+	return &actors;
 }
 
-std::set<GCPtr<Widget>> & GameWorld::GetWidgets()
+std::vector<GCWeakPtr<Widget>> GameWorld::GetWidgets()
 {
-	return widgets;
+	std::vector<GCWeakPtr<Widget>> v;
+	for (auto& item : widgets)
+	{
+		v.emplace_back(item);
+	}
+	return v;
 }
 
-void GameWorld::RemoveActorByGCPtr(GCPtr<Actor>& actor)
+void GameWorld::RemoveActorByGCPtr(const GCPtr<Actor>& actor)
 {
 	std::erase(actors, actor);
 }
@@ -121,6 +131,23 @@ bool GameWorld::IsServer() const
 bool GameWorld::IsClient() const
 {
 	return !is_server;
+}
+
+GCWeakPtr<Widget> GameWorld::AddToViewport(Widget* w)
+{
+	auto gc = NewObject(w);
+	if (is_simulation)
+	{
+		w->WidgetEventBegin();
+	}
+	else
+	{
+		BindEvent(w, "EventBegin", Event([w](TEventParams e) {
+			w->WidgetEventBegin();
+		}));
+	}
+	widgets.emplace(gc);
+	return gc;
 }
 
 

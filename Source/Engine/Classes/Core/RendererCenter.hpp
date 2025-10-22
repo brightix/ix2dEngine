@@ -95,9 +95,9 @@ public:
 	 ~RendererCenter();
 
 	//收到新数据我就渲染上一帧
-	void RenderScene(std::vector<RenderData> &clips);
+	void RenderScene(std::vector<RenderData>& clips);
 
-	void RenderUMG(std::unordered_set<GCPtr<Widget>> *clips);
+	void RenderWidget(std::vector<GCWeakPtr<Widget>> &widgets);
 
 	static std::shared_ptr<SDL_Texture> CreateOutLineTexture(const FRect& rect);
 

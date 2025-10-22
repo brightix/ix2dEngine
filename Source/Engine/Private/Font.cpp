@@ -6,7 +6,7 @@
 #include "Types/FontStyle.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 
-
+FontStyle FontRenderer::default_font;
 FontRenderer::FontRenderer() : fontCache(3)
 {
 	if (!TTF_Init()) {
@@ -36,7 +36,7 @@ FontRenderer::FontRenderer() : fontCache(3)
 			}
 		}
 	}
-	default_font = TTF_OpenFont(path.c_str(), 64);
+	default_font.font = std::shared_ptr<TTF_Font>(TTF_OpenFont((path + "simkai.ttf").c_str(), 64),SDLTTFDeleter());
 	//GCAllObjects.push_back(this);
 	NAME;
 }
@@ -45,6 +45,20 @@ FontRenderer& FontRenderer::Instance()
 {
     static FontRenderer instance;
     return instance;
+}
+
+std::shared_ptr<TTF_Font> FontRenderer::GetFont(const std::string &fontName, size_t size)
+{
+	if (auto font = fontCache.get(fontName))
+	{
+		return *font;
+	}
+	if (LoadFont(fontName,size))
+	{
+		return *fontCache.get(fontName);
+	}
+	LogWithLevel("没找到字体",Error);
+	return default_font.font;
 }
 
 // FontStyle FontRenderer::GetFontStyle(std::string fontName,size_t size)
@@ -64,7 +78,7 @@ FontRenderer& FontRenderer::Instance()
 //     return *font;
 // }
 
-bool FontRenderer::LoadFont(std::string fontName,size_t size)
+bool FontRenderer::LoadFont(const std::string &fontName, const size_t size)
 {
     //fontMap[fontName].c_str();
 	auto font = std::shared_ptr<TTF_Font>(TTF_OpenFont(fontMap[fontName].c_str(), size),SDLTTFDeleter());
@@ -76,10 +90,11 @@ bool FontRenderer::LoadFont(std::string fontName,size_t size)
     return false;
 }
 
-std::shared_ptr<SDL_Surface> FontRenderer::GetTextSurface(const std::string& str, FontStyle fs)
+std::shared_ptr<SDL_Surface> FontRenderer::GetTextSurface(const std::string& str, const FontStyle &fs)
 {
 	auto surface = TSurface;
-	surface.reset(TTF_RenderText_Blended(fs.font.get(), str.c_str(), str.length(), fs.text_color));
+	auto font = fs.font.get();
+	surface.reset(TTF_RenderText_Blended(font, str.c_str(), str.length(), fs.text_color));
 	SDL_SetSurfaceBlendMode(surface.get(), SDL_BLENDMODE_BLEND); // 启用混合模式
 	return surface;
 }
@@ -88,7 +103,7 @@ std::shared_ptr<SDL_Surface> FontRenderer::GetTextSurface(const std::string& str
 //可以加入多线程豪华套餐
 void FontRenderer::UpdateTextTexture(SDL_Texture *texture,
                                      const std::string &str,
-                                     FontStyle style)
+                                     const FontStyle &style)
 {
     try {
         SDL_Surface* surface = TTF_RenderText_Blended(style.font.get(), str.c_str(), str.length(), SDL_Color{100,0,100,150});

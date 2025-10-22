@@ -18,10 +18,10 @@ public:
     }
 	T* Peek() const
     {
-    	if (Global_GCObject_Registry.contains(weak_id) && !Global_GCObject_Registry[weak_id]->is_pending_kill)
-    	{
-    		return ptr;
-    	}
+		const auto it = Global_GCObject_Registry.find(weak_id);
+		if (it != Global_GCObject_Registry.end() && !it->second->is_pending_kill)
+			return ptr;
+
     	return nullptr;
     }
 	explicit operator bool() const noexcept
@@ -64,6 +64,20 @@ public:
 		ptr = static_cast<T*>(other.Get());
 		weak_id = other.id;
 	}
+
+	GCWeakPtr(const GCPtr<T>& other) : ptr(other.Get()), weak_id(other.id)
+	{
+
+	}
+
+	template<typename U>
+	GCWeakPtr(const GCPtr<U>& other) : ptr(other.ptr), weak_id(other.id)
+	{
+		static_assert(std::is_base_of_v<T, U> || std::is_base_of_v<U, T>,
+			  "Types must be in same inheritance hierarchy");
+	}
+
+
 };
 
 namespace std {

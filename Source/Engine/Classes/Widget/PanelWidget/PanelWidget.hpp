@@ -6,7 +6,8 @@
 
 class PanelWidget : public Widget
 {
-    std::unordered_set<PanelSlot> slots;
+protected:
+
 public:
     PanelWidget();
     ~PanelWidget()= default;

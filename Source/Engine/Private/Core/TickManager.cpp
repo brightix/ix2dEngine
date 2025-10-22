@@ -7,7 +7,7 @@
 
 void TickSubSystem::Tick(double delta_time)
 {
-    auto actors = GameEngine::Instance().GetGameWorld()->GetActors();
+    auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
     std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
 
@@ -55,24 +55,20 @@ void TickSubSystem::Tick(double delta_time)
 
 		dispatcher_system.CallDispatcher("RenderDataReady", render_data_ready_p);
 
-		//UMG
-		auto& widgets = world->GetWidgets();
-		for (auto& widget : widgets)
-		{
-			if (widget->dirty)
-			{
-				widget->flush();
-			}
-		}
+		//Widget
+		EventParams widget_data;
+		std::vector<GCWeakPtr<Widget>> v;
+		/** 将widget有序的放入vector中 */
+		widget_data.Add<std::vector<GCWeakPtr<Widget>>>("widget_data",std::move(world->GetWidgets()));
 
-
-
-
+		dispatcher_system.CallDispatcher("WidgetDataReady", widget_data);
 
 		for (auto& controller : controllers)
 		{
 			controller->Tick(delta_time);
 		}
+		// 显示到窗口
+		SDL_RenderPresent(GetRenderer());
 	}
     else if (buffer_type == 2)//  双缓冲(好像对于SDL无意义，暂时作废)  ---------------------------------------------------------------------------------
     {
@@ -117,6 +113,7 @@ void TickSubSystem::Init()
 {
 	NAME;
 	dispatcher_system.AddEventDispatcher("RenderDataReady");
+	dispatcher_system.AddEventDispatcher("WidgetDataReady");
 }
 
 

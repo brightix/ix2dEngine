@@ -8,14 +8,19 @@
 #include "Classes/Core/TickManager.hpp"
 #include "../Widget/PanelWidget/CanvasWidget.hpp"
 #include "Utilities/Timer.hpp"
-#include "Utilities/FuncLib/SystemLib.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 
+class ViewportSubSystem;
 class Controller;
 class GameModeBase;
 class TickSubSystem;
 class EngineSubSystem;
+struct GCPtrLess {
+	bool operator()(const GCPtr<Widget>& a, const GCPtr<Widget>& b) const {
+		return a->GetLayerId() < b->GetLayerId();
+	}
+};
 class GameWorld : public Object
 {
 	std::vector<GCPtr<Actor>> actors;
@@ -34,7 +39,11 @@ class GameWorld : public Object
 	//子系统
 	TimerSystem timer_system;
 	GCPtr<SubSystemManager> world_subsystem;
-	std::set<GCPtr<Widget>> widgets;
+	GCWeakPtr<ViewportSubSystem> viewport;
+
+
+
+	std::set<GCPtr<Widget>,GCPtrLess> widgets;
 public:
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	SPhysics physicsSys;
@@ -53,9 +62,11 @@ public:
 //Get
 	std::vector<GCPtr<Controller>> GetControllers();
 	Controller* GetController(int id);
-	std::vector<GCPtr<Actor>> &GetActors();
-	std::set<GCPtr<Widget>> &GetWidgets();
-	void RemoveActorByGCPtr(GCPtr<Actor> &actor);
+
+	std::vector<GCPtr<Actor>> *GetActors();
+
+	std::vector<GCWeakPtr<Widget>> GetWidgets();
+	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
 
 	//Set
 	//void RemoveActorByPtr(Actor* actor);
@@ -77,40 +88,8 @@ public:
 	bool IsClient() const;
 
 
-//Utility
-	void RegisterToSPhysics(SPhysicsBaseUtility* obj);
-
-
-	// //从类构建对象
-	// template<typename T,typename...Args>
-	// GCPtr<T> SpawnActor(Args...args)
-	// {
-	// 	GCPtr<T> gc = make_GCPtr<T>(std::forward<Args>(args)...);
-	// 	actors.emplace_back(gc);
-	// 	auto a = static_cast<Actor*>(gc.Get());
-	// 	a->Construct();
-	// 	return a;
-	// }
-	// template<typename T>
-	// GCPtr<T> SpawnActor(T* actor_raw)
-	// {
-	// 	auto i = GCPtr<T>(actor_raw, this);
-	// 	auto a = static_cast<Actor*>(i.Get());
-	// 	a->Construct();
-	// 	actors.emplace_back(a);
-	// 	if (is_simulation)
-	// 	{
-	// 		a->EventBegin();
-	// 	}
-	// 	else
-	// 	{
-	// 		dispatcher_system.BindEventTo("EventBegin",a,Event("EventBegin",[a](TEventParams) {
-	// 			a->EventBegin();
-	// 		}));
-	// 	}
-	// 	return i;
-	// }
-
+	//Widget
+	GCWeakPtr<Widget> AddToViewport(Widget *w);
 };
 
 inline GameWorld* GetWorld()

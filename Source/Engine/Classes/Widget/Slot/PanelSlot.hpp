@@ -54,10 +54,9 @@ struct Name
 
 struct PanelSlot
 {
-    //std::unordered_map<std::string, Widget*> x_cache;
-    //GCPtr<ComponentManager> x;
     GCPtr<Widget> widget;
     PanelSlot();
+    PanelSlot(const PanelSlot& other)= default;
     GCWeakPtr<Widget> GetWidget();
     virtual ~PanelSlot(){}
 };

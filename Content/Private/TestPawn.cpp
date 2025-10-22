@@ -16,7 +16,7 @@ void TestPawn::Construct()
 	Pawn::Construct();
 	mobility = ActorMobility::Movable;
 	RenderTask task;
-	auto tex = GetEngine()->renderer_center->DefaultTexture;
+	auto tex = GetDefaultTexture();
 	task.task = []  {
 		// auto s = RendererCenter::CreateOutLineTexture({0,0,500,500}).get();
 		// tex.reset(s);

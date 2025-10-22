@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
-
+#include <set>
+#include <vector>
 class GameWorld;
 
 namespace ix
@@ -14,6 +15,14 @@ namespace ix
 			hash *= 16777619u;
 		}
 		return hash;
+	}
+	template<typename T, typename U>
+	void ConvertSetToVector(const std::set<T,U>& s, std::vector<T>& v)
+	{
+		for (auto& item : s)
+		{
+			v.emplace_back(item);
+		}
 	}
 }
 

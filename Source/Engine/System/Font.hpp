@@ -13,22 +13,22 @@ class FontRenderer// : public Object
 	std::string name;
     LRUCache<std::string,std::shared_ptr<TTF_Font>> fontCache;
     std::unordered_map<std::string,std::string> fontMap;
-    TTF_Font* default_font;
+    static FontStyle default_font;
     FontRenderer();
 public:
     static FontRenderer& Instance();
     //获取字体
-    TTF_Font* GetFont(std::string fontName,size_t size);
+    std::shared_ptr<TTF_Font> GetFont(const std::string &fontName,size_t size);
 
     //无缓存 加载字体
-    bool LoadFont(std::string fontName,size_t size);
+    bool LoadFont(const std::string &fontName,size_t size);
 
-    static std::shared_ptr<SDL_Surface> GetTextSurface(const std::string& str, FontStyle fs = {});
+    static std::shared_ptr<SDL_Surface> GetTextSurface(const std::string& str, const FontStyle &fs = default_font);
 
     // [[nodiscard]] StaticTexture* GetTextTexture(std::string str, std::string fontName = "simkai", size_t fontSize = 24,
     //                                             SDL_Color col = {255, 255, 255, 255});
 
-    void UpdateTextTexture(SDL_Texture *texture, const std::string &str, FontStyle style = {});
+    void UpdateTextTexture(SDL_Texture *texture, const std::string &str, const FontStyle &style = {});
 
     ~FontRenderer();
 };

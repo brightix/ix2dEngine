@@ -49,7 +49,7 @@ private:
     GameEngine();
 public:
 	GCWeakPtr<RendererCenter> renderer_center;
-	GCWeakPtr<FontRenderer> font_manager;
+	FontRenderer* font_manager;
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	GCWeakPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
@@ -103,3 +103,8 @@ inline bool IsValid(const size_t id)
 }
 
 inline GCWeakPtr<Widget> AddToViewport(Widget* new_widget);
+
+inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
+{
+	return GameEngine::Instance().renderer_center->DefaultTexture;
+}

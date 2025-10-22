@@ -8,15 +8,12 @@ struct CanvasSlot;
 
 class CanvasWidget : public PanelWidget
 {
+
+    std::vector<PanelSlot> slots;
 public:
 
     CanvasWidget();
     void AddChild(GCPtr<Widget> child_UI) override;
-    ~CanvasWidget()= default;
-
-    void flush() override;
-
-
 
 
     //继承

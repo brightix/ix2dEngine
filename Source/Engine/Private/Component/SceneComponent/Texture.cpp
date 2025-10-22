@@ -9,7 +9,7 @@ Texture::Texture()
 {
 	//先引用默认渲染图
 	NAME;
-	in_texture = GetEngine()->renderer_center->DefaultTexture;
+	in_texture = GetDefaultTexture();
 	name = "Texture";
 	w = in_texture->w;
 	h = in_texture->h;
@@ -80,6 +80,21 @@ void Texture::SafeDestroyTexture(SDL_Texture* texture)
 	if (texture->refcount == 1)
 	{
 		SDL_DestroyTexture(texture);
+	}
+}
+
+void Texture::SetNewTexture(std::shared_ptr<SDL_Texture> new_texture)
+{
+	in_texture = new_texture;
+	if (new_texture)
+	{
+		w = new_texture->w;
+		h = new_texture->h;
+	}
+	else
+	{
+		w = 0;
+		h = 0;
 	}
 }
 

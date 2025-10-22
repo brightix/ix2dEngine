@@ -12,7 +12,7 @@ void CanvasWidget::AddChild(GCPtr<Widget> child_UI)
 
 
 
-    slots.insert(slot);
+    slots.push_back(slot);
     //加入新元素需要刷新
     dirty = true;
     flush();
@@ -23,11 +23,10 @@ void CanvasWidget::flush()
     Widget::flush();
     if (dirty)
     {
-        for (auto& it : slots)
-        {
-            RendererCenter::AddRendererTask();
-        }
+        // for (auto& it : slots)
+        // {
+        //     RendererCenter::AddRendererTask();
+        // }
         dirty = false;
     }
-
 }

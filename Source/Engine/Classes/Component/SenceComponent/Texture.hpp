@@ -34,6 +34,6 @@ void Construct() override;
 
 	virtual TextureType GetTextureType();
 	static void SafeDestroyTexture(SDL_Texture* texture);
-
+	void SetNewTexture(std::shared_ptr<SDL_Texture> new_texture);
 	void SetStaticTexture(std::shared_ptr<SDL_Texture> new_texture);
 };

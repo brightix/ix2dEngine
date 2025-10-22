@@ -28,6 +28,11 @@ void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_
     auto it = bound_dispatcher.find(bounded_name);
     if (it != bound_dispatcher.end())
     {
+    	//如果名字为空，就设置为 "nameless" + 绑定事件名
+    	if (event.event_name.empty())
+    	{
+			event.event_name = "nameless_" + bounded_name;
+    	}
         bound_dispatcher[bounded_name][GCWeakPtr(obj)].emplace_back(event);
     }
     else

@@ -2,17 +2,14 @@
 
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 
-Event::Event() {}
 
-Event::Event(const std::string& event_name, std::function<void(std::optional<EventParams>)> event_func)
-	: event_name(event_name), event_func(std::function<void(std::optional<EventParams>)>(event_func)), is_loop(false),
+Event::Event(const std::string& event_name, const std::function<void(std::optional<EventParams>)>& event_func)
+	: event_name(event_name), event_func(std::function(event_func)), is_loop(false),
 	  interval(0),
 	  elapsed(0) {}
+Event::Event() : Event("", [](std::optional<EventParams> e){}) {}
 
-// Event::Event(Event& other)
-// {
-//
-// }
+Event::Event(const std::function<void(std::optional<EventParams>)> &event_func) : Event("", event_func){}
 
 void Event::Execute() {
 	if (event_func)

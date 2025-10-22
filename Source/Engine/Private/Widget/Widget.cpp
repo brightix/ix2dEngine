@@ -6,9 +6,13 @@
 
 #include "Types/Enums/WidgetVisibility.hpp"
 
-Widget::Widget()
+Widget::Widget() : widget_visibility(WidgetVisibility::Visible), layer_id(0), dirty(true)
 {
+}
 
+void Widget::Construct()
+{
+    Object::Construct();
 }
 
 WidgetVisibility Widget::GetVisibility()
@@ -23,10 +27,23 @@ void Widget::SetVisibility(const WidgetVisibility new_Visibility)
 
 void Widget::RemoveFromParent()
 {
-    parent->
+    dirty = true;
+
 }
+
 
 int Widget::GetLayerId() const
 {
     return layer_id;
+}
+
+void Widget::MakeDirty()
+{
+    dirty = true;
+    Widget* p = parent.Peek();
+    while (p)
+    {
+        p->dirty = true;
+        p = p->parent.Peek();
+    }
 }

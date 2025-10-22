@@ -21,6 +21,15 @@ void Object::AddEventDispatcher(const std::string& event_name, EventMethod&& eve
     dispatcher_system.AddEventDispatcher(event_name);
 }
 
+void Object::BindEvent(Object* target, const std::string &event_name,Event event)
+{
+    if (event.event_name.empty())
+    {
+        event.event_name = event_name;
+    }
+    dispatcher_system.BindEventTo(target, event_name, std::move(event));
+}
+
 
 
 
