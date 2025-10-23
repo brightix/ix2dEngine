@@ -15,11 +15,8 @@ struct PhysicsBufferShot
 };
 class TickSubSystem : public EngineSubSystem
 {
-    //std::vector<RenderBufferShot> render_buffer;
     std::vector<PhysicsBufferShot> physics_buffer;
-    std::vector<std::thread> thread;
 	std::thread render_thread;
-	std::thread audio_thread;
     std::vector<std::atomic<bool>> fence;
     std::atomic<bool> is_stop;
     std::mutex mtx;
@@ -27,17 +24,7 @@ class TickSubSystem : public EngineSubSystem
     int buffer_type;
     int write_head = 0;
 public:
-    TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(buffer_cnt)
-    {
-        // //render_buffer.resize(buffer_cnt);
-        // CreateWorker([this] {
-        //     while (!is_stop)
-        //     {
-        //
-        //     }
-        //     Render();
-        // });
-    }
+    TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(buffer_cnt){}
 	TickSubSystem() : buffer_type(0) { }
 
     void Tick(double delta_time);

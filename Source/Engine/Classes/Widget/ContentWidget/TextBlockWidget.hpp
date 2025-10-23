@@ -14,7 +14,5 @@ public:
     void Construct() override;
     void SetText(const std::string& new_text);
     void SetFontStyle(const FontStyle& new_font_style);
-
-    void WidgetRender() override;
-    ~TextBlockWidget(){}
+    void WidgetRender(FRect display_area) override;
 };

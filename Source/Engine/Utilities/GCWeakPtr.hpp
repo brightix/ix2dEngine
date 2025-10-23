@@ -11,19 +11,19 @@ public:
 	GCWeakPtr() : ptr(nullptr), weak_id(-1) { }
 
 	GCWeakPtr(T* obj)
-    {
-    	static_assert(std::is_base_of_v<GCObject, T>,"使用Weak必须是继承自GCObject");
-	    ptr = obj;
-    	weak_id = obj->id;
-    }
+	{
+		static_assert(std::is_base_of_v<GCObject, T>,"使用Weak必须是继承自GCObject");
+		ptr = obj;
+		weak_id = obj->id;
+	}
 	T* Peek() const
-    {
+	{
 		const auto it = Global_GCObject_Registry.find(weak_id);
 		if (it != Global_GCObject_Registry.end() && !it->second->is_pending_kill)
 			return ptr;
 
-    	return nullptr;
-    }
+		return nullptr;
+	}
 	explicit operator bool() const noexcept
 	{
 		if (Global_GCObject_Registry.contains(weak_id) && !Global_GCObject_Registry[weak_id]->is_pending_kill)
@@ -43,14 +43,14 @@ public:
 		return ptr;
 	}
 	bool operator==(const GCWeakPtr& other) const
-    {
-    	return ptr == other.ptr;
-    }
+	{
+		return ptr == other.ptr;
+	}
 	template<typename U>
 	GCWeakPtr(const GCWeakPtr<U>& other) : weak_id(other.weak_id)
 	{
 		static_assert(std::is_base_of_v<T, U> || std::is_base_of_v<U, T>,
-		              "Types must be in same inheritance hierarchy");
+					  "Types must be in same inheritance hierarchy");
 		ptr = static_cast<T*>(other.ptr);
 	}
 
@@ -77,6 +77,12 @@ public:
 			  "Types must be in same inheritance hierarchy");
 	}
 
+	template<typename U>
+	GCWeakPtr<U> Cast()
+	{
+		U* p = dynamic_cast<U*>(ptr);
+		return GCWeakPtr<U>(p);
+	}
 
 };
 

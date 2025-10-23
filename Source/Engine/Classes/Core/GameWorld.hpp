@@ -10,6 +10,7 @@
 #include "Utilities/Timer.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
+#include "Public/TestFpsWidget.hpp"
 
 class ViewportSubSystem;
 class Controller;
@@ -39,16 +40,19 @@ class GameWorld : public Object
 	//子系统
 	TimerSystem timer_system;
 	GCPtr<SubSystemManager> world_subsystem;
-	GCWeakPtr<ViewportSubSystem> viewport;
+	GCWeakPtr<ViewportSubSystem> viewport_sub;
 
 
 
 	std::set<GCPtr<Widget>,GCPtrLess> widgets;
+	GCWeakPtr<TestFpsWidget> fps_text;
+
 public:
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	SPhysics physicsSys;
 	bool is_simulation;
 
+	GCPtr<Widget> viewport;
     GameWorld();
     ~GameWorld()= default;
 	void Construct() override;

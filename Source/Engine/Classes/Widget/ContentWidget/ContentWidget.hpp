@@ -9,5 +9,4 @@ protected:
 public:
     ContentWidget();
     void Construct() override;
-	void WidgetRender() override {}
 };

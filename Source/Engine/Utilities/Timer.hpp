@@ -109,12 +109,12 @@ public:
     //每次调用返回距上次调用的时间
     double Click()
     {
-        time_point<steady_clock> now = steady_clock::now();
+        const time_point<steady_clock> now = steady_clock::now();
         if(last == time_point<steady_clock>{}){
             last = now;
             return 0.0;
         }
-        double ret = duration<double>(now-last).count();
+        const double ret = duration<double>(now-last).count();
         last = now;
         return ret;
     }

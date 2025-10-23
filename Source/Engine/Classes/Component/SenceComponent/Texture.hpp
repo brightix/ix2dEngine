@@ -12,8 +12,6 @@ enum class TextureType : int
 };
 
 
-
-
 struct Texture : public SceneComponent
 {
 	std::shared_ptr<SDL_Texture> in_texture;

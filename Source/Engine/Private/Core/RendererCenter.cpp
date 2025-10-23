@@ -8,6 +8,9 @@
 #include "Utilities/FuncLib/Deleter.hpp"
 #include "Classes/Widget/Widget.hpp"
 #include <vector>
+
+#include "Classes/Core/GameWorld.hpp"
+#include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 std::condition_variable RendererCenter::render_cv;
 std::atomic<bool> RendererCenter::is_stop = false;
 SDL_Renderer* RendererCenter::renderer = nullptr;
@@ -25,13 +28,22 @@ void RendererCenter::Init()
 	else
 	{
 		InitSDL();
-		event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
+		event_system.AddEvent(Event("OnRenderSceneDataReady",[&](TEventParams e) {
 			auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
 			RenderScene(clips);
 		}));
-		event_system.AddEvent(Event("HandleWidgetDataReady",[&](TEventParams e) {
+		event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
 			std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
-			RenderWidget(clips);
+			auto viewport = (*e->Get<GCWeakPtr<GameWorld>>("widget_data"))->viewport;
+			RenderWidget();
+		}));
+		event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
+			SDL_RenderPresent(renderer);
+		}));
+		event_system.AddEvent(Event("OnRenderClear",[&](TEventParams e) {
+			SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
+			SDL_RenderClear(renderer);
+			SDL_RenderClear(renderer);
 		}));
 		DefaultTexture = CreateOutLineTexture(FRect(0,0,10,10));
 	}
@@ -182,18 +194,11 @@ void RendererCenter::Quit()
 	render_cv.notify_all();
 }
 
-RendererCenter::~RendererCenter()
-{
-
-}
-
 void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 {
 	//数据预处理
 	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer < B.layer;});
 	// 清屏
-	SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
-	SDL_RenderClear(renderer);
 	for (auto& clip : clips)
 	{
 		SDL_FRect* src = nullptr;
@@ -209,17 +214,11 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 	}
 }
 
-void RendererCenter::RenderWidget(std::vector<GCWeakPtr<Widget>>& widgets)
+void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
 {
 	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
-	for (auto& widget : widgets)
-	{
-		if (widget->dirty)
-		{
-			widget->flush();
-		}
-		widget->WidgetRender();
-	}
+	const auto& [w,h] = GameEngine::Instance().GetViewportSize();
+	viewport->WidgetRender(FRect(0,0,w,h));
 }
 
 std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const FRect& rect)
@@ -242,7 +241,7 @@ std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const FRect& r
 	int thickness = 3;
 	for (int i = 0; i < thickness; ++i)
 	{
-		SDL_FRect rect_bound = SDL_FRect(i,i, rect.w - i * 2, rect.h - i * 2);
+		auto rect_bound = SDL_FRect(i,i, rect.w - i * 2, rect.h - i * 2);
 		SDL_RenderRect(renderer, &rect_bound);
 	}
 	SDL_SetRenderTarget(renderer,nullptr);

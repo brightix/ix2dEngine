@@ -1,0 +1,54 @@
+#pragma once
+#include <random>
+#include <unordered_map>
+
+#include "FuncLib/ixStaticFuncLib.hpp"
+#include "FuncLib/SystemLib.hpp"
+
+
+class RandomUtility : public EngineSubSystem
+{
+    uint32_t seed;
+    std::mt19937 main_seed;
+    std::unordered_map<size_t, std::pair<std::mt19937,std::uniform_int_distribution<int>>> map;
+    std::uniform_int_distribution<int> reg_seed{0, INT32_MAX};
+public:
+    explicit RandomUtility() : seed(0) {}
+
+    std::optional<int> GetRandom(const std::string& reg_name)
+    {
+        const size_t key = ix::Hash(reg_name.c_str());
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            Log("未能找到 \"" + reg_name + "\"，请先注册");
+            return std::nullopt;
+        }
+        auto& [engine, dist] = it->second;
+        return dist(engine);
+    }
+
+    bool RegisterRandom(const std::string &reg_name, std::pair<int,int> min_max)
+    {
+        size_t hash = ix::Hash(reg_name.c_str());
+        auto it = map.find(hash);
+        if (it != map.end())
+        {
+            Log("随机数重名，拒绝生成");
+            return false;
+        }
+        auto& [min,max] = min_max;
+        map.emplace(hash,std::make_pair(std::mt19937(reg_seed(main_seed)),std::uniform_int_distribution<int>(min,max)));
+        return true;
+    }
+    void Init() override
+    {
+        main_seed = std::mt19937(seed);
+    }
+    //注意调用
+    void SetSeed(size_t user_seed)
+    {
+        seed = user_seed;
+    }
+    ~RandomUtility(){}
+};

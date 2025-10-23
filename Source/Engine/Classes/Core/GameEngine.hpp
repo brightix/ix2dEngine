@@ -15,6 +15,7 @@
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "System/Font.hpp"
 #include "Types/EngineState.hpp"
+#include "Utilities/RandomUtility.hpp"
 
 class CanvasWidget;
 class Widget;
@@ -37,7 +38,7 @@ class GameEngine final : public Object
 
     mutable GCObject* GCRoot;
 
-
+	GCWeakPtr<RandomUtility> random_utility;
 	//组件
 	GCPtr<GameWorld> game_world;
 
@@ -64,10 +65,13 @@ public:
     void Construct() override;
 	void EventBegin();
     void Quit();
+
+    void OnChangeWorld(GameWorld *new_world);
+
     ~GameEngine() override;
 //base
     //SDL_Renderer* GetRenderer() { return renderer; }
-    GCPtr<GameWorld> GetGameWorld();
+    GCWeakPtr<GameWorld> GetGameWorld();
     GCObject *GetGCRoot() const;
 //Render
 	void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
@@ -108,3 +112,8 @@ inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 {
 	return GameEngine::Instance().renderer_center->DefaultTexture;
 }
+
+// SDL_Color GetRandomColor()
+// {
+// 	GameEngine::Instance().GetRandomSubSystem();
+// }

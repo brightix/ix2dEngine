@@ -15,7 +15,7 @@ void GameWorld::Construct()
 
 	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
 	//窗口
-	viewport = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
+	viewport_sub = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
 	//tick管理器
 	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
 	tick_SubSystem->SetBufferType(1);
@@ -37,7 +37,7 @@ void GameWorld::StartSimulation()
 	is_simulation = true;
 
 
-	AddToViewport(new TestFpsWidget());
+	fps_text = AddToViewport(new TestFpsWidget()).Cast<TestFpsWidget>();
 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
 	// 	dd->DestroyActor();
@@ -109,7 +109,6 @@ void GameWorld::Tick(double delta_time)
 	//一般情况下不使用game_mode的tick
 	game_mode->Tick(delta_time);
 	tick_SubSystem->Tick(delta_time);
-
 }
 
 void GameWorld::WorldDestroy()

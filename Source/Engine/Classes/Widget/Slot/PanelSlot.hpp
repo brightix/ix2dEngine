@@ -52,11 +52,11 @@ struct Name
 };
 
 
-struct PanelSlot
+struct PanelSlot : public Object
 {
     GCPtr<Widget> widget;
+    FRect display_area;
+
     PanelSlot();
-    PanelSlot(const PanelSlot& other)= default;
     GCWeakPtr<Widget> GetWidget();
-    virtual ~PanelSlot(){}
 };

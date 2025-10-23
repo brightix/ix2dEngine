@@ -6,6 +6,7 @@
 #include "Classes/Object.hpp"
 #include "../Component/SenceComponent/Texture.hpp"
 #include "Classes/SubSystem/Sub/EngineSubsystem.hpp"
+#include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 #include "Types/RenderData.hpp"
 #include "Types/Enums/RenderPriority.hpp"
 
@@ -92,12 +93,10 @@ public:
 
 	void Quit();
 
-	 ~RendererCenter();
-
 	//收到新数据我就渲染上一帧
 	void RenderScene(std::vector<RenderData>& clips);
 
-	void RenderWidget(std::vector<GCWeakPtr<Widget>> &widgets);
+	void RenderWidget(GCWeakPtr<PanelWidget> viewport);
 
 	static std::shared_ptr<SDL_Texture> CreateOutLineTexture(const FRect& rect);
 

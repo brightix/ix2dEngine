@@ -10,6 +10,7 @@ protected:
 
 public:
     PanelWidget();
-    ~PanelWidget()= default;
+
+    virtual std::vector<GCWeakPtr<PanelSlot>> GetSlot() { return {}; }
 };
 
