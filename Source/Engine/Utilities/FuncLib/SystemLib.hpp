@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <set>
 #include <vector>
-#include <SDL3/SDL_pixels.h>
+
 class GameWorld;
 
 namespace ix

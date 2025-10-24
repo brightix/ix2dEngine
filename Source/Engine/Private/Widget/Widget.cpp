@@ -10,9 +10,25 @@ Widget::Widget() : widget_visibility(WidgetVisibility::Visible), layer_id(0), di
 {
 }
 
-void Widget::Construct()
+
+void Widget::ForTick(double delta_time)
 {
-    Object::Construct();
+    Tick(delta_time);
+    auto children = GetChildren();
+    for (auto& child : children)
+    {
+        child->widget->Tick(delta_time);
+    }
+}
+
+void Widget::NativeWidgetRender(FRect display_area)
+{
+    WidgetRender(display_area);
+    auto children = GetChildren();
+    for (auto& child : children)
+    {
+        child->widget->NativeWidgetRender(child->display_area);
+    }
 }
 
 WidgetVisibility Widget::GetVisibility()

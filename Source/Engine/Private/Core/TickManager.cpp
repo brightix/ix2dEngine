@@ -35,11 +35,7 @@ void TickSubSystem::Tick(double delta_time)
 			}
 		}
 
-		auto widgets = world->GetWidgets();
-		for (auto& w : widgets)
-		{
-			w->Tick(delta_time);
-		}
+		world->viewport->ForTick(delta_time);
 
 		//渲染纹理
 		for (auto& a : actors)
@@ -69,7 +65,7 @@ void TickSubSystem::Tick(double delta_time)
 		EventParams widget_data;
 		std::vector<GCWeakPtr<Widget>> v;
 		/** 将widget有序的放入vector中 */
-		widget_data.Add<GCWeakPtr<GameWorld>&>("widget_data", world);
+		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
 		// 显示到窗口

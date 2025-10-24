@@ -1,11 +1,11 @@
 #pragma once
-#include "Classes/Widget/ContentWidget/TextBlockWidget.hpp"
+#include "Classes/Widget/UserWidget.hpp"
 
-class TestFpsWidget final : public TextBlockWidget
+class TestFps final : public UserWidget
 {
 
 public:
-    TestFpsWidget();
-    void Construct() override;
+    TestFps();
+    void PreConstructEvent() override;
     void Tick(double delta_time) override;
 };

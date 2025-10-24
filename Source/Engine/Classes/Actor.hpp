@@ -22,6 +22,7 @@ class Actor : public Object
     bool isShowInGame;
 	bool is_active;
 	bool hidden_in_game;
+	bool is_begin_event_handled;
 //每个actor内部有个计时器组件，用来定时处理事件
 
 
@@ -32,7 +33,7 @@ protected:
 
 	//Transform transform;
 	SDL_Window* window;
-	GCPtr<GameWorld> game_world;
+	GCWeakPtr<GameWorld> game_world;
 
 	GCPtr<SceneComponent> Root;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;

@@ -33,9 +33,9 @@ void RendererCenter::Init()
 			RenderScene(clips);
 		}));
 		event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
-			std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
+			//std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
 			auto viewport = (*e->Get<GCWeakPtr<GameWorld>>("widget_data"))->viewport;
-			RenderWidget();
+			RenderWidget(viewport);
 		}));
 		event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
 			SDL_RenderPresent(renderer);
@@ -74,7 +74,7 @@ void RendererCenter::StartRenderThread()
 		//回应渲染包准备完成
 		event_system.AddEvent(Event("HandleRenderDataReady",[&](TEventParams e) {
 			//最新帧为true
-			int current = render_idx.load() % 2;
+			const int current = render_idx.load() % 2;
 			render_fence[current].store(true);
 			auto ep = *e->Get<std::vector<RenderData>>("render_data");
 			render_list[current] = ep;
@@ -218,14 +218,13 @@ void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
 {
 	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
 	const auto& [w,h] = GameEngine::Instance().GetViewportSize();
-	viewport->WidgetRender(FRect(0,0,w,h));
+	viewport->NativeWidgetRender(FRect(0,0,w,h));
 }
 
 std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const FRect& rect)
 {
 	auto texture_T = TTexture(nullptr);
-	SDL_Texture* t;
-	t = SDL_CreateTexture(
+	SDL_Texture* t = SDL_CreateTexture(
 		renderer,
 		SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET,

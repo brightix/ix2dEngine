@@ -1,21 +1,32 @@
-#include "../../Classes/Widget/PanelWidget/CanvasWidget.hpp"
+#include "../../../Classes/Widget/PanelWidget/CanvasWidget.hpp"
 
+#include "Classes/Core/GameWorld.hpp"
 #include "Classes/Core/RendererCenter.hpp"
 #include "Classes/Widget/Slot/CanvasSlot.hpp"
 
-void CanvasWidget::AddChild(GCPtr<Widget> child_UI)
+void CanvasWidget::AddChild(Widget* child)
+
 {
-    Widget::AddChild(child_UI);
+    Widget::AddChild(child);
+
+
     auto slot = NewObject(new CanvasSlot());
-    slot->widget = child_UI;
-    child_UI.SetOuter(this);
+    slot->widget = CreateWidget(child);
 
-
+    if (World()->is_simulation)
+    {
+        child->WidgetEventBegin();
+    }
+    else
+    {
+        World()->BindEvent(this, "EventBegin", Event([child](TEventParams e) {
+            child->WidgetEventBegin();
+        }));
+    }
 
     slots.emplace_back(slot);
     //加入新元素需要刷新
     dirty = true;
-    flush();
 }
 
 void CanvasWidget::flush()
@@ -38,15 +49,7 @@ void CanvasWidget::flush()
     }
 }
 
-void CanvasWidget::WidgetRender(FRect display_area)
-{
 
-    for (auto& slot : slots)
-    {
-        slot->widget->WidgetRender(slot->display_area);
-    }
-
-}
 std::vector<GCWeakPtr<PanelSlot>> CanvasWidget::GetSlot()
 {
     std::vector<GCWeakPtr<PanelSlot>> s(slots.size());

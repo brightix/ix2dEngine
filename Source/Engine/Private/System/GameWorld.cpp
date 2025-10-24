@@ -4,7 +4,7 @@
 #include "Classes/GameModeBase.hpp"
 #include "Classes/SubSystem/ViewportSubSystem.hpp"
 #include "Public/TestFpsWidget.hpp"
-
+#include "Classes/Widget/PanelWidget/CanvasWidget.hpp"
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
@@ -23,9 +23,7 @@ void GameWorld::Construct()
 
 	//world_subsystem->ForAllSubSystemInit();
 
-
-
-
+	viewport = NewObject(new CanvasWidget);
 	dispatcher_system.AddEventDispatcher("EventBegin");
 }
 
@@ -34,16 +32,16 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 	game_mode = make_GCPtr<GameModeBase>(new GameModeBase());
 	game_mode->EventBegin();
-	is_simulation = true;
 
+	AddToViewport(new TestFps);
 
-	fps_text = AddToViewport(new TestFpsWidget()).Cast<TestFpsWidget>();
 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
 	// 	dd->DestroyActor();
 	// 	return -1;
 	// });
 
+	is_simulation = true;
 	dispatcher_system.CallDispatcher("EventBegin");
 }
 
@@ -132,21 +130,12 @@ bool GameWorld::IsClient() const
 	return !is_server;
 }
 
-GCWeakPtr<Widget> GameWorld::AddToViewport(Widget* w)
+void GameWorld::AddToViewport(Widget *w)
 {
-	auto gc = NewObject(w);
-	if (is_simulation)
-	{
-		w->WidgetEventBegin();
-	}
-	else
-	{
-		BindEvent(w, "EventBegin", Event([w](TEventParams e) {
-			w->WidgetEventBegin();
-		}));
-	}
-	widgets.emplace(gc);
-	return gc;
+	//auto gc = NewObject(w);
+
+	viewport->AddChild(w);
+	//widgets.emplace(gc);
 }
 
 

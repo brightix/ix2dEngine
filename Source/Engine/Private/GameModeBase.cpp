@@ -39,7 +39,7 @@ void GameModeBase::EventBegin()
 	controller->Control(auto_generate_pawn);
 }
 
-GCPtr<Controller> GameModeBase::CreateController() const
+GCPtr<Controller> GameModeBase::CreateController()
 {
 	return game_world->AddController(new Controller());
 }

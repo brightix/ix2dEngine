@@ -27,7 +27,8 @@ void Actor::Construct()
 
 void Actor::EventBegin()
 {
-	game_world = make_GCPtr<GameWorld>(GameEngine::Instance().GetGameWorld().Get());
+	game_world = World();
+	is_begin_event_handled = true;
 	//game_world = GameEngine::Instance().GetGameWorld().Get();
 }
 
@@ -35,7 +36,7 @@ void Actor::EventBegin()
 //所有重写tick都在PreTick内
 void Actor::Tick(double delta_time) {}
 
-void Actor::RootComponentTick(double delta_time)
+void Actor::RootComponentTick(const double delta_time)
 {
 	for (auto& it : actor_components)
 	{
@@ -109,9 +110,4 @@ bool Actor::IsActive() const
 bool Actor::IsVisible() const
 {
 	return !hidden_in_game;
-}
-
-void Actor::AddToWorld(GCPtr<Actor> a) const
-{
-	game_world->AddToWorld(a);
 }

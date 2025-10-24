@@ -15,16 +15,13 @@ enum CanvasWidgetFillRule
 
 class CanvasWidget : public PanelWidget
 {
-    std::vector<GCPtr<CanvasSlot>> slots;
 public:
     CanvasWidgetFillRule fill_rule = FillScreen;
-    CanvasWidget();
-    void AddChild(GCPtr<Widget> child_UI) override;
-
+    CanvasWidget(){}
+    void AddChild(Widget *child) override;
 
     //继承
     void flush() override;
-    void WidgetRender(FRect display_area) override;
     std::vector<GCWeakPtr<PanelSlot>> GetSlot() override;
 };
 

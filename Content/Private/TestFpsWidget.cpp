@@ -1,25 +1,31 @@
 #include "../Public/TestFpsWidget.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Widget/ContentWidget/TextBlockWidget.hpp"
 #include "System/Font.hpp"
 
-TestFpsWidget::TestFpsWidget()
+TestFps::TestFps()
 {
 }
 
-void TestFpsWidget::Construct()
+
+
+void TestFps::PreConstructEvent()
 {
-    TextBlockWidget::Construct();
-    widget_texture = NewObject(new StaticTexture);
+    UserWidget::PreConstructEvent();
+
+    auto text = CreateWidget(new TextBlockWidget);
     FontStyle fontStyle;
     fontStyle.font = FontRenderer::Instance().GetFont("arial.ttf", 24);
-    SetFontStyle(fontStyle);
-    SetText("Hello World!");
+    text->SetFontStyle(fontStyle);
+    text->SetText("Hello World!");
+    AddChild("Fps_Text", text);
+
+    Root->widget = text;
 }
 
-void TestFpsWidget::Tick(double delta_time)
+void TestFps::Tick(double delta_time)
 {
-    TextBlockWidget::Tick(delta_time);
     auto info = GameEngine::Instance().GetEngineAttribution();
-    SetText(std::to_string(1.0/info.DeltaTime));
+    GetChild("Fps_Text").Cast<TextBlockWidget>()->SetText(std::to_string(1.0/info.DeltaTime));
 }

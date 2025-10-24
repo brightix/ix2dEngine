@@ -45,5 +45,6 @@ public:
 		it->Construct();
 		return it;
 	}
+
     ~Object() override = default;
 };

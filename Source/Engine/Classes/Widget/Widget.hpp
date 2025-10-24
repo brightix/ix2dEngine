@@ -1,8 +1,17 @@
 #pragma once
 #include "Classes/Object.hpp"
+#include "Slot/PanelSlot.hpp"
 #include "Types/FRect.hpp"
+#include "Classes/Widget/Slot/PanelSlot.hpp"
 
 enum class WidgetVisibility;
+enum class WidgetType
+{
+	None,
+	PanelWidget,
+	ContentWidget,
+	UserWidget
+};
 
 class Widget : public Object
 {
@@ -11,21 +20,28 @@ protected:
 	WidgetVisibility widget_visibility;
 	int layer_id;
 	GCWeakPtr<Widget> parent;
+	GCPtr<PanelSlot> Root;
 public:
 	bool dirty;
     Widget();
 
-	void Construct() override;
-	virtual void Tick(double delta_time){}
+	void Construct() final {}
+	virtual void PreConstructEvent()
+	{
+		Root = NewObject(new PanelSlot);
+	}
+	virtual void ConstructEvent(){}
 
-
+	virtual void ForTick(double delta_time);
 
 	//渲染
 	virtual void flush(){}
-	virtual void WidgetRender(FRect display_area)= 0;
+	virtual void WidgetRender(FRect display_area){}
+	//递归调用
+	//系统调用的render
+    virtual void NativeWidgetRender(FRect display_area);
 
-
-	virtual void AddChild(GCPtr<Widget> UI){}
+	virtual void AddChild(Widget *child){}
 	WidgetVisibility GetVisibility();
 	void SetVisibility(WidgetVisibility new_Visibility);
 
@@ -35,13 +51,29 @@ public:
 
 	void RemoveFromParent();
 	virtual void RemoveChild(Widget* UI){}
+	virtual std::vector<GCWeakPtr<PanelSlot>> GetChildren(){ return {}; }
+
 
 	int GetLayerId() const;
 
     void MakeDirty();
 
+    virtual void Tick(double delta_time){}
+
+
+	//Widget类型
+	virtual WidgetType GetWidgetType(){ return WidgetType::None; }
 	Widget(const Widget&) = default;             // 显式允许拷贝
 	Widget(Widget&&) noexcept = default;         // 显式允许移动
 	~Widget() override = default;
+	template<typename T>
+	GCPtr<T> CreateWidget(T* widget)
+	{
+		static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
+		auto it = GCPtr<T>(widget,this);
+		widget->PreConstructEvent();
+		return it;
+	}
 };
+
 

@@ -45,14 +45,13 @@ class GameWorld : public Object
 
 
 	std::set<GCPtr<Widget>,GCPtrLess> widgets;
-	GCWeakPtr<TestFpsWidget> fps_text;
 
 public:
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	SPhysics physicsSys;
 	bool is_simulation;
 
-	GCPtr<Widget> viewport;
+	GCPtr<CanvasWidget> viewport;
     GameWorld();
     ~GameWorld()= default;
 	void Construct() override;
@@ -93,12 +92,12 @@ public:
 
 
 	//Widget
-	GCWeakPtr<Widget> AddToViewport(Widget *w);
+	void AddToViewport(Widget *w);
 };
 
 inline GameWorld* GetWorld()
 {
-	return GameEngine::Instance().GetGameWorld().Get();
+	return GameEngine::Instance().GetGameWorld().Peek();
 }
 
 template<typename T>

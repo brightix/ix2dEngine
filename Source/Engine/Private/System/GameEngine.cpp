@@ -4,6 +4,7 @@
 #include "../../Classes/Component/SenceComponent/Texture.hpp"
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 #include "Classes/Core/GameWorld.hpp"
+#include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "Types/FontStyle.hpp"
 #include "Types/RenderData.hpp"
@@ -139,7 +140,6 @@ void GameEngine::OnChangeWorld(GameWorld* new_world)
 	game_world->tick_SubSystem->BindEvent(renderer_center.ptr, "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
 	game_world->tick_SubSystem->BindEvent(renderer_center.ptr, "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
 
-
 	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr,"synchronization",Event("synchronization",[this](TEventParams e) {
 		this->renderer_center->ReadLeftCallback();
 	}));
@@ -151,6 +151,8 @@ GCWeakPtr<Widget> AddToViewport(Widget* new_widget)
 {
 	return GameEngine::Instance().AddWidgetToViewport(new_widget);
 }
-
-
+GCWeakPtr<GameWorld> World()
+{
+	return GameEngine::Instance().GetGameWorld();
+}
 

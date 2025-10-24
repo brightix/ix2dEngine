@@ -1,9 +1,8 @@
 #pragma once
 #include "Classes/Object.hpp"
-#include "Classes/Widget/Widget.hpp"
+#include "Types/FRect.hpp"
 #include "Utilities/GCPtr.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
-
 
 #ifdef DebugMod
     #define DebugName(NAME) Name(NAME)
@@ -51,6 +50,7 @@ struct Name
     size_t name_serial;
 };
 
+class Widget;
 
 struct PanelSlot : public Object
 {
@@ -58,5 +58,4 @@ struct PanelSlot : public Object
     FRect display_area;
 
     PanelSlot();
-    GCWeakPtr<Widget> GetWidget();
 };

@@ -8,5 +8,6 @@ protected:
     GCPtr<StaticTexture> widget_texture;
 public:
     ContentWidget();
-    void Construct() override;
+    void PreConstructEvent() override;
+    WidgetType GetWidgetType() override;
 };

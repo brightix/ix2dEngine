@@ -4,9 +4,9 @@
 #include "Classes/Core/RendererCenter.hpp"
 #include "System/Font.hpp"
 
-void TextBlockWidget::Construct()
+void TextBlockWidget::PreConstructEvent()
 {
-    ContentWidget::Construct();
+    ContentWidget::PreConstructEvent();
 }
 
 

@@ -7,10 +7,8 @@
 #include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
-#include "Utilities/ConverterRegistry.hpp"
 #include "Utilities/ExternalWrapper.hpp"
 #include "Utilities/GCPtr.hpp"
-#include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/TextureStoreSubSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "System/Font.hpp"
@@ -113,7 +111,4 @@ inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 	return GameEngine::Instance().renderer_center->DefaultTexture;
 }
 
-// SDL_Color GetRandomColor()
-// {
-// 	GameEngine::Instance().GetRandomSubSystem();
-// }
+GCWeakPtr<GameWorld> World();

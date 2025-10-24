@@ -14,6 +14,6 @@ public:
 	void Construct() override;
 	void EventBegin() override;
 
-    GCPtr<Controller> CreateController() const;
+    GCPtr<Controller> CreateController();
 };
 

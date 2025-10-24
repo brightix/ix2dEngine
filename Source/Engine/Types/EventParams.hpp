@@ -1,7 +1,7 @@
 #pragma once
 #include <optional>
 #include <unordered_map>
-
+#include <any>
 #include "Classes/Core/GCObject.hpp"
 
 
@@ -50,5 +50,12 @@ struct EventParams
 		//using W = std::decay_t<U>;
 		//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
 		values[val_name] = std::forward<U>(v);
+	}
+	template<typename U>
+	void Add(const std::string& val_name, U& v)
+	{
+		//using W = std::decay_t<U>;
+		//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
+		values[val_name] = v;
 	}
 };
