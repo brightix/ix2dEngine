@@ -24,7 +24,6 @@ GameEngine::GameEngine() : delta_time(0)
 void GameEngine::Construct()
 {
 	//最先启动GPU
-
 	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
 	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
 	//renderer_center->StartRenderThread();
@@ -40,7 +39,8 @@ void GameEngine::Construct()
 
 	//Engine子系统
 	engine_subsystem->CreateSubSystem<GarbageCollection>("GarbageCollection");
-	engine_subsystem->CreateSubSystem<RandomUtility>("RandomUtility")->SetSeed(123456);
+	random_utility = engine_subsystem->CreateSubSystem<RandomUtility>("RandomUtility");
+	//random_utility->SetSeed(123456);
 	texture_store = engine_subsystem->CreateSubSystem<TextureStoreSubSystem>("TextureStoreSubSystem");
 
 	//加载默认关卡
@@ -51,14 +51,15 @@ void GameEngine::Construct()
 void GameEngine::EventBegin()
 {
 	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
-	// timer_system.SetTimer(2000,[gc]() {
-	// 	if (auto p = gc.Peek())
-	// 	{
-	// 		p->GCSweep();
-	// 	}
-	// 	// std::cout << "{ " <<  << " } objects have been Swept!" << std::endl;
-	// 	return 2000;
-	// });
+	timer_system.SetTimer(2000,[gc]() {
+		int cnt{};
+		if (auto p = gc.Peek())
+		{
+			cnt = p->GCSweep();
+		}
+		std::cout << "{ " << cnt << " } objects have been Swept!" << std::endl;
+		return 2000;
+	});
 	game_world->StartSimulation();
 }
 
@@ -69,7 +70,7 @@ void GameEngine::Tick()
 {
 	tick_timer->Start(); // 关键：第一次先 Start
 
-	auto fps_surface = font_manager->GetTextSurface("            ",{});
+	auto fps_surface = GetTextSurface("            ",{});
 	auto fpsTex = NewObject(new StaticTexture());
 	RendererCenter::SetTextureFromSurface(fpsTex.Get(),fps_surface);
 	while (running) {
@@ -85,7 +86,7 @@ void GameEngine::Tick()
 		FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
 
 		//主线程查看回调函数 通知任务完成
-		renderer_center->ReadLeftCallback();
+
 		// 控制帧率
 		//查看是否有需要处理的事件
 
@@ -100,6 +101,7 @@ GameEngine::~GameEngine()
 	// 清理
 	engine_subsystem->DeInitAllSubSystem();
 	timeEndPeriod(1);
+	SDL_Quit();
 }
 
 GCWeakPtr<GameWorld> GameEngine::GetGameWorld()
@@ -114,10 +116,11 @@ GCWeakPtr<Widget> GameEngine::AddWidgetToViewport(Widget *widget)
 	return GCWeakPtr<Widget>(ret);
 }
 
-EngineState GameEngine::GetEngineAttribution() const
+EngineState GameEngine::GetEngineAttribution()
 {
 	EngineState engine_state;
 	engine_state.DeltaTime = delta_time;
+	SDL_GetWindowSize(renderer_center->window, &engine_state.ScreenSize.x, &engine_state.ScreenSize.y);
 	return engine_state;
 }
 
@@ -140,10 +143,15 @@ void GameEngine::OnChangeWorld(GameWorld* new_world)
 	game_world->tick_SubSystem->BindEvent(renderer_center.ptr, "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
 	game_world->tick_SubSystem->BindEvent(renderer_center.ptr, "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
 
-	game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr,"synchronization",Event("synchronization",[this](TEventParams e) {
-		this->renderer_center->ReadLeftCallback();
-	}));
+	// game_world->tick_SubSystem->dispatcher_system.BindEventTo(renderer_center.ptr,"synchronization",Event("synchronization",[this](TEventParams e) {
+	// 	this->renderer_center->ReadLeftCallback();
+	// }));
 }
+std::shared_ptr<SDL_Texture> GameEngine::GetDefaultTexture()
+{
+	return renderer_center->DefaultTexture;
+}
+
 
 
 

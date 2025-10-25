@@ -16,7 +16,6 @@ struct PhysicsBufferShot
 class TickSubSystem : public EngineSubSystem
 {
     std::vector<PhysicsBufferShot> physics_buffer;
-	std::thread render_thread;
     std::vector<std::atomic<bool>> fence;
     std::atomic<bool> is_stop;
     std::mutex mtx;

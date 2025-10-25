@@ -16,13 +16,14 @@ class Actor : public Object
 {
     //Attribution
 	//GCPtr<StaticTexture> collision_box;
-
+	Transform transform;
 
 	//Component
     bool isShowInGame;
 	bool is_active;
 	bool hidden_in_game;
 	bool is_begin_event_handled;
+
 //每个actor内部有个计时器组件，用来定时处理事件
 
 
@@ -41,6 +42,7 @@ protected:
 	ActorMobility mobility;
 public:
 	bool is_pre_kill = false; // for render thread 防止悬空指正延迟删除
+	bool open_physics;
 public:
 
     Actor();
@@ -57,11 +59,18 @@ public:
     virtual void EventEnd(){}
 
 
+	//void SimulationPhysics();
+
 	void DestroyActor();
     //attribution
 
 	void SetMobility(ActorMobility target_mobility);
-	//Add
+
+    void SetActorTransform(Transform trans);
+
+    void AddActorTransform(Transform trans);
+
+    //Add
 	void AddActorWorldLocation(Vec2<float> dis) const;
 
     //Get

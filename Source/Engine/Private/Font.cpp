@@ -6,13 +6,11 @@
 #include "Types/FontStyle.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 
-FontStyle FontRenderer::default_font;
-FontRenderer::FontRenderer() : fontCache(3)
+FontRenderer::FontRenderer()
 {
 	if (!TTF_Init()) {
 		Log("TTF 初始化失败");
 		throw std::runtime_error("TTF_Init failed: " + std::string(SDL_GetError()));
-		return;
 	}
 	// fontCache.OnEvict = [](TTF_Font*& font){
 	//     if(font) {
@@ -36,7 +34,7 @@ FontRenderer::FontRenderer() : fontCache(3)
 			}
 		}
 	}
-	default_font.font = std::shared_ptr<TTF_Font>(TTF_OpenFont((path + "simkai.ttf").c_str(), 64),SDLTTFDeleter());
+	fonts.emplace("simkai24", TFont(TTF_OpenFont((path + "simkai.ttf").c_str(),24)));
 	//GCAllObjects.push_back(this);
 	NAME;
 }
@@ -49,16 +47,21 @@ FontRenderer& FontRenderer::Instance()
 
 std::shared_ptr<TTF_Font> FontRenderer::GetFont(const std::string &fontName, size_t size)
 {
-	if (auto font = fontCache.get(fontName))
+	std::string target_font = fontName+std::to_string(size);
+	// if (auto font = fontCache.get(target_font))
+	// {
+	// 	return *font;
+	// }
+	auto it = fonts.find(target_font);
+	if (it == fonts.end())
 	{
-		return *font;
+		if (!LoadFont(fontName,size))
+		{
+			Log("没有找到字体");
+			return fonts["simkai24"];
+		}
 	}
-	if (LoadFont(fontName,size))
-	{
-		return *fontCache.get(fontName);
-	}
-	LogWithLevel("没找到字体",Error);
-	return default_font.font;
+	return fonts[target_font];
 }
 
 // FontStyle FontRenderer::GetFontStyle(std::string fontName,size_t size)
@@ -81,22 +84,13 @@ std::shared_ptr<TTF_Font> FontRenderer::GetFont(const std::string &fontName, siz
 bool FontRenderer::LoadFont(const std::string &fontName, const size_t size)
 {
     //fontMap[fontName].c_str();
-	auto font = std::shared_ptr<TTF_Font>(TTF_OpenFont(fontMap[fontName].c_str(), size),SDLTTFDeleter());
+	auto font = TFont(TTF_OpenFont(fontMap[fontName].c_str(), size));
     if(font.get())
     {
-        fontCache.put(fontName + std::to_string(size),font);
+        //fontCache.put(fontName + std::to_string(size),font);
         return true;
     }
     return false;
-}
-
-std::shared_ptr<SDL_Surface> FontRenderer::GetTextSurface(const std::string& str, const FontStyle &fs)
-{
-	auto surface = TSurface;
-	auto font = fs.font.get();
-	surface.reset(TTF_RenderText_Blended(font, str.c_str(), str.length(), fs.text_color));
-	SDL_SetSurfaceBlendMode(surface.get(), SDL_BLENDMODE_BLEND); // 启用混合模式
-	return surface;
 }
 
 
@@ -130,7 +124,31 @@ void FontRenderer::UpdateTextTexture(SDL_Texture *texture,
     }
 }
 
+const std::unordered_map<std::string, std::shared_ptr<TTF_Font>>* FontRenderer::GetFontMap() const
+{
+	return &fonts;
+}
+
 FontRenderer::~FontRenderer()
 {
+	//所有字体引用都必须来自fonts，由fonts释放
+	for (auto& font : fonts | std::views::values)
+	{
+		font.reset();
+	}
     TTF_Quit();
+}
+
+std::shared_ptr<TTF_Font> GetFont(const std::string &fontName, size_t size)
+{
+	return FontRenderer::Instance().GetFont(fontName,size);
+}
+
+std::shared_ptr<SDL_Surface> GetTextSurface(const std::string& str, const FontStyle& fs)
+{
+	auto surface = TSurface(nullptr);
+	auto font = fs.font.get();
+	surface.reset(TTF_RenderText_Blended(font, str.c_str(), str.length(), fs.text_color));
+	SDL_SetSurfaceBlendMode(surface.get(), SDL_BLENDMODE_BLEND); // 启用混合模式
+	return surface;
 }

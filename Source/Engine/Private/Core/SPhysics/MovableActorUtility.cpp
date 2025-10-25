@@ -12,14 +12,15 @@ PhysicsType MovableUtility::GetPhysicsType()
     return PhysicsType::Movable;
 }
 
-void MovableUtility::HandleVelocity(float delta_time)
-{
-	SPhysicsBaseUtility::HandleVelocity(delta_time);
-}
+// void MovableUtility::HandleVelocity(float delta_time)
+// {
+// 	SPhysicsBaseUtility::HandleVelocity(delta_time);
+// }
 
 void MovableUtility::Init()
 {
     SPhysicsBaseUtility::Init();
+	NAME;
 }
 
 void MovableUtility::SetCollisionBound(FRect box)

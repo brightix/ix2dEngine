@@ -1,7 +1,6 @@
 #include "Classes/Component/SenceComponent/Texture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
-#include "Classes/SubSystem/TextureStoreSubSystem.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 
 
@@ -32,33 +31,7 @@ void Texture::SetPivot(Vec2<float> p)
 
 
 void Texture::Copy(Texture& other)
-{
-	// auto task = RenderTask();
-	// task.task = [this,other]() {
-	// 	EventParams e;
-	// 	w = other.w;
-	// 	h = other.h;
-	// 	auto t = SDL_CreateTexture(GetRenderer(),
-	// 	SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-	// 	w, h);
-	//
-	// 	// 保存原渲染目标
-	// 	SDL_Texture* origTarget = SDL_GetRenderTarget(r);
-	//
-	// 	// 设置新纹理为渲染目标
-	// 	SDL_SetRenderTarget(r, tex.get());
-	//
-	// 	// 渲染原纹理到新纹理
-	// 	SDL_RenderTexture(r, other.in_texture.get(), nullptr, nullptr);
-	//
-	// 	// 恢复原渲染目标
-	// 	SDL_SetRenderTarget(r, origTarget);
-	// 	return e;
-	// };
-	// task.callback = [this](EventParams e) {
-	// 	SetStaticTexture(*e.Get<std::shared_ptr<SDL_Texture>("new_texture"));
-	// };
-}
+{}
 
 std::shared_ptr<SDL_Texture> Texture::GetTexture() const
 {
@@ -98,20 +71,6 @@ void Texture::SetNewTexture(std::shared_ptr<SDL_Texture> new_texture)
 	}
 }
 
-void Texture::SetStaticTexture(std::shared_ptr<SDL_Texture> new_texture)
-{
-	in_texture = new_texture;
-	if (new_texture)
-	{
-		w = new_texture->w;
-		h = new_texture->h;
-	}
-	else
-	{
-		w = 0;
-		h = 0;
-	}
-}
 
 // void Texture::AsyncSetTextureFromSurface(std::shared_ptr<SDL_Surface> new_surface)
 // {

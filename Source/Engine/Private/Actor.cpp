@@ -10,8 +10,10 @@
 
 Actor::Actor() : Actor(Transform()){}
 Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
-                                    window(nullptr),
-                                    mobility(ActorMobility::Static) { }
+                                    is_begin_event_handled(false),
+                                    window(nullptr), transform(tf),
+                                    mobility(ActorMobility::Static), open_physics(false)
+{ }
 
 Actor::~Actor() = default;
 
@@ -22,7 +24,9 @@ void Actor::Construct()
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
 	auto default_image = NewObject(new StaticTexture());
 	default_image->name = "default_texture";
+	default_image->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({100,100})));
 	Root->MountedComponent(default_image);
+	SetActorTransform(transform);
 }
 
 void Actor::EventBegin()
@@ -63,25 +67,7 @@ void Actor::SetMobility(const ActorMobility target_mobility)
 }
 
 
-void Actor::AddActorWorldLocation(Vec2<float> dis) const
-{
-	Root->AddComponentWorldLocation(dis);
-}
 
-Location Actor::GetWorldLocation() const
-{
-	return Root->GetComponentTransform().location;
-}
-
-Vec2<float> Actor::GetRelativeLocation()
-{
-	return {};
-}
-
-Transform Actor::GetWorldTransform() const
-{
-	return Root->GetComponentTransform();
-}
 
 void Actor::RenderOnScreen()
 {
@@ -110,4 +96,40 @@ bool Actor::IsActive() const
 bool Actor::IsVisible() const
 {
 	return !hidden_in_game;
+}
+//=====================================================
+// 🧠 Transform 控制
+//=====================================================
+void Actor::SetActorTransform(Transform trans)
+{
+	Root->SetComponentWorldLocation(trans.location);
+	Root->SetComponentWorldRotation(trans.rotation);
+}
+
+void Actor::AddActorTransform(Transform trans)
+{
+	Root->AddComponentWorldLocation({trans.location.x,trans.location.y});
+	Root->AddComponentWorldRotation(trans.rotation);
+}
+
+void Actor::AddActorWorldLocation(Vec2<float> dis) const
+{
+	Root->AddComponentWorldLocation(dis);
+}
+//=====================================================
+// Get 属性
+//=====================================================
+Location Actor::GetWorldLocation() const
+{
+	return Root->GetComponentTransform().location;
+}
+
+Vec2<float> Actor::GetRelativeLocation()
+{
+	return {};
+}
+
+Transform Actor::GetWorldTransform() const
+{
+	return Root->GetComponentTransform();
 }

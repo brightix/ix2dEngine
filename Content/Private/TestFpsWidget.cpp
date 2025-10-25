@@ -13,10 +13,10 @@ TestFps::TestFps()
 void TestFps::PreConstructEvent()
 {
     UserWidget::PreConstructEvent();
-
+	NAME;
     auto text = CreateWidget(new TextBlockWidget);
     FontStyle fontStyle;
-    fontStyle.font = FontRenderer::Instance().GetFont("arial.ttf", 24);
+    fontStyle.font = FontRenderer::Instance().GetFont("simkai", 24);
     text->SetFontStyle(fontStyle);
     text->SetText("Hello World!");
     AddChild("Fps_Text", text);

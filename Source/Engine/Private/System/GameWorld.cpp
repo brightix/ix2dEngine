@@ -24,23 +24,31 @@ void GameWorld::Construct()
 	//world_subsystem->ForAllSubSystemInit();
 
 	viewport = NewObject(new CanvasWidget);
+
+
 	dispatcher_system.AddEventDispatcher("EventBegin");
 }
 
 void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
-	game_mode = make_GCPtr<GameModeBase>(new GameModeBase());
-	game_mode->EventBegin();
+	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
 
 	AddToViewport(new TestFps);
 
-	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
-	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
-	// 	dd->DestroyActor();
-	// 	return -1;
-	// });
+ 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
+	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
+		dd->DestroyActor();
+		return -1;
+	});
+	FRect bound;
+	float h = GameEngine::Instance().GetEngineAttribution().ScreenSize.x;
+	float w = GameEngine::Instance().GetEngineAttribution().ScreenSize.y;
 
+	bound.h = h;
+	bound.w = w;
+
+	RandCreateActorInBox(bound,10);
 	is_simulation = true;
 	dispatcher_system.CallDispatcher("EventBegin");
 }
@@ -83,7 +91,7 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 {
 	if (is_server)
 	{
-		GCPtr<Controller> t = make_GCPtr<Controller>(controller);
+		GCPtr<Controller> t = SpawnActor<Controller>(controller);
 		controllers.push_back(t);
 		t->Construct();
 		t->EventBegin();

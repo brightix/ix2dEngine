@@ -2,6 +2,7 @@
 #include <unordered_set>
 
 #include "SPhysicsUtilityBase.hpp"
+#include "Utilities/GCWeakPtr.hpp"
 #include "Utilities/QuadTree.hpp"
 
 
@@ -18,7 +19,7 @@ class SPhysics
     WorldPhysics world_physics;
     float GravityForce = -1.f;
     //std::vector<SPhysicsTypeBase*> actors;
-    std::unordered_set<SPhysicsBaseUtility*> actors;
+    std::unordered_set<SPhysicsBaseUtility*> units;
     QuadTree collision_tree;
 public:
     SPhysics();
@@ -26,10 +27,15 @@ public:
 
     ~SPhysics()= default;
 
-    void Register(SPhysicsBaseUtility *actor);
-    void simulation(double delta_time);
-    void HandleVelocity(float delta_time);
+    void Register(SPhysicsBaseUtility* unit);
+	void DeRegister(SPhysicsBaseUtility* unit);
+	void simulation(double delta_time);
+    //void HandleVelocity(float delta_time);
     static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);
 
+	void DebugTree()
+	{
+		collision_tree.DebugTree();
+	}
 };
 

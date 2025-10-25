@@ -14,14 +14,14 @@ struct GCObject
 	std::vector<GCObject*> referencing;
 	GCObject();
 
-	//GC安全
+	//GC安全 只创建实例，不执行construct和绑定事件
 	template<typename T, typename ...Args>
-	GCPtr<T> make_GCPtr(Args&&...args)
+	GCPtr<T> NewGCPtr(Args&&...args)
 	{
 		return GCPtr<T>(new T(std::forward<Args>(args)...), this);
 	}
 	template<typename T>
-	GCPtr<T> make_GCPtr(T* p)
+	GCPtr<T> NewGCPtr(T* p)
 	{
 		return GCPtr<T>(p, this);
 	}

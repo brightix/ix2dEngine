@@ -1,11 +1,10 @@
 #pragma once
 #include <typeinfo>
-//#define sptr std::shared_ptr
 #define UpDir    Vec2<int>(0, -1)
 #define DownDir  Vec2<int>(0, 1)
 #define LeftDir  Vec2<int>(-1, 0)
 #define RightDir Vec2<int>(1, 0)
-
+#define PI 3.14159265
 
 #define DebugMod 1
 
@@ -17,20 +16,22 @@
 
 #define Cast_(T,U) dynamic_cast<T>(U)
 
-#define NewRendererTask(T) RendererCenter::AddRendererTask(T)
+#define NewRendererTask(T) RendererCenterBackUp::AddRendererTask(T)
 
 #define TTexture(x)     std::shared_ptr<SDL_Texture>(x,SDLTextureDeleter())
-#define TSurface	 std::shared_ptr<SDL_Surface>(nullptr,SDLSurfaceDeleter())
-#define TFont		 std::shared_ptr<TTF_Font>(nullptr,SDLTTFDeleter())
+#define TSurface(x)	 std::shared_ptr<SDL_Surface>(x,SDLSurfaceDeleter())
+#define TFont(x)		 std::shared_ptr<TTF_Font>(x,SDLTTFDeleter())
 
 
 #define RenderCallback_SetStaticTexture(Texture,tex) [&Texture,tex] {	\
 	texture->SetStaticTexture(tex.get());								\
 }																		\
 
-#define Color_White SDL_Color(255,255,255,255)
+#define WHITE SDL_Color(255,255,255,255)
 
-#define Color_Red SDL_Color(255,0,0,255)
+#define RED SDL_Color(255,0,0,255)
+
+#define BLUE SDL_Color(0,0,255,255)
 
 
 

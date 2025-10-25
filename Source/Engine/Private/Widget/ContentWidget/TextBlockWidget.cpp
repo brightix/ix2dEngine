@@ -3,6 +3,11 @@
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/RendererCenter.hpp"
 #include "System/Font.hpp"
+#include "Types/FontStyle.hpp"
+TextBlockWidget::TextBlockWidget()
+{
+	NAME;
+}
 
 void TextBlockWidget::PreConstructEvent()
 {
@@ -13,14 +18,15 @@ void TextBlockWidget::PreConstructEvent()
 void TextBlockWidget::SetText(const std::string& new_text)
 {
     text = new_text;
-    auto text_surface = FontRenderer::GetTextSurface(text,font_style);
-    RendererCenter::SetTextureFromSurface(widget_texture.Get(), text_surface);
+    auto text_surface = GetTextSurface(text,font_style);
+	auto t = widget_texture.Get();
+    RendererCenter::SetTextureFromSurface(t, text_surface);
 }
 
 void TextBlockWidget::SetFontStyle(const FontStyle &new_font_style)
 {
     font_style = new_font_style;
-    auto text_surface = FontRenderer::GetTextSurface(text,font_style);
+    auto text_surface = GetTextSurface(text,font_style);
     RendererCenter::SetTextureFromSurface(widget_texture.Get(), text_surface);
 }
 

@@ -5,5 +5,5 @@
 struct SystemConfig
 {
     int TargetFps;
-    Vec2<double> ViewportSize;
+    Vec2<int> ViewportSize;
 };

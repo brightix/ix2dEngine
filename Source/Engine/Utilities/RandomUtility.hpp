@@ -6,6 +6,14 @@
 #include "FuncLib/SystemLib.hpp"
 
 
+static double Rand()
+{
+	// 静态保证每次调用不会重新初始化随机数生成器
+	static std::mt19937 rng(std::random_device{}());
+	static std::uniform_real_distribution<double> dist(0.0, 1.0);
+	return dist(rng);
+}
+
 class RandomUtility : public EngineSubSystem
 {
     uint32_t seed;
@@ -13,7 +21,7 @@ class RandomUtility : public EngineSubSystem
     std::unordered_map<size_t, std::pair<std::mt19937,std::uniform_int_distribution<int>>> map;
     std::uniform_int_distribution<int> reg_seed{0, INT32_MAX};
 public:
-    explicit RandomUtility() : seed(0) {}
+    explicit RandomUtility() : seed(std::random_device{}()) {}
 
     std::optional<int> GetRandom(const std::string& reg_name)
     {

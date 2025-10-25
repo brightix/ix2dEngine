@@ -2,7 +2,7 @@
 #include "SceneComponent.hpp"
 #include "Classes/Core/SPhysics/MovableActorUtility.hpp"
 
-class CollisionBox final : public SceneComponent, public MovableUtility
+class CollisionBox final : public SceneComponent
 {
 public:
     CollisionBox();

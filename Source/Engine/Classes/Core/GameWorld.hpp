@@ -122,3 +122,14 @@ GCPtr<T> SpawnActor(T* actor)
 }
 
 
+inline void RandCreateActorInBox(const FRect& Box, const int n)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		Transform t;
+		t.location.x = Box.x + Box.w * Rand();
+		t.location.y = Box.y + Box.h * Rand();
+		SpawnActor(new Actor(t));
+	}
+}
+

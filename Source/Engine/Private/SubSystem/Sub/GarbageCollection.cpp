@@ -7,7 +7,7 @@
 
 GarbageCollection::GarbageCollection()
 {
-    name = "GarbageCollection";
+    NAME;
 }
 
 void GarbageCollection::GCMark(GCObject *gc_object)

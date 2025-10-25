@@ -2,6 +2,7 @@
 #include <SDL3/SDL_rect.h>
 
 #include "Classes/Component/Component.hpp"
+#include "Classes/Core/SPhysics/MovableActorUtility.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Enums/ActorVisibility.hpp"
 #include "Types/Enums/LayerHierachy.hpp"
@@ -16,6 +17,8 @@ protected:
      * 逻辑变换
      */
     Transform transform;
+	Location relative_location;
+	Rotation relative_rotation;
     int w;
     int h;
 
@@ -23,17 +26,21 @@ protected:
      * 渲染枢轴
      */
     Vec2<float> pivot;
-
-
+	GCPtr<SPhysicsBaseUtility> physics_body;
 	std::unordered_map<std::string, GCPtr<SceneComponent>> mounted_components;
 	ComponentVisibility visibility = ComponentVisibility::Visible;
+	bool open_physics = true;
 public:
 	LayerHierarchy layer;
     SceneComponent();
-
     explicit SceneComponent(const Transform& trans);
+
+	void Construct() override;
+
+
 	Transform GetComponentTransform();
-	void AddComponentWorldLocation(Vec2<float> v);
+	void AddComponentWorldLocation(const Vec2<float>& added_loc);
+
 	void SetComponentWorldLocation(const Location& new_loc);
 
 
@@ -70,6 +77,8 @@ public:
 	void ForRenderData(std::vector<RenderData>& data);
     virtual void OfferRenderData(std::vector<RenderData>& data);
 
+	bool IsSceneComponentOpenedPhysics() const;
+
 
 	SDL_FRect GetComponentRenderRect() const;
 	/**
@@ -86,4 +95,8 @@ public:
 public:
 
 	virtual void Debug_RenderOutline(std::vector<RenderData>& data);
+
+	void SetComponentWorldRotation(const Rotation& rotation);
+
+	void AddComponentWorldRotation(const Rotation& rotation);
 };

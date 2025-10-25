@@ -43,4 +43,9 @@ struct FRect
 
 	// 获取下边缘
 	float bottom() const { return y + h; }
+
+	SDL_FRect CastToSDL_FRect() const
+	{
+		return SDL_FRect(x,y,w,h);
+	}
 };

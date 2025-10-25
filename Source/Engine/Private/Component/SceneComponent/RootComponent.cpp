@@ -2,7 +2,7 @@
 
 RootComponent::RootComponent()
 {
-
+	SceneComponent::name = "Root";
 }
 
 RootComponent::RootComponent(const Transform& transform)
@@ -10,7 +10,3 @@ RootComponent::RootComponent(const Transform& transform)
 	this->transform = transform;
 }
 
-PhysicsType RootComponent::GetPhysicsType()
-{
-	return PhysicsType::Static;
-}

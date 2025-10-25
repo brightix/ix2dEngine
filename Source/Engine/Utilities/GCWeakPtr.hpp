@@ -81,6 +81,10 @@ public:
 	GCWeakPtr<U> Cast()
 	{
 		U* p = dynamic_cast<U*>(ptr);
+		if (!p)
+		{
+			LogWithLevel("GCWeak Cast失败",FatalError);
+		}
 		return GCWeakPtr<U>(p);
 	}
 

@@ -30,7 +30,7 @@ void Controller::Construct()
 
 	input_map = NewObject<InputMap>(new InputMap());
 	auto st = NewObject<StaticTexture>(new StaticTexture);
-	RendererCenter::SetTextureFromSurface(st.Get(),FontRenderer::GetTextSurface("                    "));
+	RendererCenter::SetTextureFromSurface(st.Get(),GetTextSurface("                    "));
 	Root->MountedComponent(st);
 }
 

@@ -4,28 +4,28 @@
 
 #include "Classes/Core/GameEngine.hpp"
 #include "Types/RenderData.hpp"
+#include "Utilities/FuncLib/Deleter.hpp"
 
 SceneComponent::SceneComponent() : SceneComponent(Transform{}){ }
 SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
+
+void SceneComponent::Construct()
+{
+	Component::Construct();
+	if (open_physics)
+	{
+		physics_body = NewGCPtr(new SPhysicsBaseUtility);
+		physics_body->SetOwner(this);
+	}
+}
+
 Transform SceneComponent::GetComponentTransform()
 {
 	return transform;
 }
 
-void SceneComponent::AddComponentWorldLocation(Vec2<float> v)
-{
-	transform.location += v;
-	for (const auto& val : mounted_components | std::views::values)
-	{
-		val->AddComponentWorldLocation(v);
-	}
-}
 
-void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
-{
-	transform.location.x = new_loc.x;
-	transform.location.y = new_loc.y;
-}
+
 
 void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
 {
@@ -72,6 +72,8 @@ void SceneComponent::ForRender()
 void SceneComponent::OfferRenderData(std::vector<RenderData>& data)
 {}
 
+bool SceneComponent::IsSceneComponentOpenedPhysics() const { return open_physics; }
+
 SDL_FRect SceneComponent::GetComponentRenderRect() const
 {
 	return SDL_FRect(transform.location.x - w * pivot.x, transform.location.y - h * pivot.y, w * transform.scaling.horizontal, h * transform.scaling.vertical);
@@ -90,8 +92,10 @@ Vec2<float> SceneComponent::GetComponentRenderLocation() const
 void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 {
 	//单线程
-	data.emplace_back(RenderData{RendererCenter::CreateOutLineTexture({0,0,w,h}),transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
+	auto t = TTexture(RendererCenter::CreateOutLineTexture(Vec2<float>(w,h)));
+	data.emplace_back(RenderData{t ,transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
 }
+
 
 
 //递归调用接口
@@ -105,4 +109,61 @@ void SceneComponent::ForRenderData(std::vector<RenderData>& data)
 			child->ForRenderData(data);
 		}
 	}
+}
+
+
+//位置
+void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
+{
+	transform.location += added_loc;
+	if (open_physics)
+	{
+		physics_body->AddBodyWorldLocation(added_loc);
+	}
+	for (const auto& val : mounted_components | std::views::values)
+	{
+		val->AddComponentWorldLocation(added_loc);
+	}
+}
+void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
+{
+	//传递一个新位置，所有的子组件都需要以父位置为基准，便宜 相对量 位置
+	Location absolute_location = new_loc + relative_location;
+	transform.location = absolute_location;
+	if (open_physics)
+	{
+		physics_body->SetBodyWorldLocation(absolute_location);
+	}
+	for (const auto& val : mounted_components | std::views::values)
+	{
+		val->SetComponentWorldLocation(absolute_location);
+	}
+}
+
+
+//旋转
+// TODO 可能有问题
+void SceneComponent::SetComponentWorldRotation(const Rotation& rotation)
+{
+	//点绕点旋转
+	if (rotation.Point)
+	{
+		if (open_physics)
+		{
+			physics_body->SetBodyWorldRotation(rotation);
+		}
+		transform.location.RotateByAngle(rotation.Angle,{rotation.Point->x,rotation.Point->y});
+
+		//TODO 自转
+	}
+	transform.rotation.Angle = rotation.Angle;
+	for (const auto& val : mounted_components | std::views::values)
+	{
+		val->SetComponentWorldRotation(rotation);
+	}
+}
+
+void SceneComponent::AddComponentWorldRotation(const Rotation& rotation)
+{
+	SetComponentWorldRotation({Rotation::Normalize(rotation.Angle),rotation.Point});
 }

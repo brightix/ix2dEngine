@@ -91,8 +91,9 @@ public:
 	}
 	void SetOuter(GCObject* owner)
 	{
+		GCUnLink(ptr,outer);
 		outer = owner;
-		GCLink(ptr,owner);
+		GCLink(ptr,outer);
 	}
 //绑定GC关系
 	static void GCLink(GCObject* child, GCObject* parent)

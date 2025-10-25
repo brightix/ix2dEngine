@@ -10,13 +10,24 @@ void TickSubSystem::Tick(double delta_time)
     auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
     std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
-
+	auto& physics = world->physicsSys;
 	std::vector<RenderData> render_data;
 	render_data.reserve(actors.size());
 	if (buffer_type == 1)
 	{
 		//计算物理
-		world->physicsSys.simulation(delta_time);
+		physics.simulation(delta_time);
+		// for (auto& a : actors)
+		// {
+		// 	if (a->IsActive())
+		// 	{
+		// 		if (a->open_physics)
+		// 		{
+		// 			a->SimulationPhysics();
+		// 		}
+		// 		a->PostPhysicsTick(delta_time);
+		// 	}
+		// }
 		//映射物理
 		for (auto& a : actors)
 		{
@@ -61,6 +72,7 @@ void TickSubSystem::Tick(double delta_time)
 		dispatcher_system.CallDispatcher("RenderSceneDataReady", render_data_ready_p);
 
 
+
 		//Widget
 		EventParams widget_data;
 		std::vector<GCWeakPtr<Widget>> v;
@@ -68,7 +80,8 @@ void TickSubSystem::Tick(double delta_time)
 		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
-		// 显示到窗口
+		physics.DebugTree();
+// 显示到窗口
 		dispatcher_system.CallDispatcher("RenderPresent");
 		SDL_RenderPresent(GetRenderer());
 

@@ -15,15 +15,16 @@ TextureStoreSubSystem::TextureStoreSubSystem()
 
 void TextureStoreSubSystem::Init()
 {
-	auto task = RenderTask();
-	task.task = []() {
-		EventParams e;
-		e.Add("new_texture",RendererCenter::CreateOutLineTexture(FRect(0,0,10,10)));
-		return e;
-	};
-	task.callback = [this](EventParams e) {
-		DefaultTexture = *e.Get<std::shared_ptr<SDL_Texture>>("new_texture");
-	};
+	// auto task = RenderTask();
+	// task.task = []() {
+	// 	EventParams e;
+	// 	e.Add("new_texture",RendererCenter::CreateOutLineTexture(FRect(0,0,10,10)));
+	// 	return e;
+	// };
+	// task.callback = [this](EventParams e) {
+	// 	DefaultTexture = *e.Get<std::shared_ptr<SDL_Texture>>("new_texture");
+	// };
+	DefaultTexture = GameEngine::Instance().GetDefaultTexture();
 }
 
 SDL_Texture* TextureStoreSubSystem::GetTexture(const std::string& texture_name)
@@ -55,10 +56,5 @@ void TextureStoreSubSystem::DeInit()
 	EngineSubSystem::DeInit();
 	DefaultTexture.reset();
 	cached_texture.clear();
-}
-
-std::shared_ptr<SDL_Texture> TextureStoreSubSystem::GetDefaultTexture()
-{
-	return DefaultTexture;
 }
 

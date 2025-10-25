@@ -36,13 +36,14 @@ class GameEngine final : public Object
 
     mutable GCObject* GCRoot;
 
-	GCWeakPtr<RandomUtility> random_utility;
+
 	//组件
 	GCPtr<GameWorld> game_world;
 
 	//子系统
 	GCPtr<SubSystemManager> engine_subsystem;
 	std::unordered_set<GCPtr<Widget>> widgets;
+	GCWeakPtr<RandomUtility> random_utility;
 private:
     //只放全局变量初始化
     GameEngine();
@@ -66,6 +67,8 @@ public:
 
     void OnChangeWorld(GameWorld *new_world);
 
+    std::shared_ptr<SDL_Texture> GetDefaultTexture();
+
     ~GameEngine() override;
 //base
     //SDL_Renderer* GetRenderer() { return renderer; }
@@ -79,11 +82,15 @@ public:
 //Widget
 
 	GCWeakPtr<CanvasWidget> GetViewport();
-	Vec2<double> GetViewportSize() { return SysConfig.ViewportSize; }
+	Vec2<int> GetViewportSize() { return SysConfig.ViewportSize; }
 
     GCWeakPtr<Widget> AddWidgetToViewport(Widget *widget);
-	//属性
+
+    EngineState GetEngineAttribution();
+
+    //属性
 	EngineState GetEngineAttribution() const;
+
 };
 
 

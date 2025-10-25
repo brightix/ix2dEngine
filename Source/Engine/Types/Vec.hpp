@@ -19,6 +19,13 @@ struct Vec2
         x = static_cast<T>(V.x);
         y = static_cast<T>(V.y);
     }
+	template<typename U>
+	Vec2(Vec2&& V) noexcept
+	{
+    	x = static_cast<T>(V.x);
+    	y = static_cast<T>(V.y);
+	}
+
 	//template<type>
 	void operator+=(Vec2<T> other)
     {
@@ -55,6 +62,8 @@ struct Vec2
     	return *this/len;
     }
 };
+
+
 
 template<typename T>
 struct Vec

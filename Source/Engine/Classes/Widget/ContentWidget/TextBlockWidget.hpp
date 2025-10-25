@@ -10,7 +10,7 @@ class TextBlockWidget : public ContentWidget
     std::string text;
     FontStyle font_style;
 public:
-    TextBlockWidget(){}
+    TextBlockWidget();
     void PreConstructEvent() override;
     void SetText(const std::string& new_text);
     void SetFontStyle(const FontStyle& new_font_style);
