@@ -3,7 +3,6 @@
 #include <SDL3/SDL.h>
 
 #include "RendererCenter.hpp"
-#include "../Component/SenceComponent/Texture.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
@@ -81,15 +80,13 @@ public:
 
 //Widget
 
-	GCWeakPtr<CanvasWidget> GetViewport();
+	//GCWeakPtr<CanvasWidget> GetViewport();
 	Vec2<int> GetViewportSize() { return SysConfig.ViewportSize; }
 
     GCWeakPtr<Widget> AddWidgetToViewport(Widget *widget);
 
-    EngineState GetEngineAttribution();
-
     //属性
-	EngineState GetEngineAttribution() const;
+	EngineState GetEngineAttribution();
 
 };
 
@@ -109,6 +106,11 @@ inline SDL_Renderer* GetRenderer()
 inline bool IsValid(const size_t id)
 {
 	return Global_GCObject_Registry.contains(id) && !Global_GCObject_Registry[id]->is_pending_kill;
+}
+
+inline bool IsValid(const GCObject* obj)
+{
+	return IsValid(obj->id);
 }
 
 inline GCWeakPtr<Widget> AddToViewport(Widget* new_widget);

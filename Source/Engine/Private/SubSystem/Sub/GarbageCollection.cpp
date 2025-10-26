@@ -13,20 +13,19 @@ GarbageCollection::GarbageCollection()
 void GarbageCollection::GCMark(GCObject *gc_object)
 {
 	//对象不存在 or 已被标记
-	if (!gc_object || gc_object->bMarked) return;
-	if (gc_object->is_pending_kill)
-	{
-		for (auto parent : gc_object->referenced)
-		{
-			std::erase(parent->referencing,this);
-		}
-		return;
-	}
+	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
 	gc_object->bMarked = true;
-	for (auto child : gc_object->referencing)
+	auto& children = gc_object->referencing;
+	for (int i = 0; i<children.size(); i++)
 	{
-		GCMark(child);
+		//std::cout << children[i]->name << std::endl;
+		GCMark(children[i]);
 	}
+	// for (auto& child : children)
+	// {
+	// 	std::cout << child->name << std::endl;
+	// 	GCMark(child);
+	// }
 }
 
 int GarbageCollection::GCSweep()
@@ -48,6 +47,14 @@ int GarbageCollection::GCSweep()
 		if (obj && !obj->bMarked)
 		{
 			//to_delete.emplace_back(obj);
+			for (auto parent : obj->referenced)
+			{
+				std::erase(parent->referencing,obj);
+			}
+			if (obj->name == "未命名")
+			{
+				std::cout << "有未命名类" << std::endl;
+			}
 			std::cout << "移除了 " + obj->name << std::endl;
 			delete obj;
 			obj = nullptr;

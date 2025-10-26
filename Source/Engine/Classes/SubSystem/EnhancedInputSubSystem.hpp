@@ -36,7 +36,8 @@ struct EnhancedInputParam<Vec2<double>>
 	EnhancedInputParamStatus status;
 
 	EnhancedInputParam(const Vec2<double>& v, EnhancedInputParamStatus s = EnhancedInputParamStatus::Start)
-		: val(v), status(s) {}
+		: val(v), status(s)
+	{}
 
 	Vec2<double> Get() const { return val; }
 };

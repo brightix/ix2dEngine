@@ -6,7 +6,6 @@
 
 #include "../Classes/Component/SenceComponent/Texture.hpp"
 #include "Utilities/Exception.hpp"
-#include "Utilities/DataStructure/LRUCache.hpp"
 #include "Types/FontStyle.hpp"
 class FontRenderer// : public Object
 {

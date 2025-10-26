@@ -1,5 +1,6 @@
 #include "public/TestPawn.hpp"
 
+#include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/RendererCenter.hpp"
@@ -15,6 +16,8 @@ void TestPawn::Construct()
 {
 	Pawn::Construct();
 	mobility = ActorMobility::Movable;
-	GetSceneComponent<StaticTexture>("default_texture")
-		->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({200,200},BLUE)));
+	auto st = GetSceneComponent("default_texture").Cast<StaticTexture>();
+	st->SetNewTexture(TTexture(RendererCenter::CreateFilledTexture({200,200})));
+	collision_box = Root->MountedComponent(new CollisionBox());
+	collision_box->SetBoundBox({st->w,st->h});
 }

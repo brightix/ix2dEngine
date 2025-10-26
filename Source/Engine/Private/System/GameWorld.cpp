@@ -5,17 +5,18 @@
 #include "Classes/SubSystem/ViewportSubSystem.hpp"
 #include "Public/TestFpsWidget.hpp"
 #include "Classes/Widget/PanelWidget/CanvasWidget.hpp"
+#include "Public/TestPawn.hpp"
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
 void GameWorld::Construct()
 {
-	NAME;
+	name = "World";
 	auto game = game_mode;
 	is_server = true;
 
 	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
 	//窗口
-	viewport_sub = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
+	//viewport_sub = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
 	//tick管理器
 	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
 	tick_SubSystem->SetBufferType(1);
@@ -34,7 +35,9 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
 
-	AddToViewport(new TestFps);
+
+	auto fps = CreateWidget(new TestFps);
+	AddToViewport(fps);
 
  	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
 	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
@@ -48,7 +51,7 @@ void GameWorld::StartSimulation()
 	bound.h = h;
 	bound.w = w;
 
-	RandCreateActorInBox(bound,10);
+	//RandCreateActorInBox<TestPawn>(bound,10);
 	is_simulation = true;
 	dispatcher_system.CallDispatcher("EventBegin");
 }
@@ -93,8 +96,6 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 	{
 		GCPtr<Controller> t = SpawnActor<Controller>(controller);
 		controllers.push_back(t);
-		t->Construct();
-		t->EventBegin();
 		return t;
 	}
 	return {};
@@ -138,12 +139,9 @@ bool GameWorld::IsClient() const
 	return !is_server;
 }
 
-void GameWorld::AddToViewport(Widget *w)
+void GameWorld::AddToViewport(GCPtr<Widget> w)
 {
-	//auto gc = NewObject(w);
-
 	viewport->AddChild(w);
-	//widgets.emplace(gc);
 }
 
 

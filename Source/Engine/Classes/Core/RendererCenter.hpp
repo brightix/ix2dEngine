@@ -4,15 +4,13 @@
 #include <queue>
 
 #include "Classes/Object.hpp"
-#include "../Component/SenceComponent/Texture.hpp"
 #include "Classes/SubSystem/Sub/EngineSubsystem.hpp"
 #include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 #include "Types/RenderData.hpp"
-#include "Types/Enums/RenderPriority.hpp"
 
 class Actor;
 struct Transform;
-
+class Texture;
 //需要排序
 
 class RendererCenter : public EngineSubSystem
@@ -32,12 +30,12 @@ public:
 
 	void RenderWidget(GCWeakPtr<PanelWidget> viewport);
 
-	static SDL_Texture* CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = {255,0,0,255});
+	static SDL_Texture* CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
 
-	static SDL_Texture* CreateFilledTexture(Vec2<int> size);
+	static SDL_Texture* CreateFilledTexture(Vec2<int> size, SDL_Color color = EmeraldGreen);
 	// TODO 添加AsyncSetTexture();
 	static void SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
-	static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
+	//static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
 
 	void InitSDL();
 

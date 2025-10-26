@@ -23,6 +23,7 @@ protected:
 	GCPtr<PanelSlot> Root;
 public:
 	bool dirty;
+	bool is_initialized;
     Widget();
 
 	void Construct() final {}
@@ -41,7 +42,7 @@ public:
 	//系统调用的render
     virtual void NativeWidgetRender(FRect display_area);
 
-	virtual void AddChild(Widget *child){}
+	virtual void AddChild(GCPtr<Widget> child);
 	WidgetVisibility GetVisibility();
 	void SetVisibility(WidgetVisibility new_Visibility);
 
@@ -66,14 +67,20 @@ public:
 	Widget(const Widget&) = default;             // 显式允许拷贝
 	Widget(Widget&&) noexcept = default;         // 显式允许移动
 	~Widget() override = default;
-	template<typename T>
-	GCPtr<T> CreateWidget(T* widget)
-	{
-		static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
-		auto it = GCPtr<T>(widget,this);
-		widget->PreConstructEvent();
-		return it;
-	}
 };
 
+/**
+ *  This widget has no parent unless it is added to a viewport or to another widget.
+ * @tparam T
+ * @param widget
+ * @return Wrappered by GCPtr
+ */
+template<typename T>
+GCPtr<T> CreateWidget(T* widget)
+{
+	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
+	auto it = GCPtr<T>(widget,nullptr);
+	widget->PreConstructEvent();
+	return it;
+}
 

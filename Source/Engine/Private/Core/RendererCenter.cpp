@@ -3,14 +3,15 @@
 #include <set>
 #include <thread>
 #include <SDL3/SDL_render.h>
+#include <vector>
 #include "Types/RenderData.hpp"
 #include "../../Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 #include "Classes/Widget/Widget.hpp"
-#include <vector>
-
+#include "Classes/Component/SenceComponent/Texture.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Widget/PanelWidget/PanelWidget.hpp"
+
 SDL_Renderer* RendererCenter::renderer = nullptr;
 RendererCenter::RendererCenter() : window(nullptr)
 {
@@ -80,7 +81,8 @@ void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
 {
 	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
 	const auto& [w,h] = GameEngine::Instance().GetViewportSize();
-	viewport->NativeWidgetRender(FRect(0,0,w,h));
+	auto size = std::move(GameEngine::Instance().GetEngineAttribution().ScreenSize);
+	viewport->NativeWidgetRender({0,0,size.x,size.y});
 }
 
 SDL_Texture* RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_Color color)
@@ -110,7 +112,7 @@ SDL_Texture* RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_C
 	SDL_SetRenderTarget(renderer,nullptr);
 	return t;
 }
-SDL_Texture * RendererCenter::CreateFilledTexture(const Vec2<int> size)
+SDL_Texture * RendererCenter::CreateFilledTexture(const Vec2<int> size, SDL_Color color)
 {
 	SDL_Texture* texture_T = SDL_CreateTexture(
 		renderer,
@@ -120,7 +122,7 @@ SDL_Texture * RendererCenter::CreateFilledTexture(const Vec2<int> size)
 		size.y
 	);
 	SDL_SetRenderTarget(renderer, texture_T);
-	SDL_SetRenderDrawColor(renderer,255,255,255,255);
+	SDL_SetRenderDrawColor(renderer,color.r,color.g,color.b,color.a);
 	const auto rect_T = SDL_FRect(0, 0, size.x, size.y);
 	SDL_RenderFillRect(renderer,&rect_T);
 	SDL_SetRenderTarget(renderer, nullptr);

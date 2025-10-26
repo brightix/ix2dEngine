@@ -12,25 +12,15 @@ SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
 void SceneComponent::Construct()
 {
 	Component::Construct();
-	if (open_physics)
-	{
-		physics_body = NewGCPtr(new SPhysicsBaseUtility);
-		physics_body->SetOwner(this);
-	}
 }
-
-Transform SceneComponent::GetComponentTransform()
-{
-	return transform;
-}
-
-
-
 
 void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
 {
 	visibility = new_visibility;
 }
+
+
+
 
 ComponentVisibility SceneComponent::GetVisibility()
 {
@@ -43,6 +33,7 @@ bool SceneComponent::IsVisible() const
 }
 
 void SceneComponent::ComponentRender() {}
+
 void SceneComponent::SceneComponentTick(double delta_time)
 {
 	//先tick自己，后tick挂载的组件
@@ -52,13 +43,6 @@ void SceneComponent::SceneComponentTick(double delta_time)
 		it.second->SceneComponentTick(delta_time);
 	}
 }
-void SceneComponent::MountedComponent(GCPtr<SceneComponent> child_component)
-{
-	mounted_components.emplace(child_component->GetComponentName(),child_component);
-}
-
-
-
 //递归调用接口
 void SceneComponent::ForRender()
 {
@@ -66,6 +50,21 @@ void SceneComponent::ForRender()
 	for (const auto& child : mounted_components | std::views::values)
 	{
 		child->ForRender();
+	}
+}
+
+
+
+//递归调用接口
+void SceneComponent::ForRenderData(std::vector<RenderData>& data)
+{
+	OfferRenderData(data);
+	for (const auto& child : mounted_components | std::views::values)
+	{
+		if (child->IsVisible())
+		{
+			child->ForRenderData(data);
+		}
 	}
 }
 
@@ -97,29 +96,55 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 }
 
 
-
-//递归调用接口
-void SceneComponent::ForRenderData(std::vector<RenderData>& data)
+bool SceneComponent::SetComponentName(const std::string& new_name)
 {
-	OfferRenderData(data);
-	for (const auto& child : mounted_components | std::views::values)
+	if (parent_component && parent_component->OnMountedComponentNameChanged(name,new_name))
 	{
-		if (child->IsVisible())
-		{
-			child->ForRenderData(data);
-		}
+		name = new_name;
+		return true;
 	}
+	return false;
 }
 
+bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name)
+{
+
+	auto it = mounted_components.find(new_name);
+	if (it != mounted_components.end())
+	{
+		Log("场景组件命名已使用，驳回改名请求");
+		return false;
+	}
+	mounted_components[new_name] = std::move(mounted_components[component_name]);
+	mounted_components.erase(component_name);
+	return true;
+}
+
+
+Transform SceneComponent::GetComponentTransform()
+{
+	return transform;
+}
+
+//变换
+void SceneComponent::SetComponentTransform(Transform new_transform)
+{
+	new_transform.location += {relative_location.x,relative_location.y};
+	transform = new_transform;
+	// if (open_physics)
+	// {
+	// 	physics_body->SetComponentTransform(transform);
+	// }
+	for (const auto& val : mounted_components | std::views::values)
+	{
+		val->SetComponentTransform(transform);
+	}
+}
 
 //位置
 void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
 {
 	transform.location += added_loc;
-	if (open_physics)
-	{
-		physics_body->AddBodyWorldLocation(added_loc);
-	}
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		val->AddComponentWorldLocation(added_loc);
@@ -130,14 +155,19 @@ void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 	//传递一个新位置，所有的子组件都需要以父位置为基准，便宜 相对量 位置
 	Location absolute_location = new_loc + relative_location;
 	transform.location = absolute_location;
-	if (open_physics)
-	{
-		physics_body->SetBodyWorldLocation(absolute_location);
-	}
+	// if (open_physics)
+	// {
+	// 	physics_body->SetBodyWorldLocation(absolute_location);
+	// }
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		val->SetComponentWorldLocation(absolute_location);
 	}
+}
+
+Location SceneComponent::GetComponentWorldLocation()
+{
+	return transform.location;
 }
 
 
@@ -148,10 +178,10 @@ void SceneComponent::SetComponentWorldRotation(const Rotation& rotation)
 	//点绕点旋转
 	if (rotation.Point)
 	{
-		if (open_physics)
-		{
-			physics_body->SetBodyWorldRotation(rotation);
-		}
+		// if (open_physics)
+		// {
+		// 	physics_body->SetBodyWorldRotation(rotation);
+		// }
 		transform.location.RotateByAngle(rotation.Angle,{rotation.Point->x,rotation.Point->y});
 
 		//TODO 自转

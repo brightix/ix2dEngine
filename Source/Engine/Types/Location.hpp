@@ -3,6 +3,7 @@
 #include "var_type.hpp"
 #include "Vec.hpp"
 
+#include "Utilities/FuncLib/GlobalMacros.hpp"
 struct Location : var_type
 {
     float x;

@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
+#include <format>
 #include <set>
+#include <string>
 #include <vector>
 
 class GameWorld;
@@ -25,4 +27,11 @@ namespace ix
 			v.emplace_back(item);
 		}
 	}
+
+
+	inline std::string to_string(double val, int reserve_p)
+	{
+		return std::format("{:.{}f}", val, reserve_p);
+	}
 }
+

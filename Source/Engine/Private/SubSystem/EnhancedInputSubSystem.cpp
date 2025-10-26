@@ -4,6 +4,7 @@
 
 EnhancedInputSubSystem::EnhancedInputSubSystem() 
 {
+	NAME;
 }
 
 void EnhancedInputSubSystem::AddInputEventBool(SDL_Scancode scancode, std::function<void(EnhancedInputParam<bool>)> func)

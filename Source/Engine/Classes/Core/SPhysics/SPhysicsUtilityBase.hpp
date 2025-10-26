@@ -5,6 +5,7 @@
 #include "Types/FRect.hpp"
 #include "Types/Location.hpp"
 #include "Types/Rotation.hpp"
+#include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
 
 class SceneComponent;
@@ -20,12 +21,11 @@ class SPhysicsBaseUtility : public GCObject
 {
 public:
 	~SPhysicsBaseUtility() override;
-
 	FRect collision_box;
 	Vec2<float> velocity;
 	float quality = 10.f;
 	float force_attenuation = 1.0f;
-	bool is_simulated_physics;
+
 	PhysicsType type;
 	SceneComponent* owner;
 	std::string test_name;
@@ -43,10 +43,12 @@ public:
 
 
     virtual void Init();
-    void SetIsSimulatedPhysics(bool value);
+    // void SetIsSimulatedPhysics(bool value);
 	void SetOwner(SceneComponent* new_owner);
 
-	void SetBodyWorldLocation(const Location& location);
 
+	void SetBodyTransform(Transform transform);
+
+	void SetBodyWorldLocation(const Location& location);
 	void SetBodyWorldRotation(const Rotation& rotation);
 };

@@ -49,10 +49,10 @@ std::optional<Event> EventDispatcherSystem::GetEvent(Object* obj, const std::str
 	// {
 	// 	return bound_dispatcher[event_name][it_by_obj];
 	// }
-	// return std::nullopt;
+	return std::nullopt;
 }
 
-void EventDispatcherSystem::CallDispatcher(std::string event_name, std::optional<EventParams> event_params)
+void EventDispatcherSystem::CallDispatcher(const std::string& event_name, std::optional<EventParams> event_params)
 {
     auto it = bound_dispatcher.find(event_name);
 

@@ -11,7 +11,9 @@ class SubSystemManager : public Object
 	std::unordered_map<uint32_t,GCPtr<SubSystemBase>> mounted_subSystem;
 public:
     SubSystemManager()
-    {}
+    {
+	    NAME;
+    }
     ~SubSystemManager()= default;
 
 	template<typename T>

@@ -11,8 +11,6 @@
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 #include "Enum/ActorEnum.hpp"
 
-Pawn::Pawn() : Actor(Transform()), base_move_speed(200.f) {}
-
 Pawn::~Pawn()= default;
 
 void Pawn::Construct()
@@ -20,6 +18,7 @@ void Pawn::Construct()
 	Actor::Construct();
 	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem());
 	actor_components.emplace("movable",NewObject(new MovableComponent(this)));
+
 	base_move_speed = 200.f;
 }
 

@@ -14,7 +14,11 @@ struct GCObject
 	std::vector<GCObject*> referencing;
 	GCObject();
 
-	//GC安全 只创建实例，不执行construct和绑定事件
+    virtual ~GCObject();
+
+    bool IsActive();
+
+    //GC安全 只创建实例，不执行construct和绑定事件
 	template<typename T, typename ...Args>
 	GCPtr<T> NewGCPtr(Args&&...args)
 	{
@@ -25,8 +29,5 @@ struct GCObject
 	{
 		return GCPtr<T>(p, this);
 	}
-
-
-	virtual ~GCObject()= default;
 };
 

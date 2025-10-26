@@ -5,6 +5,9 @@ struct CanvasSlot : public PanelSlot
 {
 
 public:
-    CanvasSlot(){}
+    CanvasSlot()
+    {
+	    NAME;
+    }
     ~CanvasSlot(){}
 };

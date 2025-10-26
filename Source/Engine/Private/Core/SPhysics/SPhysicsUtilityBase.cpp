@@ -21,14 +21,19 @@ FRect SPhysicsBaseUtility::GetCollisionBox() const
     return collision_box;
 }
 
-void SPhysicsBaseUtility::SetIsSimulatedPhysics(bool value)
-{
-    is_simulated_physics = value;
-}
+// void SPhysicsBaseUtility::SetIsSimulatedPhysics(bool value)
+// {
+//     is_simulated_physics = value;
+// }
 
 void SPhysicsBaseUtility::SetOwner(SceneComponent* new_owner)
 {
 	owner = new_owner;
+}
+
+void SPhysicsBaseUtility::SetBodyTransform(Transform transform)
+{
+
 }
 
 void SPhysicsBaseUtility::SetBodyWorldLocation(const Location& location)

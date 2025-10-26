@@ -31,6 +31,11 @@ void Widget::NativeWidgetRender(FRect display_area)
     }
 }
 
+void Widget::AddChild(GCPtr<Widget> child)
+{
+	child.SetOuter(this);
+}
+
 WidgetVisibility Widget::GetVisibility()
 {
     return widget_visibility;

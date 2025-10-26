@@ -1,7 +1,7 @@
 #include "Classes/Actor.hpp"
 
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
-#include "Classes/Component/ActorComponent/RootComponent.h"
+#include "../Classes/Component/SenceComponent/RootComponent.h"
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
@@ -13,19 +13,18 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
                                     is_begin_event_handled(false),
                                     window(nullptr), transform(tf),
                                     mobility(ActorMobility::Static), open_physics(false)
-{ }
-
-Actor::~Actor() = default;
+{
+	NAME;
+}
 
 void Actor::Construct()
 {
-	NAME;
 	//场景默认根组件
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
-	auto default_image = NewObject(new StaticTexture());
-	default_image->name = "default_texture";
-	default_image->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({100,100})));
-	Root->MountedComponent(default_image);
+	//auto default_image = ;
+	Root->MountedComponent(new StaticTexture())->name = "default_texture";
+	//default_image->name = "default_texture";
+	//default_image->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({100,100})));
 	SetActorTransform(transform);
 }
 
@@ -67,7 +66,10 @@ void Actor::SetMobility(const ActorMobility target_mobility)
 }
 
 
-
+GCWeakPtr<SceneComponent> Actor::GetSceneComponent(const std::string& component_name) const
+{
+	return Root->GetSceneComponentByName(component_name);
+}
 
 void Actor::RenderOnScreen()
 {
@@ -88,10 +90,6 @@ void Actor::ForRenderOrder(std::vector<RenderData>& data) const
 // 	GameEngine::Instance().RenderTexture(collision_box,SDL_FRect(transform.location.x,transform.location.y,collision_box->w,collision_box->h));
 // }
 
-bool Actor::IsActive() const
-{
-	return is_active;
-}
 
 bool Actor::IsVisible() const
 {

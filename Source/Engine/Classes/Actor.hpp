@@ -2,12 +2,13 @@
 #include <SDL3/SDL.h>
 
 #include "Object.hpp"
-#include "Component/SenceComponent/Texture.hpp"
 #include "Types/Location.hpp"
 #include "Types/Transform.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
 
+struct RenderData;
+class SceneComponent;
 enum class ActorMobility;
 class ActorComponent;
 class GameWorld;
@@ -30,9 +31,6 @@ class Actor : public Object
 protected:
 
 	//关卡 负责管理生命周期
-	//GameWorld* game_world;
-
-	//Transform transform;
 	SDL_Window* window;
 	GCWeakPtr<GameWorld> game_world;
 
@@ -47,7 +45,6 @@ public:
 
     Actor();
 	explicit Actor(const Transform &tf);
-	~Actor() override;
 
 	void Construct() override;
     virtual void EventBegin();
@@ -101,24 +98,14 @@ public:
 	{
 		return Cast<T>(actor_components[component_name].Get());
 	}
-	template<typename T>
-	GCWeakPtr<T> GetSceneComponent(const std::string& component_name)
-	{
-		auto c = Root->GetSceneComponentByName(component_name);
-		return GCWeakPtr<T>(dynamic_cast<T*>(c.Get()));
-	}
+	GCWeakPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
 
 //Sys
 	virtual void RenderOnScreen();
 
     void ForRenderOrder(std::vector<RenderData>& data) const;
 
-    //void RenderCollisionBox() const;
-
-    bool IsActive() const;
 	bool IsVisible() const;
-private:
-	void AddToWorld(GCPtr<Actor> a) const;
 };
 
 template<typename T>

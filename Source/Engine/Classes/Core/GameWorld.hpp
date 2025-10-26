@@ -92,7 +92,7 @@ public:
 
 
 	//Widget
-	void AddToViewport(Widget *w);
+	void AddToViewport(GCPtr<Widget> w);
 };
 
 inline GameWorld* GetWorld()
@@ -121,15 +121,16 @@ GCPtr<T> SpawnActor(T* actor)
 	return a;
 }
 
-
-inline void RandCreateActorInBox(const FRect& Box, const int n)
+template<typename T>
+void RandCreateActorInBox(const FRect& Box, const int n)
 {
+	static_assert(std::is_base_of_v<Actor,T>,"T must be derived from Actor");
 	for (int i = 0; i < n; ++i)
 	{
 		Transform t;
 		t.location.x = Box.x + Box.w * Rand();
 		t.location.y = Box.y + Box.h * Rand();
-		SpawnActor(new Actor(t));
+		SpawnActor(new T(t));
 	}
 }
 

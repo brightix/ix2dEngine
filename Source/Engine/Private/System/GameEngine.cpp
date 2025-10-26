@@ -1,16 +1,12 @@
 #include "../../Classes/Core/GameEngine.hpp"
 
 #include "System/Font.hpp"
-#include "../../Classes/Component/SenceComponent/Texture.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
-#include "Types/FontStyle.hpp"
 #include "Types/RenderData.hpp"
-#include "Utilities/FuncLib/Deleter.hpp"
 
-GameEngine::GameEngine() : delta_time(0)
+GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 {
 	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
@@ -30,7 +26,6 @@ void GameEngine::Construct()
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
-	GCRoot = this;
 	SysConfig = {120, {640, 480}};
 
 
@@ -51,7 +46,7 @@ void GameEngine::Construct()
 void GameEngine::EventBegin()
 {
 	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
-	timer_system.SetTimer(2000,[gc]() {
+	timer_system.SetTimer(500,[gc]() {
 		int cnt{};
 		if (auto p = gc.Peek())
 		{
@@ -70,9 +65,9 @@ void GameEngine::Tick()
 {
 	tick_timer->Start(); // 关键：第一次先 Start
 
-	auto fps_surface = GetTextSurface("            ",{});
-	auto fpsTex = NewObject(new StaticTexture());
-	RendererCenter::SetTextureFromSurface(fpsTex.Get(),fps_surface);
+	//auto fps_surface = GetTextSurface("            ",{});
+	//auto fpsTex = NewObject(new StaticTexture());
+	//RendererCenter::SetTextureFromSurface(fpsTex.Get(),fps_surface);
 	while (running) {
 		consume_timer->Start();
 		delta_time = tick_timer->Click();       // 重置计时
@@ -82,8 +77,8 @@ void GameEngine::Tick()
 		game_world->Tick(delta_time);
 		timer_system.Run();
 
-		double fps = 1.0 / delta_time;
-		FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
+		//double fps = 1.0 / delta_time;
+		//FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
 
 		//主线程查看回调函数 通知任务完成
 

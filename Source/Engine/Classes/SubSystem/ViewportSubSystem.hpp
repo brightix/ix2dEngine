@@ -4,6 +4,9 @@
 class ViewportSubSystem : public WorldSubSystem
 {
 public:
-    ViewportSubSystem(){}
+    ViewportSubSystem()
+    {
+	    NAME;
+    }
     ~ViewportSubSystem(){}
 };

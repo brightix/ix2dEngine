@@ -1,12 +1,10 @@
-#include "../../../Classes/Component/ActorComponent/RootComponent.h"
+#include "Classes/Component/SenceComponent/RootComponent.h"
 
-RootComponent::RootComponent()
-{
-	SceneComponent::name = "Root";
-}
+RootComponent::RootComponent() : RootComponent(Transform{}) {}
 
 RootComponent::RootComponent(const Transform& transform)
 {
+	NAME;
 	this->transform = transform;
 }
 

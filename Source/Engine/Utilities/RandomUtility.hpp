@@ -21,7 +21,10 @@ class RandomUtility : public EngineSubSystem
     std::unordered_map<size_t, std::pair<std::mt19937,std::uniform_int_distribution<int>>> map;
     std::uniform_int_distribution<int> reg_seed{0, INT32_MAX};
 public:
-    explicit RandomUtility() : seed(std::random_device{}()) {}
+    explicit RandomUtility() : seed(std::random_device{}())
+    {
+	    NAME;
+    }
 
     std::optional<int> GetRandom(const std::string& reg_name)
     {

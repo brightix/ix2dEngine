@@ -33,7 +33,7 @@ void TextBlockWidget::SetFontStyle(const FontStyle &new_font_style)
 void TextBlockWidget::WidgetRender(FRect display_area)
 {
     //ContentWidget::WidgetRender();
-    auto dst = SDL_FRect(500,500,widget_texture->w,widget_texture->h);
+    auto dst = SDL_FRect(display_area.x,display_area.y,widget_texture->w,widget_texture->h);
     SDL_RenderTexture(GetRenderer(),widget_texture->GetTexture().get(),nullptr,&dst);
 }
 

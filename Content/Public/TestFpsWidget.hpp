@@ -3,7 +3,7 @@
 
 class TestFps final : public UserWidget
 {
-
+	float per_delta;
 public:
     TestFps();
     void PreConstructEvent() override;

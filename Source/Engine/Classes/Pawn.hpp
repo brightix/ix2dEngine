@@ -6,14 +6,13 @@ class MovableComponent;
 
 class Pawn : public Actor
 {
-	using Actor::Actor;
 	//Vec2d<float> player_input_Vec;
 	float base_move_speed;
 	//GCPtr<> sprite;
 protected:
 public:
 	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
-    Pawn();
+	using Actor::Actor;
     ~Pawn() override;
 	void Construct() override;
 	void EventBegin() override;

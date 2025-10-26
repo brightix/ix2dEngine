@@ -15,8 +15,7 @@ using namespace std;
 using json = nlohmann::json;
 Controller::Controller() : show_mouse_cursor(false)
 {
-	//controlled_pawn = SpawnActorFromSelf<Pawn>(new Pawn());
-	//input_map = make_GCPtr<InputMap>();
+	name = "Controller";
 }
 
 void Controller::Control(GCPtr<Pawn> pawn)
@@ -29,9 +28,8 @@ void Controller::Construct()
 	Actor::Construct();
 
 	input_map = NewObject<InputMap>(new InputMap());
-	auto st = NewObject<StaticTexture>(new StaticTexture);
-	RendererCenter::SetTextureFromSurface(st.Get(),GetTextSurface("                    "));
-	Root->MountedComponent(st);
+	auto st = 	Root->MountedComponent(new StaticTexture);
+	RendererCenter::SetTextureFromSurface(st.Peek(),GetTextSurface("                    "));
 }
 
 void Controller::Tick(double delta)

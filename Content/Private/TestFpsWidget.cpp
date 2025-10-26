@@ -26,6 +26,11 @@ void TestFps::PreConstructEvent()
 
 void TestFps::Tick(double delta_time)
 {
-    auto info = GameEngine::Instance().GetEngineAttribution();
-    GetChild("Fps_Text").Cast<TextBlockWidget>()->SetText(std::to_string(1.0/info.DeltaTime));
+	per_delta += delta_time;
+	if (per_delta > 0.3f)
+	{
+		per_delta = 0.f;
+		auto info = GameEngine::Instance().GetEngineAttribution();
+		GetChild("Fps_Text").Cast<TextBlockWidget>()->SetText(ix::to_string(1.0/info.DeltaTime,0));
+	}
 }

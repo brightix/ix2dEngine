@@ -33,6 +33,7 @@
 
 #define BLUE SDL_Color(0,0,255,255)
 
+#define EmeraldGreen SDL_Color(80,200,120,255)
 
 
 //#define AddComponent(name) AddActorComponent<x>(name, x)

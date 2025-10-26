@@ -77,6 +77,7 @@ public:
     NewTimer()
     {
         last = {};
+    	NAME;
     }
 
     void Start()

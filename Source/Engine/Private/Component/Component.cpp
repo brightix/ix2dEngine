@@ -20,7 +20,8 @@ std::string Component::GetComponentName()
 	return name;
 }
 
-void Component::SetComponentName(const std::string& new_name)
+bool Component::SetComponentName(const std::string& new_name)
 {
 	component_name = new_name;
+	return true;
 }

@@ -6,7 +6,7 @@ using json = nlohmann::json;
 using namespace std;
 InputMap::InputMap() 
 {
-
+	NAME;
 }
 
 void InputMap::Construct()

@@ -1,7 +1,7 @@
 #pragma once
 #include "Texture.hpp"
 
-
+struct RenderData;
 struct StaticTexture : public Texture
 {
 	//Vec2<float> transform;

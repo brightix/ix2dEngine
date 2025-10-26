@@ -4,16 +4,18 @@
 #include "Classes/Core/RendererCenter.hpp"
 #include "Classes/Widget/Slot/CanvasSlot.hpp"
 
-void CanvasWidget::AddChild(Widget* child)
+CanvasWidget::CanvasWidget()
+{
+	NAME;
+}
 
+void CanvasWidget::AddChild(GCPtr<Widget> child)
 {
     Widget::AddChild(child);
 
-
     auto slot = NewObject(new CanvasSlot());
-    slot->widget = CreateWidget(child);
-
-    if (World()->is_simulation)
+	slot->widget = child;
+    if (is_initialized && !child->is_initialized)
     {
         child->WidgetEventBegin();
     }

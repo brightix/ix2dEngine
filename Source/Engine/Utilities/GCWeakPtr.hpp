@@ -33,6 +33,11 @@ public:
 		return false;
 	}
 
+	bool IsValid() const
+	{
+		return Global_GCObject_Registry.contains(weak_id) && !Global_GCObject_Registry[weak_id]->is_pending_kill;
+	}
+
 	//不检查合法性
 	T operator*()
 	{
