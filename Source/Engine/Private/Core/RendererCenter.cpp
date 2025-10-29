@@ -12,7 +12,7 @@
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 
-SDL_Renderer* RendererCenter::renderer = nullptr;
+
 RendererCenter::RendererCenter() : window(nullptr)
 {
 }
@@ -20,6 +20,7 @@ RendererCenter::RendererCenter() : window(nullptr)
 void RendererCenter::Init()
 {
 	InitSDL();
+
 	NAME;
 	event_system.AddEvent(Event("OnRenderSceneDataReady",[&](TEventParams e) {
 		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
@@ -41,6 +42,12 @@ void RendererCenter::Init()
 	DefaultTexture = TTexture(CreateOutLineTexture({10.f,10.f}));
 }
 
+void RendererCenter::InitSDL()
+{
+	renderer = GameEngine::Instance().renderer;
+	window = GameEngine::Instance().window;
+}
+
 void RendererCenter::DeInit()
 {
 	DeInitSDL();
@@ -53,6 +60,12 @@ SDL_Renderer* RendererCenter::GetRenderer() const
 	return renderer;
 }
 
+void RendererCenter::SetRendererAndWindow(SDL_Renderer *r, SDL_Window *w)
+{
+	renderer = r;
+	window = w;
+}
+
 void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 {
 	//数据预处理
@@ -61,7 +74,7 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 	for (auto& clip : clips)
 	{
 		auto& [_, texture,trans,src_opt,dst_opt] = clip;
-		auto point = SDL_FPoint(trans.rotation.Point->x,trans.rotation.Point->y);
+		auto point = trans.rotation.Point ? SDL_FPoint(trans.rotation.Point->x,trans.rotation.Point->y) : SDL_FPoint();
 		SDL_FRect* src = nullptr;
 		SDL_FRect* dst = nullptr;
 		if (src_opt)
@@ -72,6 +85,7 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 		{
 			dst = &*dst_opt;
 		}
+		//auto test = SDL_FRect(0,0,1,1);
 		//SDL_RenderTexture(renderer,texture.get(),src,dst);
 		SDL_RenderTextureRotated(renderer,texture.get(),src,dst,trans.rotation.Angle,&point,SDL_FLIP_NONE);
 	}
@@ -80,7 +94,6 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
 {
 	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
-	const auto& [w,h] = GameEngine::Instance().GetViewportSize();
 	auto size = std::move(GameEngine::Instance().GetEngineAttribution().ScreenSize);
 	viewport->NativeWidgetRender({0,0,size.x,size.y});
 }
@@ -137,39 +150,28 @@ void RendererCenter::SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surfa
 	t->SetNewTexture(new_texture_s);
 }
 
-void RendererCenter::InitSDL()
-{
-	window = SDL_CreateWindow(
-		"Hello SDL3",        // 标题
-		1200, 1000,            // 宽高
-		SDL_WINDOW_RESIZABLE // 可拉伸
-	);
-	if (!window)
-	{
-		Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
-		SDL_Quit();
-		return;
-	}
-	renderer = SDL_CreateRenderer(window, nullptr);
-	if (!renderer)
-	{
-		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
-		SDL_DestroyWindow(window);
-		SDL_Quit();
-	}
-}
+
 
 void RendererCenter::DeInitSDL() const
 {
-	SDL_GetError();
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+
 }
 
 std::shared_ptr<SDL_Texture> RendererCenter::GetDefaultTexture()
 {
 	return DefaultTexture;
 }
+
+void SetTextureFromSurface_S(Texture *t, std::shared_ptr<SDL_Surface> new_surface)
+{
+	GameEngine::Instance().renderer_center->SetTextureFromSurface(t,new_surface);
+}
+
+// SDL_Texture * Create_OutLineTexture_S()
+//
+// {
+// 	return GameEngine::Instance().renderer_center->Create
+// }
 
 
 //单线程专用

@@ -1,7 +1,7 @@
 #include "Classes/Core/TickManager.hpp"
 
-#include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
+#include "Classes/Core/GameEngine.hpp"
 #include "Classes/Controller.hpp"
 #include "Types/RenderData.hpp"
 
@@ -18,6 +18,8 @@ void TickSubSystem::Tick(double delta_time)
 		//计算物理
 		physics.simulation(delta_time);
 		//普通Tick
+		NewTimer timer;
+		timer.Start();
 		 for (auto& a : actors)
 		 {
 		 	if (a->IsActive())
@@ -26,33 +28,34 @@ void TickSubSystem::Tick(double delta_time)
 		 		a->RootComponentTick(delta_time);
 		 	}
 		 }
-
+		texts[0]->SetText("TickDelay: " + std::to_string(timer.Click()));
 		world->viewport->ForTick(delta_time);
 
+		texts[1]->SetText("WidgetTickDelay: " + std::to_string(timer.Click()));
 		//渲染纹理
-		// for (auto& a : actors)
-		// {
-		// 	if (a->is_pre_kill)
-		// 	{
-		// 		a->is_pending_kill = true;
-		// 		world->RemoveActorByGCPtr(a);
-		// 	}
-		// 	else if (a->IsActive())
-		// 	{
-		// 		//a->RenderOnScreen();
-		// 		a->ForRenderOrder(render_data);
-		// 	}
-		// }
-
+		for (auto& a : actors)
+		{
+			if (a->is_pre_kill)
+			{
+				a->is_pending_kill = true;
+				world->RemoveActorByGCPtr(a);
+			}
+			else if (a->IsActive())
+			{
+				//a->RenderOnScreen();
+				a->ForRenderOrder(render_data);
+			}
+		}
+		texts[2]->SetText("SceneRenderOfferDelay: " + std::to_string(timer.Click()));
 		//清屏
 		dispatcher_system.CallDispatcher("RenderClear");
 
-		// //场景组件
-		// EventParams render_data_ready_p;
-		// render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
-		// dispatcher_system.CallDispatcher("RenderSceneDataReady", render_data_ready_p);
+		//场景组件
+		EventParams render_data_ready_p;
+		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
+		dispatcher_system.CallDispatcher("RenderSceneDataReady", render_data_ready_p);
 
-
+		texts[3]->SetText("SceneRenderDelay: " + std::to_string(timer.Click()));
 
 		//Widget
 		EventParams widget_data;
@@ -61,16 +64,17 @@ void TickSubSystem::Tick(double delta_time)
 		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
+		//texts[3]->SetText("WidgetRenderDelay: " + std::to_string(timer.Click()));
 		//physics.DebugTree();
 // 显示到窗口
 		dispatcher_system.CallDispatcher("RenderPresent");
 		SDL_RenderPresent(GetRenderer());
 
-
 		for (auto& controller : controllers)
 		{
 			controller->Tick(delta_time);
 		}
+
 	}
 }
 
@@ -81,10 +85,20 @@ void TickSubSystem::Init()
 	dispatcher_system.AddEventDispatcher("RenderPresent");
 	dispatcher_system.AddEventDispatcher("RenderSceneDataReady");
 	dispatcher_system.AddEventDispatcher("RenderWidgetDataReady");
+
+	texts.resize(4);
+	for (int i = 0; i < 4; i++)
+	{
+		auto text = CreateWidget(new TextBlockWidget);
+		auto slot = AddToViewport(text);
+		slot->display_area.y = (i+1)*30;
+		texts[i] = slot->widget;
+	}
 }
 
 
 void TickSubSystem::SetBufferType(int type) { buffer_type = type; }
+
 
 // else if (buffer_type == 2)//  双缓冲(好像对于SDL无意义，暂时作废)  ---------------------------------------------------------------------------------
 // {

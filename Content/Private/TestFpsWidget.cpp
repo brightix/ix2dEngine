@@ -4,10 +4,9 @@
 #include "Classes/Widget/ContentWidget/TextBlockWidget.hpp"
 #include "System/Font.hpp"
 
-TestFps::TestFps()
+TestFps::TestFps() : per_delta(0)
 {
 }
-
 
 
 void TestFps::PreConstructEvent()
@@ -17,8 +16,14 @@ void TestFps::PreConstructEvent()
     auto text = CreateWidget(new TextBlockWidget);
     FontStyle fontStyle;
     fontStyle.font = FontRenderer::Instance().GetFont("simkai", 24);
-    text->SetFontStyle(fontStyle);
-    text->SetText("Hello World!");
+    try{
+    	text->SetText("Hello World!");
+		text->SetFontStyle(fontStyle);
+    }
+	catch (...)
+	{
+		SDL_GetError();
+	}
     AddChild("Fps_Text", text);
 
     Root->widget = text;

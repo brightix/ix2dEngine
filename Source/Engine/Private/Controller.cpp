@@ -29,7 +29,7 @@ void Controller::Construct()
 
 	input_map = NewObject<InputMap>(new InputMap());
 	auto st = 	Root->MountedComponent(new StaticTexture);
-	RendererCenter::SetTextureFromSurface(st.Peek(),GetTextSurface("                    "));
+	SetTextureFromSurface_S(st.Peek(),GetTextSurface("                    "));
 }
 
 void Controller::Tick(double delta)
@@ -47,7 +47,7 @@ void Controller::Tick(double delta)
 	        case SDL_EVENT_QUIT:
         		// 用户点击关闭按钮
         		//running = false;
-        		GameEngine::Instance().Quit();
+        		GameEngine::Instance().Stop();
         		return;
 
         	case SDL_EVENT_KEY_DOWN: // 键盘按下
@@ -115,19 +115,6 @@ void Controller::Tick(double delta)
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
-
-	// if (controlled_pawn)
-	// {
-	// 	auto task = RenderTask();
-	// 	task.task = [this](SDL_Renderer* r) {
-	// 		SDL_RenderTexture(pawn_location_tex->GetTexture(),controlled_pawn->GetWorldLocation().str());
-	// 		//FontRenderer::Instance().UpdateTextTexture(pawn_location_tex.Get(),controlled_pawn->GetWorldLocation().str());
-	//
-	// 		auto dst = SDL_FRect(0,200,pawn_location_tex->w,pawn_location_tex->h);
-	// 		SDL_RenderTexture(r, pawn_location_tex->GetTexture(), nullptr, &dst);
-	// 	};
-	// }
-	// 	ToRender(task);
 }
 
 Vec2<float> Controller::GetMousePos() const

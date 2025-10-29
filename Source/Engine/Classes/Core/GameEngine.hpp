@@ -4,6 +4,7 @@
 
 #include "RendererCenter.hpp"
 #include "Classes/Core/TimerSystem.hpp"
+#include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
 #include "Utilities/ExternalWrapper.hpp"
@@ -41,12 +42,17 @@ class GameEngine final : public Object
 
 	//子系统
 	GCPtr<SubSystemManager> engine_subsystem;
+	GCPtr<CanvasWidget> viewport;
 	std::unordered_set<GCPtr<Widget>> widgets;
 	GCWeakPtr<RandomUtility> random_utility;
+    GCWeakPtr<GarbageCollection> GCSys;
+
 private:
     //只放全局变量初始化
     GameEngine();
 public:
+	SDL_Renderer * renderer;
+	SDL_Window * window;
 	GCWeakPtr<RendererCenter> renderer_center;
 	FontRenderer* font_manager;
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
@@ -62,11 +68,13 @@ public:
 	void Tick();
     void Construct() override;
 	void EventBegin();
-    void Quit();
+    void Stop();
 
     void OnChangeWorld(GameWorld *new_world);
 
     std::shared_ptr<SDL_Texture> GetDefaultTexture();
+
+    void Quit();
 
     ~GameEngine() override;
 //base
@@ -83,7 +91,7 @@ public:
 	//GCWeakPtr<CanvasWidget> GetViewport();
 	Vec2<int> GetViewportSize() { return SysConfig.ViewportSize; }
 
-    GCWeakPtr<Widget> AddWidgetToViewport(Widget *widget);
+    GCWeakPtr<PanelSlot> AddWidgetToViewport(GCPtr<Widget> widget) const;
 
     //属性
 	EngineState GetEngineAttribution();
@@ -113,7 +121,7 @@ inline bool IsValid(const GCObject* obj)
 	return IsValid(obj->id);
 }
 
-inline GCWeakPtr<Widget> AddToViewport(Widget* new_widget);
+GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> new_widget);
 
 inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 {
@@ -121,3 +129,5 @@ inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 }
 
 GCWeakPtr<GameWorld> World();
+
+SDL_Texture* Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);

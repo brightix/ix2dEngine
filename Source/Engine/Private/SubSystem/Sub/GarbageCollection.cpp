@@ -47,10 +47,7 @@ int GarbageCollection::GCSweep()
 		if (obj && !obj->bMarked)
 		{
 			//to_delete.emplace_back(obj);
-			for (auto parent : obj->referenced)
-			{
-				std::erase(parent->referencing,obj);
-			}
+
 			if (obj->name == "未命名")
 			{
 				std::cout << "有未命名类" << std::endl;

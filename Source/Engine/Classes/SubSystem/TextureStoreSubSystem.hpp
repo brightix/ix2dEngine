@@ -7,6 +7,8 @@
 class TextureStoreSubSystem : public EngineSubSystem
 {
 	LRUCache<std::string, SDL_Texture*> cached_texture;
+
+
 	std::shared_ptr<SDL_Texture> DefaultTexture;
 public:
     TextureStoreSubSystem();

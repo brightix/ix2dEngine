@@ -31,10 +31,7 @@ void Widget::NativeWidgetRender(FRect display_area)
     }
 }
 
-void Widget::AddChild(GCPtr<Widget> child)
-{
-	child.SetOuter(this);
-}
+// GCWeakPtr<PanelSlot> Widget::AddChild(GCPtr<Widget> child);
 
 WidgetVisibility Widget::GetVisibility()
 {

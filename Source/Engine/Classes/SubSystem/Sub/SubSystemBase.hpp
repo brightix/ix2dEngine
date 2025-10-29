@@ -7,4 +7,5 @@ public:
 	SubSystemBase();
 	virtual void Init(){}
 	virtual void DeInit(){}
+
 };

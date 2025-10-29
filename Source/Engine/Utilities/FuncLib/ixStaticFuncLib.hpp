@@ -43,7 +43,7 @@ inline void LogToFile(const std::string msg, std::string file_name = "", std::st
     }
 }
 
-inline std::ofstream OpenOutputFileSafety(std::string file_path, std::_Ios_Openmode mode)
+inline std::ofstream OpenOutputFileSafety(std::string file_path, std::ios::openmode mode)
 {
     std::ofstream file(file_path,mode);
     if(!file.is_open())
@@ -59,7 +59,7 @@ inline T GetParam(T&& val)
 
 }
 
-inline std::ifstream OpenInputFileSafety(std::string file_path, std::_Ios_Openmode mode = std::ios::app)
+inline std::ifstream OpenInputFileSafety(std::string file_path, std::ios::openmode mode = std::ios::app)
 {
     std::ifstream file(file_path,mode);
     if(!file.is_open())
@@ -71,4 +71,34 @@ inline std::ifstream OpenInputFileSafety(std::string file_path, std::_Ios_Openmo
 }
 
 //
-// inline void FindMapSafety()
+// inlin
+
+// inline std::ofstream OpenOutputFileSafety(std::string file_path, std::_Ios_Openmode mode)
+// {
+//     std::ofstream file(file_path,mode);
+//     if(!file.is_open())
+//     {
+//         std::cerr << "文件打开失败" << std::endl;
+//         Log("文件打开失败,文件名：" + file_path);
+//     }
+//     return file;
+// }
+// template<typename T>
+// inline T GetParam(T&& val)
+// {
+//
+// }
+//
+// inline std::ifstream OpenInputFileSafety(std::string file_path, std::_Ios_Openmode mode = std::ios::app)
+// {
+//     std::ifstream file(file_path,mode);
+//     if(!file.is_open())
+//     {
+//         std::cerr << "文件打开失败" << std::endl;
+//         Log("文件打开失败,文件名：" + file_path);
+//     }
+//     return file;
+// }
+//
+// //
+// // inline void FindMapSafety()

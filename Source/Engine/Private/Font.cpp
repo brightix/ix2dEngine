@@ -146,9 +146,9 @@ std::shared_ptr<TTF_Font> GetFont(const std::string &fontName, size_t size)
 
 std::shared_ptr<SDL_Surface> GetTextSurface(const std::string& str, const FontStyle& fs)
 {
-	auto surface = TSurface(nullptr);
+	auto surface = std::shared_ptr<SDL_Surface>(nullptr,SDLSurfaceDeleter());
 	auto font = fs.font.get();
-	surface.reset(TTF_RenderText_Blended(font, str.c_str(), str.length(), fs.text_color));
+	surface.reset(TTF_RenderText_Blended(font, str.c_str(), str.length(), fs.text_color),SDLSurfaceDeleter());
 	SDL_SetSurfaceBlendMode(surface.get(), SDL_BLENDMODE_BLEND); // 启用混合模式
 	return surface;
 }

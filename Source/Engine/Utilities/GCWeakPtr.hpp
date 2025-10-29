@@ -3,9 +3,8 @@
 #include "Classes/Core/GCObject.hpp"
 
 template<typename T>
-class GCWeakPtr
+struct GCWeakPtr
 {
-public:
 	T* ptr;
 	size_t weak_id;
 	GCWeakPtr() : ptr(nullptr), weak_id(-1) { }
@@ -76,7 +75,7 @@ public:
 	}
 
 	template<typename U>
-	GCWeakPtr(const GCPtr<U>& other) : ptr(other.ptr), weak_id(other.id)
+	GCWeakPtr(const GCPtr<U>& other) : ptr(other.Get()), weak_id(other.id)
 	{
 		static_assert(std::is_base_of_v<T, U> || std::is_base_of_v<U, T>,
 			  "Types must be in same inheritance hierarchy");

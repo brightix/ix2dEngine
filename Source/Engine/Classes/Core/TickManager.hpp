@@ -4,6 +4,7 @@
 
 #include "Classes/Actor.hpp"
 #include "Classes/SubSystem/Sub/EngineSubsystem.hpp"
+#include "Classes/Widget/ContentWidget/TextBlockWidget.hpp"
 #include "SPhysics/SPhysics.hpp"
 
 
@@ -22,6 +23,7 @@ class TickSubSystem : public EngineSubSystem
     std::condition_variable cv;
     int buffer_type;
     int write_head = 0;
+    std::vector<GCWeakPtr<TextBlockWidget>> texts;
 public:
     TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(buffer_cnt){}
 	TickSubSystem() : buffer_type(0) { }

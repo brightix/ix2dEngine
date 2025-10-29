@@ -9,5 +9,7 @@ protected:
 public:
     ContentWidget();
     void PreConstructEvent() override;
+    GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child) final { return {}; }
+
     WidgetType GetWidgetType() override;
 };

@@ -28,11 +28,13 @@ void EventSystem::CallEvent(const std::string& event_name, std::optional<EventPa
 std::optional<Event> EventSystem::GetEventByName(const std::string& event_name)
 {
 	auto it = events.find(event_name);
-	if (it != events.end())
+	if (it == events.end())
 	{
-		return it->second;
+		Log("没找到" + event_name +"事件");
+		return std::nullopt;
+
 	}
-	return std::nullopt;
+	return it->second;
 }
 
 void EventSystem::TickEvent(double delta_time)

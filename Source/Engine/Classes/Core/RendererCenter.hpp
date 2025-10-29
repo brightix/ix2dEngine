@@ -15,7 +15,7 @@ class Texture;
 
 class RendererCenter : public EngineSubSystem
 {
-	static SDL_Renderer* renderer;
+	SDL_Renderer* renderer;
 public:
 	std::shared_ptr<SDL_Texture> DefaultTexture;
 	SDL_Window* window;
@@ -25,16 +25,19 @@ public:
 
 	SDL_Renderer* GetRenderer() const;
 
+	void SetRendererAndWindow(SDL_Renderer* r, SDL_Window* w);
+
+
 	//收到新数据我就渲染上一帧
 	void RenderScene(std::vector<RenderData>& clips);
 
 	void RenderWidget(GCWeakPtr<PanelWidget> viewport);
 
-	static SDL_Texture* CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
+	SDL_Texture* CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
 
-	static SDL_Texture* CreateFilledTexture(Vec2<int> size, SDL_Color color = EmeraldGreen);
+	SDL_Texture* CreateFilledTexture(Vec2<int> size, SDL_Color color = EmeraldGreen);
 	// TODO 添加AsyncSetTexture();
-	static void SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
+	void SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
 	//static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
 
 	void InitSDL();
@@ -42,4 +45,7 @@ public:
 	void DeInitSDL() const;
 	std::shared_ptr<SDL_Texture> GetDefaultTexture();
 };
+
+void SetTextureFromSurface_S(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
+
 

@@ -99,7 +99,7 @@ public:
     void DebugTree(int depth = 0)
     {
     	auto rect = boundary.CastToSDL_FRect();
-		auto texture = TTexture(RendererCenter::CreateOutLineTexture({boundary.w,boundary.h}));
+		auto texture = TTexture(Create_OutLineTexture_S({boundary.w,boundary.h}));
     	SDL_RenderTexture(GetRenderer(), texture.get(), nullptr, &rect);
     	if (tree_slots[0])
     	{

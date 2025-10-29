@@ -1,7 +1,6 @@
 #pragma once
 #include "../Classes/Core/GCObject.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include <cxxabi.h>
 inline std::vector<GCObject*> GCAllObjects;
 inline std::unordered_map<size_t,GCObject*> Global_GCObject_Registry;
 #include <functional>
@@ -33,6 +32,11 @@ public:
 		}
 		GCLink(ptr,outer);
 		GCAllObjects.push_back(ptr);
+
+		if (GCAllObjects.size() == 25)
+		{
+			std::cout << std::endl;
+		}
 		//AddToObject();
 		id = p->id;
 	}

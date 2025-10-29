@@ -29,5 +29,17 @@ struct GCObject
 	{
 		return GCPtr<T>(p, this);
 	}
+
+	void GCUnlink()
+	{
+		for (auto parent : referenced)
+		{
+			std::erase(parent->referencing,this);
+		}
+		for (auto child : referencing)
+		{
+			std::erase(child->referenced,this);
+		}
+	}
 };
 

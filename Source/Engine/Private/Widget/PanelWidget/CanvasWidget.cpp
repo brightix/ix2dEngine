@@ -9,12 +9,13 @@ CanvasWidget::CanvasWidget()
 	NAME;
 }
 
-void CanvasWidget::AddChild(GCPtr<Widget> child)
+GCWeakPtr<PanelSlot> CanvasWidget::AddChild(GCPtr<Widget> child)
 {
-    Widget::AddChild(child);
+    //Widget::AddChild(child);
 
     auto slot = NewObject(new CanvasSlot());
 	slot->widget = child;
+    child.SetOuter(slot.Get());
     if (is_initialized && !child->is_initialized)
     {
         child->WidgetEventBegin();
@@ -29,6 +30,7 @@ void CanvasWidget::AddChild(GCPtr<Widget> child)
     slots.emplace_back(slot);
     //加入新元素需要刷新
     dirty = true;
+    return slot;
 }
 
 void CanvasWidget::flush()

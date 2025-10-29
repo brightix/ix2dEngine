@@ -65,6 +65,7 @@ void Actor::DestroyActor()
 	//三缓冲
 	is_pre_kill = true;
 	is_active = false;
+	GCUnlink();
 }
 
 void Actor::SetMobility(const ActorMobility target_mobility)

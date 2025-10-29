@@ -23,7 +23,7 @@ void CollisionBox::Construct()
 	//默认描边
 	auto texture = MountedComponent(new StaticTexture);
 	texture->SetComponentName("CollisionBoxOutline");
-	texture->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({w,h})));
+	texture->SetNewTexture(TTexture(Create_OutLineTexture_S({w,h})));
 	is_outline_visible = true;
 
 
@@ -55,7 +55,7 @@ void CollisionBox::SetBoundBox(const Vec2<float>& size)
 	h = size.y;
 	if (auto t = GetSceneComponentByName("CollisionBoxOutline").Cast<StaticTexture>())
 	{
-		t->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({w,h})));
+		t->SetNewTexture(TTexture(Create_OutLineTexture_S({w,h})));
 	}
 	physics_body->SetBodyBox(size);
 }

@@ -42,7 +42,7 @@ public:
 	//系统调用的render
     virtual void NativeWidgetRender(FRect display_area);
 
-	virtual void AddChild(GCPtr<Widget> child);
+	virtual GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child)= 0;
 	WidgetVisibility GetVisibility();
 	void SetVisibility(WidgetVisibility new_Visibility);
 
@@ -73,13 +73,14 @@ public:
  *  This widget has no parent unless it is added to a viewport or to another widget.
  * @tparam T
  * @param widget
+ * @param outer
  * @return Wrappered by GCPtr
  */
 template<typename T>
-GCPtr<T> CreateWidget(T* widget)
+GCPtr<T> CreateWidget(T* widget, GCObject* outer = nullptr)
 {
 	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
-	auto it = GCPtr<T>(widget,nullptr);
+	auto it = GCPtr<T>(widget,outer);
 	widget->PreConstructEvent();
 	return it;
 }

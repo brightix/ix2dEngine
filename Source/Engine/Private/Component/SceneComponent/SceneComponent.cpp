@@ -101,7 +101,7 @@ Vec2<float> SceneComponent::GetComponentRenderLocation() const
 void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 {
 	//单线程
-	auto t = TTexture(RendererCenter::CreateOutLineTexture(Vec2<float>(w,h)));
+	auto t = TTexture(Create_OutLineTexture_S(Vec2<float>(w,h)));
 	data.emplace_back(RenderData{t ,transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
 }
 

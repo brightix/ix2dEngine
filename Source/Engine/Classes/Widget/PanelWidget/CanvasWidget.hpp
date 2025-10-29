@@ -18,7 +18,7 @@ class CanvasWidget : public PanelWidget
 public:
     CanvasWidgetFillRule fill_rule = FillScreen;
     CanvasWidget();
-    void AddChild(GCPtr<Widget> child) override;
+    GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child) override;
 
     //继承
     void flush() override;

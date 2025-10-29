@@ -15,5 +15,8 @@ public:
     void AddChild(const std::string &widget_name, GCPtr<Widget> child);
     GCWeakPtr<Widget> GetChild(const std::string &widget_name);
     std::vector<GCWeakPtr<PanelSlot>> GetChildren() override;
+
+
+    GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child) final { return {};}
 };
 

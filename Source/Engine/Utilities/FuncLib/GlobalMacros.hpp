@@ -36,4 +36,6 @@
 #define EmeraldGreen SDL_Color(80,200,120,255)
 
 
+
+#define BREAK std::cout << "break point tool" << std::endl;
 //#define AddComponent(name) AddActorComponent<x>(name, x)

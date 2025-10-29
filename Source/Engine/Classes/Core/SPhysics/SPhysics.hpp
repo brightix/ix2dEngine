@@ -40,5 +40,6 @@ public:
 	{
 		collision_tree.DebugTree();
 	}
+	//void Clear();
 };
 

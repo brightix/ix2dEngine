@@ -7,7 +7,6 @@ ContentWidget::ContentWidget()
 
 void ContentWidget::PreConstructEvent()
 {
-    Widget::Construct();
     widget_texture = NewObject(new StaticTexture);
 }
 

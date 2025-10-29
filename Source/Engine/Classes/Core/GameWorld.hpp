@@ -53,8 +53,11 @@ public:
 
 	GCPtr<CanvasWidget> viewport;
     GameWorld();
-    ~GameWorld()= default;
-	void Construct() override;
+    ~GameWorld();
+	void Unload();
+
+	void Construct() override{}
+	void ConstructWorld();
 	void StartSimulation();
 	// 从类构建Actor
 	// void SpawnActorFromClass(std::shared_ptr<T> actor){
@@ -93,7 +96,7 @@ public:
 
 
 	//Widget
-	void AddToViewport(GCPtr<Widget> w);
+	GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> w) const;
 };
 
 inline GameWorld* GetWorld()
@@ -125,6 +128,7 @@ GCPtr<T> SpawnActor(T* actor)
 template<typename T>
 void RandCreateActorInBox(const FRect& Box, const int n)
 {
+	NewTimer timer;
 	static_assert(std::is_base_of_v<Actor,T>,"T must be derived from Actor");
 	for (int i = 0; i < n; ++i)
 	{
@@ -132,6 +136,7 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 		t.location.x = Box.x + Box.w * Rand();
 		t.location.y = Box.y + Box.h * Rand();
 		SpawnActor(new T(t));
+		std::cout << i << "  in_delay: " << timer.Click() << std::endl;
 	}
 }
 

@@ -8,7 +8,20 @@
 #include "Public/TestPawn.hpp"
 GameWorld::GameWorld() : is_simulation(false), is_server(false) {}
 
-void GameWorld::Construct()
+GameWorld::~GameWorld()
+{
+
+}
+
+void GameWorld::Unload()
+{
+	for (auto& actor : actors)
+	{
+		actor->is_pending_kill = true;
+	}
+}
+
+void GameWorld::ConstructWorld()
 {
 	name = "World";
 	auto game = game_mode;
@@ -24,7 +37,6 @@ void GameWorld::Construct()
 
 	//world_subsystem->ForAllSubSystemInit();
 
-	viewport = NewObject(new CanvasWidget);
 
 
 	dispatcher_system.AddEventDispatcher("EventBegin");
@@ -33,8 +45,12 @@ void GameWorld::Construct()
 void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
-	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
 
+	viewport = CreateWidget(new CanvasWidget);
+	viewport->ConstructEvent();
+	world_subsystem->ForAllSubSystemInit();
+
+	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
 
 	auto fps = CreateWidget(new TestFps);
 	AddToViewport(fps);
@@ -51,7 +67,7 @@ void GameWorld::StartSimulation()
 	bound.h = h;
 	bound.w = w;
 
-	RandCreateActorInBox<TestPawn>(bound,500);
+	RandCreateActorInBox<TestPawn>(bound,5);
 	//RandCreateActorInBox<TestPawn>({0,0,2,2},100);
 	is_simulation = true;
 	dispatcher_system.CallDispatcher("EventBegin");
@@ -140,9 +156,9 @@ bool GameWorld::IsClient() const
 	return !is_server;
 }
 
-void GameWorld::AddToViewport(GCPtr<Widget> w)
+GCWeakPtr<PanelSlot> GameWorld::AddToViewport(GCPtr<Widget> w) const
 {
-	viewport->AddChild(w);
+	return viewport->AddChild(w);
 }
 
 

@@ -24,7 +24,6 @@ public:
 		if (!mounted_subSystem.contains(id))
 		{
 			GCPtr<T> sub = NewObject<T>(new T());
-			dynamic_cast<SubSystemBase*>(sub.Get())->Init();
 			mounted_subSystem.emplace(id,std::move(sub));
 			return sub.Get();
 		}
