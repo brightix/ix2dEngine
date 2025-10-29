@@ -23,7 +23,7 @@ void SPhysics::DeRegister(SPhysicsBaseUtility* unit)
 	units.erase(unit);
 }
 
-void SPhysics::simulation(double delta_time)//注意tunneling
+void SPhysics::simulation(double delta_time)//注意tunneling，分批tick
 {
     collision_tree.Clear();
     for (auto& unit : units)
@@ -32,7 +32,22 @@ void SPhysics::simulation(double delta_time)//注意tunneling
     	collision_tree.Insert(unit);
     }
     collision_tree.Query();
+
+
+	//鼠标点击事件
+
     // TODO 四叉树碰撞
+}
+
+void SPhysics::HandlePhysics(double delta_time, SPhysicsBaseUtility* unit)
+{
+	unit->velocity.y += world_physics.GravityForce * delta_time * unit->quality;
+
+	//处理冲量 可能来自 其他物体 或 主观
+	unit->velocity += unit->added_force;
+	unit->added_force.Reset();
+
+
 }
 
 

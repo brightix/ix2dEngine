@@ -12,6 +12,16 @@ SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
 void SceneComponent::Construct()
 {
 	Component::Construct();
+	dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
+}
+
+void SceneComponent::NativeSceneComponentEventBegin()
+{
+	ComponentEventBegin();
+	for (const auto& sc : mounted_components | std::views::values)
+	{
+		sc->NativeSceneComponentEventBegin();
+	}
 }
 
 void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
@@ -38,9 +48,9 @@ void SceneComponent::SceneComponentTick(double delta_time)
 {
 	//先tick自己，后tick挂载的组件
 	ComponentTick(delta_time);
-	for (auto& it : mounted_components)
+	for (auto& it : mounted_components | std::views::values)
 	{
-		it.second->SceneComponentTick(delta_time);
+		it->SceneComponentTick(delta_time);
 	}
 }
 //递归调用接口
@@ -152,17 +162,15 @@ void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
 }
 void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 {
-	//传递一个新位置，所有的子组件都需要以父位置为基准，便宜 相对量 位置
+	//传递一个新位置，所有的子组件都需要以父位置为基准，偏移 相对量 位置
 	Location absolute_location = new_loc + relative_location;
 	transform.location = absolute_location;
-	// if (open_physics)
-	// {
-	// 	physics_body->SetBodyWorldLocation(absolute_location);
-	// }
+
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		val->SetComponentWorldLocation(absolute_location);
 	}
+	dispatcher_system.CallDispatcher("OnSceneComponentTeleport");
 }
 
 Location SceneComponent::GetComponentWorldLocation()

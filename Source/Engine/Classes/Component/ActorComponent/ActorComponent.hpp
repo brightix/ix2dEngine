@@ -7,7 +7,6 @@ class ActorComponent : public Component
 {
 public:
 	using Component::Component;
-    virtual void EventBegin(){}
     void Construct() override;
     virtual void ActorComponentTick(double delta_time){}
 };

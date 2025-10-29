@@ -81,6 +81,7 @@ void Controller::Tick(double delta)
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_DOWN: // 鼠标按下
         		// event.button.button 获取按钮
+
         		break;
 
         	case SDL_EVENT_MOUSE_BUTTON_UP:   // 鼠标松开
@@ -88,6 +89,7 @@ void Controller::Tick(double delta)
 
         	case SDL_EVENT_MOUSE_MOTION:     // 鼠标移动
         		// event.motion.x / y / xrel / yrel
+	    		mouse_pos = {event.motion.x,event.motion.y};
         		break;
 
         	case SDL_EVENT_MOUSE_WHEEL:      // 鼠标滚轮
@@ -128,7 +130,17 @@ void Controller::Tick(double delta)
 	// 	ToRender(task);
 }
 
+Vec2<float> Controller::GetMousePos() const
+{
+	return mouse_pos;
+}
+
 GCWeakPtr<Pawn> Controller::GetControlledPawn() const
 {
 	return controlled_pawn;
+}
+
+Vec2<float> GetMousePos(GCWeakPtr<Controller> controller)
+{
+	return controller->GetMousePos();
 }

@@ -8,6 +8,7 @@
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
 
+class SPhysicsBaseUtility;
 class SceneComponent;
 
 enum class PhysicsType
@@ -17,36 +18,68 @@ enum class PhysicsType
     Movable
 };
 
+struct PhysicsState
+{
+	//用于表示物理包属于谁
+	GCWeakPtr<SPhysicsBaseUtility> physics_object;
+
+	Vec2<float> position;
+
+	Vec2<float> added_force;
+	Vec2<float> velocity;
+	float quality;
+	float force_attenuation;
+};
+
 class SPhysicsBaseUtility : public GCObject
 {
 public:
 	~SPhysicsBaseUtility() override;
-	FRect collision_box;
+//物理的位置跟随父场景组件
+	float w,h;
 	Vec2<float> velocity;
 	float quality = 10.f;
 	float force_attenuation = 1.0f;
 
 	PhysicsType type;
-	SceneComponent* owner;
-	std::string test_name;
+	SceneComponent* collision_owner;
 
+	//外力
+	Vec2<float> added_force;	//冲量
+
+	//结果
+	Location after_location;
+	Rotation after_rotation;
 
     SPhysicsBaseUtility();
-	//void Construct() override;
+
+
+
 
     virtual PhysicsType GetPhysicsType(){ return type; }
     [[nodiscard]] FRect GetCollisionBox() const;
-    virtual void HandleVelocity(double delta_time){}
+
+
+
+    virtual void HandleVelocity(double delta_time);
+
+
 
 //位移需要变换位置
 	void AddBodyWorldLocation(Vec2<float> v);
+
+
 
 
     virtual void Init();
     // void SetIsSimulatedPhysics(bool value);
 	void SetOwner(SceneComponent* new_owner);
 
+//同步
+	void SynchronizationTransform();
 
+
+	void SetBodyBox(Vec2<float> size);
 	void SetBodyTransform(Transform transform);
 
 	void SetBodyWorldLocation(const Location& location);

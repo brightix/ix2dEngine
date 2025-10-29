@@ -9,9 +9,7 @@ using EventMethod = std::function<void(std::optional<EventParams>)>;
 //多播委托
 class EventDispatcherSystem
 {
-	std::unordered_set<std::string> dispatchers;
 	//分发器-> 事件对象-> 事件
-
 	std::unordered_map<std::string,std::unordered_map<GCWeakPtr<Object>,std::vector<Event>>> bound_dispatcher;
 
 //	std::unordered_map<> ;

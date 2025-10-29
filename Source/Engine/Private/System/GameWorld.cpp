@@ -51,7 +51,8 @@ void GameWorld::StartSimulation()
 	bound.h = h;
 	bound.w = w;
 
-	//RandCreateActorInBox<TestPawn>(bound,10);
+	RandCreateActorInBox<TestPawn>(bound,500);
+	//RandCreateActorInBox<TestPawn>({0,0,2,2},100);
 	is_simulation = true;
 	dispatcher_system.CallDispatcher("EventBegin");
 }
@@ -61,13 +62,13 @@ std::vector<GCPtr<Controller>> GameWorld::GetControllers()
 	return controllers;
 }
 
-Controller * GameWorld::GetController(int id)
+GCWeakPtr<Controller> GameWorld::GetController(int id) const
 {
 	if (id >= 0 && id < controllers.size())
 	{
-		return controllers[id].Get();
+		return controllers[id];
 	}
-	return nullptr;
+	return {};
 }
 
 std::vector<GCPtr<Actor>> *GameWorld::GetActors()

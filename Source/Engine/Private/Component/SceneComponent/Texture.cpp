@@ -71,36 +71,3 @@ void Texture::SetNewTexture(std::shared_ptr<SDL_Texture> new_texture)
 	}
 }
 
-
-// void Texture::AsyncSetTextureFromSurface(std::shared_ptr<SDL_Surface> new_surface)
-// {
-// 	auto temp = TTexture(nullptr);
-//
-// 	RenderTask task;
-// 	task.task = [new_surface, temp](SDL_Renderer* r) mutable{
-// 		temp.reset(SDL_CreateTextureFromSurface(r, new_surface.get()),SDLTextureDeleter());
-// 	};
-// 	task.callback = [this, temp]() {
-//
-// 		SetStaticTexture(temp);
-// 	};
-// 	NewRendererTask(task);
-// }
-//
-// void Texture::AsyncLoadOutLine()
-// {
-// 	auto task = RenderTask();
-// 	auto tex = TTexture(nullptr);
-// 	task.task = [this,&tex](SDL_Renderer* r) {
-// 		if (!w || !h)
-// 		{
-// 			w = 500;
-// 			h = 500;
-// 		}
-// 		tex = RendererCenter::CreateOutLineTexture({0,0,w,h});
-// 	};
-// 	task.callback = [this,tex]() {
-// 		SetStaticTexture(tex);
-// 	};
-// }
-

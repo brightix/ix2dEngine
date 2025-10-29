@@ -19,12 +19,13 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
 
 void Actor::Construct()
 {
+	//事件
+
 	//场景默认根组件
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
-	//auto default_image = ;
+	// TODO处理事件回调时机，先绑定事件还是先设置位置
+
 	Root->MountedComponent(new StaticTexture())->name = "default_texture";
-	//default_image->name = "default_texture";
-	//default_image->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({100,100})));
 	SetActorTransform(transform);
 }
 
@@ -32,10 +33,16 @@ void Actor::EventBegin()
 {
 	game_world = World();
 	is_begin_event_handled = true;
+	//场景根
+	Root->NativeSceneComponentEventBegin();
+	//逻辑组件
+	for (auto& ac : actor_components | std::views::values)
+	{
+		ac->ComponentEventBegin();
+	}
 	//game_world = GameEngine::Instance().GetGameWorld().Get();
 }
 
-//Actor tick -> component tick
 //所有重写tick都在PreTick内
 void Actor::Tick(double delta_time) {}
 

@@ -64,7 +64,8 @@ public:
 
 //Get
 	std::vector<GCPtr<Controller>> GetControllers();
-	Controller* GetController(int id);
+
+	GCWeakPtr<Controller> GetController(int id = 0) const;
 
 	std::vector<GCPtr<Actor>> *GetActors();
 

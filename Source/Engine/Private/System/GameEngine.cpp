@@ -20,6 +20,11 @@ GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 void GameEngine::Construct()
 {
 	//最先启动GPU
+	// int count = SDL_GetNumRenderDrivers();
+	// for (int i = 0; i < count; ++i) {
+	// 	const char* name = SDL_GetRenderDriver(i);
+	// 	SDL_Log("Render driver[%d]: %s", i, name);
+	// }
 	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
 	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
 	//renderer_center->StartRenderThread();
@@ -46,15 +51,15 @@ void GameEngine::Construct()
 void GameEngine::EventBegin()
 {
 	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
-	timer_system.SetTimer(500,[gc]() {
-		int cnt{};
-		if (auto p = gc.Peek())
-		{
-			cnt = p->GCSweep();
-		}
-		std::cout << "{ " << cnt << " } objects have been Swept!" << std::endl;
-		return 2000;
-	});
+	// timer_system.SetTimer(500,[gc]() {
+	// 	int cnt{};
+	// 	if (auto p = gc.Peek())
+	// 	{
+	// 		cnt = p->GCSweep();
+	// 	}
+	// 	std::cout << "{ " << cnt << " } objects have been Swept!" << std::endl;
+	// 	return 2000;
+	// });
 	game_world->StartSimulation();
 }
 
@@ -65,9 +70,6 @@ void GameEngine::Tick()
 {
 	tick_timer->Start(); // 关键：第一次先 Start
 
-	//auto fps_surface = GetTextSurface("            ",{});
-	//auto fpsTex = NewObject(new StaticTexture());
-	//RendererCenter::SetTextureFromSurface(fpsTex.Get(),fps_surface);
 	while (running) {
 		consume_timer->Start();
 		delta_time = tick_timer->Click();       // 重置计时

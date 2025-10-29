@@ -17,7 +17,7 @@ void TestPawn::Construct()
 	Pawn::Construct();
 	mobility = ActorMobility::Movable;
 	auto st = GetSceneComponent("default_texture").Cast<StaticTexture>();
-	st->SetNewTexture(TTexture(RendererCenter::CreateFilledTexture({200,200})));
+	st->SetNewTexture(TTexture(RendererCenter::CreateFilledTexture({1000,1000})));
 	collision_box = Root->MountedComponent(new CollisionBox());
 	collision_box->SetBoundBox({st->w,st->h});
 }

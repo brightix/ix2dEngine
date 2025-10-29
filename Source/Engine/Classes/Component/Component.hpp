@@ -10,7 +10,9 @@ protected:
 	Actor* owner;
 public:
 	Component();
-	Component(Actor* owner);
+
+	explicit Component(Actor* owner);
+	virtual void ComponentEventBegin(){}
 	void SetOwner(Actor* actor);
 	Actor* GetOwner() const;
 	std::string GetComponentName();

@@ -37,7 +37,7 @@ public:
 
 	void Construct() override;
 
-
+	void NativeSceneComponentEventBegin();
 
 
 	//可视性

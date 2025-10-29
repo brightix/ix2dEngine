@@ -93,6 +93,7 @@ public:
 //秒
     void Delay(double duration_s)
     {
+    	//std::cout << "需要delay    " << duration_s << std::endl;
         auto start = steady_clock::now();
         auto end = start + duration<double>(duration_s);
 

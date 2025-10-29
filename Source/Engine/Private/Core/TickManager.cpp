@@ -17,59 +17,40 @@ void TickSubSystem::Tick(double delta_time)
 	{
 		//计算物理
 		physics.simulation(delta_time);
-		// for (auto& a : actors)
-		// {
-		// 	if (a->IsActive())
-		// 	{
-		// 		if (a->open_physics)
-		// 		{
-		// 			a->SimulationPhysics();
-		// 		}
-		// 		a->PostPhysicsTick(delta_time);
-		// 	}
-		// }
-		//映射物理
-		for (auto& a : actors)
-		{
-			if (a->IsActive())
-			{
-				a->PostPhysicsTick(delta_time);
-			}
-		}
 		//普通Tick
-		for (auto& a : actors)
-		{
-			if (a->IsActive())
-			{
-				a->Tick(delta_time);
-				a->RootComponentTick(delta_time);
-			}
-		}
+		 for (auto& a : actors)
+		 {
+		 	if (a->IsActive())
+		 	{
+		 		a->Tick(delta_time);
+		 		a->RootComponentTick(delta_time);
+		 	}
+		 }
 
 		world->viewport->ForTick(delta_time);
 
 		//渲染纹理
-		for (auto& a : actors)
-		{
-			if (a->is_pre_kill)
-			{
-				a->is_pending_kill = true;
-				world->RemoveActorByGCPtr(a);
-			}
-			else if (a->IsActive())
-			{
-				//a->RenderOnScreen();
-				a->ForRenderOrder(render_data);
-			}
-		}
+		// for (auto& a : actors)
+		// {
+		// 	if (a->is_pre_kill)
+		// 	{
+		// 		a->is_pending_kill = true;
+		// 		world->RemoveActorByGCPtr(a);
+		// 	}
+		// 	else if (a->IsActive())
+		// 	{
+		// 		//a->RenderOnScreen();
+		// 		a->ForRenderOrder(render_data);
+		// 	}
+		// }
 
 		//清屏
 		dispatcher_system.CallDispatcher("RenderClear");
 
-		//场景组件
-		EventParams render_data_ready_p;
-		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
-		dispatcher_system.CallDispatcher("RenderSceneDataReady", render_data_ready_p);
+		// //场景组件
+		// EventParams render_data_ready_p;
+		// render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
+		// dispatcher_system.CallDispatcher("RenderSceneDataReady", render_data_ready_p);
 
 
 
@@ -80,7 +61,7 @@ void TickSubSystem::Tick(double delta_time)
 		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
-		physics.DebugTree();
+		//physics.DebugTree();
 // 显示到窗口
 		dispatcher_system.CallDispatcher("RenderPresent");
 		SDL_RenderPresent(GetRenderer());

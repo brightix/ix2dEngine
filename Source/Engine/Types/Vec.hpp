@@ -61,6 +61,11 @@ struct Vec2
     	}
     	return *this/len;
     }
+	void Reset()
+    {
+	    x = T{};
+    	y = T{};
+    }
 };
 
 

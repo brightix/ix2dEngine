@@ -16,12 +16,25 @@ CollisionBox::CollisionBox()
 void CollisionBox::Construct()
 {
 	SceneComponent::Construct();
+	//物理组件
 	physics_body = NewGCPtr(new SPhysicsBaseUtility());
 	physics_body->SetOwner(this);
+
+	//默认描边
 	auto texture = MountedComponent(new StaticTexture);
 	texture->SetComponentName("CollisionBoxOutline");
 	texture->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({w,h})));
 	is_outline_visible = true;
+
+
+}
+
+void CollisionBox::ComponentEventBegin()
+{
+	SceneComponent::ComponentEventBegin();
+	// BindEvent(this, "OnSceneComponentTeleport",Event([&](TEventParams e) {
+	// 	Synchronization();
+	// }));
 }
 
 
@@ -38,12 +51,13 @@ void CollisionBox::ComponentRender()
 
 void CollisionBox::SetBoundBox(const Vec2<float>& size)
 {
-	w = static_cast<int>(size.x);
-	h = static_cast<int>(size.y);
+	w = size.x;
+	h = size.y;
 	if (auto t = GetSceneComponentByName("CollisionBoxOutline").Cast<StaticTexture>())
 	{
 		t->SetNewTexture(TTexture(RendererCenter::CreateOutLineTexture({w,h})));
 	}
+	physics_body->SetBodyBox(size);
 }
 
 void CollisionBox::OfferRenderData(std::vector<RenderData>& data)
@@ -56,6 +70,13 @@ void CollisionBox::OfferRenderData(std::vector<RenderData>& data)
 		rd.layer = 3;
 		data.emplace_back(std::move(rd));
 	}
+}
+
+void CollisionBox::Synchronization() const
+{
+	//physics_body->collision_rect.x = transform.location.x;
+	//physics_body->collision_rect.y = transform.location.y;
+	std::cout << "CollisionBox::Synchronization()" << std::endl;
 }
 
 

@@ -7,8 +7,7 @@ SPhysicsBaseUtility::SPhysicsBaseUtility()
 {
 	NAME;
 	SPhysicsBaseUtility::Init();
-
-	test_name = std::to_string(global_physics_id++);
+	//test_name = std::to_string(global_physics_id++);
 }
 
 SPhysicsBaseUtility::~SPhysicsBaseUtility()
@@ -18,7 +17,13 @@ SPhysicsBaseUtility::~SPhysicsBaseUtility()
 
 FRect SPhysicsBaseUtility::GetCollisionBox() const
 {
-    return collision_box;
+	Location loc = collision_owner->GetComponentWorldLocation();
+    return FRect(loc.x,loc.y,w,h);
+}
+
+void SPhysicsBaseUtility::HandleVelocity(double delta_time)
+{
+	//after_location
 }
 
 // void SPhysicsBaseUtility::SetIsSimulatedPhysics(bool value)
@@ -28,7 +33,20 @@ FRect SPhysicsBaseUtility::GetCollisionBox() const
 
 void SPhysicsBaseUtility::SetOwner(SceneComponent* new_owner)
 {
-	owner = new_owner;
+	collision_owner = new_owner;
+}
+
+void SPhysicsBaseUtility::SynchronizationTransform()
+{
+	// const auto loc = collision_owner->GetComponentTransform().location;
+	// collision_rect.x = loc.x;
+	// collision_rect.y = loc.y;
+}
+
+void SPhysicsBaseUtility::SetBodyBox(const Vec2<float> size)
+{
+	w = size.x;
+	h = size.y;
 }
 
 void SPhysicsBaseUtility::SetBodyTransform(Transform transform)
@@ -38,8 +56,9 @@ void SPhysicsBaseUtility::SetBodyTransform(Transform transform)
 
 void SPhysicsBaseUtility::SetBodyWorldLocation(const Location& location)
 {
-	collision_box.x = location.x;
-	collision_box.y = location.y;
+	// collision_rect.x = location.x;
+	// collision_rect.y = location.y;
+	std::cout << "调用了已删除的函数，物理组件的 设置 世界位置" << std::endl;
 }
 
 // TODO
@@ -47,8 +66,9 @@ void SPhysicsBaseUtility::SetBodyWorldRotation(const Rotation& rotation) { }
 
 void SPhysicsBaseUtility::AddBodyWorldLocation(Vec2<float> v)
 {
-	collision_box.x += v.x;
-	collision_box.y += v.y;
+	// collision_rect.x += v.x;
+	// collision_rect.y += v.y;
+	std::cout << "调用了已删除的函数，物理组件的 添加 世界位置" << std::endl;
 }
 
 void SPhysicsBaseUtility::Init()
