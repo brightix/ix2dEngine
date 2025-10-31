@@ -11,6 +11,7 @@
 #include "Classes/Component/SenceComponent/Texture.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Widget/PanelWidget/PanelWidget.hpp"
+#include "Utilities/TracingUtility.hpp"
 
 
 RendererCenter::RendererCenter() : window(nullptr)
@@ -28,16 +29,21 @@ void RendererCenter::Init()
 	}));
 	event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
 		//std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
+		TStartF("UI渲染");
 		auto viewport = (*e->Get<GCWeakPtr<GameWorld>>("widget_data"))->viewport;
 		RenderWidget(viewport);
+		TEndF("UI渲染");
 	}));
 	event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
+		TStartF("SDL_RenderPresent");
 		SDL_RenderPresent(renderer);
+		TEndF("SDL_RenderPresent");
 	}));
 	event_system.AddEvent(Event("OnRenderClear",[&](TEventParams e) {
+		TStartF("SDL_RenderClear");
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
 		SDL_RenderClear(renderer);
-		SDL_RenderClear(renderer);
+		TEndF("SDL_RenderClear");
 	}));
 	DefaultTexture = TTexture(CreateOutLineTexture({10.f,10.f}));
 }
@@ -69,6 +75,7 @@ void RendererCenter::SetRendererAndWindow(SDL_Renderer *r, SDL_Window *w)
 void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 {
 	//数据预处理
+	TStart;
 	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer < B.layer;});
 
 	for (auto& clip : clips)
@@ -89,6 +96,7 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 		//SDL_RenderTexture(renderer,texture.get(),src,dst);
 		SDL_RenderTextureRotated(renderer,texture.get(),src,dst,trans.rotation.Angle,&point,SDL_FLIP_NONE);
 	}
+	TEnd;
 }
 
 void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)

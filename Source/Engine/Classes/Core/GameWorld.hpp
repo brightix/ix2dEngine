@@ -132,11 +132,13 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 	static_assert(std::is_base_of_v<Actor,T>,"T must be derived from Actor");
 	for (int i = 0; i < n; ++i)
 	{
+		TStartF("RandCreateActor");
 		Transform t;
 		t.location.x = Box.x + Box.w * Rand();
 		t.location.y = Box.y + Box.h * Rand();
 		SpawnActor(new T(t));
 		std::cout << i << "  in_delay: " << timer.Click() << std::endl;
+		TEndF("RandCreateActor");
 	}
 }
 

@@ -4,6 +4,8 @@
 #include <chrono>
 #include <thread>
 
+#include "TracingUtility.hpp"
+
 using namespace std::chrono;
 
 class Timer : public Object
@@ -94,6 +96,7 @@ public:
     void Delay(double duration_s)
     {
     	//std::cout << "需要delay    " << duration_s << std::endl;
+        TStart;
         auto start = steady_clock::now();
         auto end = start + duration<double>(duration_s);
 
@@ -106,6 +109,7 @@ public:
         while (steady_clock::now() < end) {
             _mm_pause();
         }
+        TEnd;
     }
 
     //每次调用返回距上次调用的时间

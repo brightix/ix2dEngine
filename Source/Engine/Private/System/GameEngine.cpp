@@ -5,6 +5,7 @@
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "Types/RenderData.hpp"
+#include "Utilities/TracingUtility.hpp"
 
 GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 {
@@ -37,13 +38,6 @@ GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 
 void GameEngine::Construct()
 {
-
-	//最先启动GPU
-	// int count = SDL_GetNumRenderDrivers();
-	// for (int i = 0; i < count; ++i) {
-	// 	const char* name = SDL_GetRenderDriver(i);
-	// 	SDL_Log("Render driver[%d]: %s", i, name);
-	// }
 	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
 	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
 	//renderer_center->SetRendererAndWindow(renderer,window);
@@ -52,7 +46,7 @@ void GameEngine::Construct()
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
-	SysConfig = {120, {640, 480}};
+	SysConfig = {30, {640, 480}};
 
 
 	tick_timer = NewObject(new NewTimer());
@@ -103,6 +97,7 @@ void GameEngine::EventBegin()
 
 void GameEngine::Tick()
 {
+	TStart;
 	tick_timer->Start(); // 关键：第一次先 Start
 
 	while (running) {
@@ -124,6 +119,7 @@ void GameEngine::Tick()
 		tick_timer->Delay(1.0 / SysConfig.TargetFps - consume_timer->End());
 	}
 	game_world->WorldDestroy();
+	TEnd;
 }
 
 

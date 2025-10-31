@@ -4,6 +4,7 @@
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Core/GCObject.hpp"
 #include "Utilities/GCPtr.hpp"
+#include "Utilities/TracingUtility.hpp"
 
 GarbageCollection::GarbageCollection()
 {
@@ -30,6 +31,7 @@ void GarbageCollection::GCMark(GCObject *gc_object)
 
 int GarbageCollection::GCSweep()
 {
+	TStart;
 	//清理标记
 	for (auto& obj : GCAllObjects)
 	{
@@ -59,5 +61,6 @@ int GarbageCollection::GCSweep()
 		}
 	}
 	Block += cnt;
+	TEnd;
 	return cnt;
 }

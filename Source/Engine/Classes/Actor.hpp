@@ -55,7 +55,6 @@ public:
 	virtual void RootComponentTick(double delta_time);
     virtual void EventEnd(){}
 
-
 	//void SimulationPhysics();
 
 	void DestroyActor();

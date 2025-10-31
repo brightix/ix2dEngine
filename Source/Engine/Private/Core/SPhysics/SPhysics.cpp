@@ -25,6 +25,7 @@ void SPhysics::DeRegister(SPhysicsBaseUtility* unit)
 
 void SPhysics::simulation(double delta_time)//注意tunneling，分批tick
 {
+	TStart;
     collision_tree.Clear();
     for (auto& unit : units)
     {
@@ -32,7 +33,7 @@ void SPhysics::simulation(double delta_time)//注意tunneling，分批tick
     	collision_tree.Insert(unit);
     }
     collision_tree.Query();
-
+	TEnd;
 
 	//鼠标点击事件
 

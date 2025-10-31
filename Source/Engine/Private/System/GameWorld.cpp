@@ -46,7 +46,7 @@ void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
 
-	viewport = CreateWidget(new CanvasWidget);
+	viewport = CreateWidget(new CanvasWidget, this);
 	viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
 
