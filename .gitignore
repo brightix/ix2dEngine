@@ -7,6 +7,9 @@
 *pdb
 *.ilk
 
+#tracing文件
+Content/Tracing/
+
 # 🧱 CMake 构建目录（CLion 默认是 cmake-build-*）
 cmake-build-*/
 
