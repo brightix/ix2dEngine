@@ -6,7 +6,7 @@
 #define RightDir Vec2<int>(1, 0)
 #define PI 3.14159265
 
-#define DebugMod 1
+#define DebugMod 0
 
 
 //#define NAME(x) x + std::string("_") + std::to_string(glo_id); glo_id++
@@ -35,11 +35,17 @@
 
 #define EmeraldGreen SDL_Color(80,200,120,255)
 
-
-#define TStart TracingUtility::Instance().StartTracing(__FUNCTION__)
-#define TEnd TracingUtility::Instance().EndTracing(__FUNCTION__)
-#define TStartF(file) TracingUtility::Instance().StartTracing(file)
-#define TEndF(file) TracingUtility::Instance().EndTracing(file)
+#if DebugMod == 1
+	#define TStart TracingUtility::Instance().StartTracing(__FUNCTION__)
+	#define TEnd TracingUtility::Instance().EndTracing(__FUNCTION__)
+	#define TStartF(file) TracingUtility::Instance().StartTracing(file)
+	#define TEndF(file) TracingUtility::Instance().EndTracing(file)
+#else
+	#define TStart
+	#define TEnd
+	#define TStartF(file)
+	#define TEndF(file)
+#endif
 
 #define BREAK std::cout << "break point tool" << std::endl;
 //#define AddComponent(name) AddActorComponent<x>(name, x)

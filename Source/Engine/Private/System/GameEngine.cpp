@@ -27,6 +27,7 @@ GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 			return;
 		}
 		renderer = SDL_CreateRenderer(window, nullptr);
+		std::cout << SDL_GetRendererName(renderer) << std::endl;
 		if (!renderer)
 		{
 			Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
@@ -46,7 +47,7 @@ void GameEngine::Construct()
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
-	SysConfig = {30, {640, 480}};
+	SysConfig = {99999, {640, 480}};
 
 
 	tick_timer = NewObject(new NewTimer());

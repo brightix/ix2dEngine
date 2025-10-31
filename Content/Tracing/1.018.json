@@ -1,0 +1,154 @@
+{"traceEvents": [
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504469109
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504481430
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504483939
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504496592
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504499478
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504519125
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504522406
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504536374
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504539387
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504553794
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "GameEngine::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504689501
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504693382
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504696998
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504700873
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504704342
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504708327
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891504712587
+},

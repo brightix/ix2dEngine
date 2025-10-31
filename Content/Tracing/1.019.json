@@ -1,0 +1,2936 @@
+{"traceEvents": [
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601457971
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601471841
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601474737
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601487444
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601490201
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601509904
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601513025
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601528542
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601531525
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RandCreateActor",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601546546
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "GameEngine::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601685176
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601689281
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601693143
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601697100
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601700980
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601705221
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601709854
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601714631
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601720910
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601725489
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601730515
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601735800
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601741777
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601745536
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601750679
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601754506
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601761418
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601766161
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601770517
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601776837
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601780615
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601784936
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601789982
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601793883
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601797653
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601801212
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601805246
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601809252
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601813019
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601816899
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601821071
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601824889
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601829736
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601834202
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601838904
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601844128
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601850103
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601854245
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601859677
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601864019
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601872440
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601877037
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601881410
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601886157
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601890072
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601894377
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601899499
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "GarbageCollection::GCSweep",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601903480
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "GarbageCollection::GCSweep",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601907420
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601911877
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601915638
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601919436
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601923328
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601927167
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601930642
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601934294
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601938881
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601942791
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601948584
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601952963
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601957447
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601962676
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601966989
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601970676
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601976116
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601979900
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601986619
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601991187
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601995764
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891601999703
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602003785
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602007895
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602013190
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602017145
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602020985
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602024902
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602028718
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602032468
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602036568
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602040342
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602044900
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602048869
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602054710
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602059909
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602064685
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602070193
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602074869
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602078759
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602084215
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602088236
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602094916
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602099652
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602104434
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602108489
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602112255
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602116592
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602121523
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602125577
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602129133
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602132808
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602136673
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602140509
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602144066
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602147817
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602151971
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602155537
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602160452
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602165092
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602169676
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602174773
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602179286
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602182887
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602187951
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602191666
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602198440
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602203698
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602208147
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602212389
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602216640
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602220478
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602225508
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602229398
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602233112
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602236842
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602240538
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602244484
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602248126
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602252048
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602256573
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602260255
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602264730
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602269256
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602275242
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602280638
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602285797
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602289689
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602295464
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602299508
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602306745
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602311911
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602316576
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602320450
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602324484
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602328587
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602333758
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602337987
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602341446
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602345129
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602349112
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602352947
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602356444
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602360006
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602364162
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602367967
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602372645
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602378007
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602382224
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602387475
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602392047
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602395707
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602400981
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602405125
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602412002
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602416874
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602421172
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602425546
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602429465
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602433382
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602438317
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602441995
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602445583
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602449551
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602453399
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602457021
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602460590
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602464521
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602469114
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602473835
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602478744
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602483083
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602487908
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602493161
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602497996
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602501934
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602507763
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602511832
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602518569
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602523621
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602528218
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602532366
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602537218
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602541425
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602546421
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602550361
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602554282
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602557902
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602561633
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602565311
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602568870
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602572733
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602577194
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602580912
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602585752
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602590190
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602594922
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602599933
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602604720
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602608455
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602613854
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602617717
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602624720
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602630095
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602634687
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602639011
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602643328
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602648328
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602653516
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602657703
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602661224
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602665175
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602669234
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602673332
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602676896
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602680674
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602684948
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602689280
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602694143
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602699093
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602703289
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602708148
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602712986
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602716834
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602722181
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602726322
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602732820
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602737457
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602741711
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602745795
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602750144
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602755948
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602760665
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602764687
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602768483
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602772172
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602775886
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602779592
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602783338
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602787190
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602791305
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602795210
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602799908
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602804533
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602809067
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602814457
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602819103
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602823115
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602828297
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602832011
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602838658
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602843468
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602847817
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602851671
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602855876
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602860346
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602865612
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602869389
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602873038
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602876888
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602880822
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602884609
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602888285
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602892258
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602896798
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602901275
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602906057
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602910320
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602914971
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602920096
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602924959
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602928889
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602934196
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602938397
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602944962
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602949758
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602954205
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602958164
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602962282
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602966848
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602972033
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602976395
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602980159
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602983821
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602987357
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubInit",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602991323
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602995098
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SPhysics::simulation",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891602998733
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603002942
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NormalTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603061955
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603066595
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "viewportTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603071844
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603076410
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "收集渲染数据",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603081710
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603086478
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderClear",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603090173
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603095504
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "RendererCenter::RenderScene",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603099485
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603106079
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "UI渲染",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603111078
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603115659
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_RenderPresent",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603119633
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603123861
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "SDL_ControllerTick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603127364
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "TickSubSystem::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603132188
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "B",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603136261
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "NewTimer::Delay",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603139921
+},
+{
+    "args": {},
+    "cat": "function",
+    "name": "GameEngine::Tick",
+    "ph": "E",
+    "pid": 0,
+    "tid": "main",
+    "ts": 1761891603143676
+},
+],"displayTimeUnit": "ms"}

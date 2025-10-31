@@ -4,6 +4,8 @@
 *.so
 *.out
 *.exe
+*pdb
+*.ilk
 
 # 🧱 CMake 构建目录（CLion 默认是 cmake-build-*）
 cmake-build-*/
