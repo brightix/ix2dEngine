@@ -12,7 +12,7 @@ class SubSystemManager : public Object
 public:
     SubSystemManager()
     {
-	    NAME;
+	    CNAME;
     }
     ~SubSystemManager()= default;
 

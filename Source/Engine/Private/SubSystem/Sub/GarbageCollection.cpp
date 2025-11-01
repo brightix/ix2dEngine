@@ -8,7 +8,7 @@
 
 GarbageCollection::GarbageCollection()
 {
-    NAME;
+    CNAME;
 }
 
 void GarbageCollection::GCMark(GCObject *gc_object)
@@ -50,11 +50,11 @@ int GarbageCollection::GCSweep()
 		{
 			//to_delete.emplace_back(obj);
 
-			if (obj->name == "未命名")
+			if (obj->class_name == "UnknownClass")
 			{
 				std::cout << "有未命名类" << std::endl;
 			}
-			std::cout << "移除了 " + obj->name << std::endl;
+			//std::cout << "移除了 " + obj->name << std::endl;
 			delete obj;
 			obj = nullptr;
 			cnt++;

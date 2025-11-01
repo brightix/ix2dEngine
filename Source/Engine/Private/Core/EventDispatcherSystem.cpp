@@ -7,10 +7,10 @@ EventDispatcherSystem::EventDispatcherSystem() {}
 void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
 {
 
-#ifdef DebugMod
+#if DEBUG
 	if (bound_dispatcher.contains(event_name))
 	{
-		LogWithLevel("添加["+ event_name +"]事件错误：已有相同事件写入事件系统",LogLevel::FatalError);
+		Log("添加["+ event_name +"]事件错误：已有相同事件写入事件系统");
 	}
 #endif
 
@@ -23,7 +23,7 @@ void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
 }
 
 //在这个事件系统里绑定其他对象的事件
-void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_name,  Event event)
+void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_name, Event event)
 {
     auto it = bound_dispatcher.find(bounded_name);
     if (it != bound_dispatcher.end())

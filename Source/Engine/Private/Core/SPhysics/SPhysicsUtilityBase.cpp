@@ -3,11 +3,22 @@
 #include "Classes/Core/GameWorld.hpp"
 
 static int global_physics_id = 0;
+void SPhysicsBaseUtility::SetPhysicsCallback(const std::function<void()>& physics_callback_)
+{
+	physics_callback = physics_callback_;
+	quality = 0.046f * *GameEngine::Instance().GetEngineSubSystemManager()->GetSubSystem<RandomUtility>("RandomUtility")->GetRandom("SPhysicsBaseUtility_quality");
+}
+
 SPhysicsBaseUtility::SPhysicsBaseUtility()
 {
-	NAME;
+	CNAME;
 	SPhysicsBaseUtility::Init();
-	//test_name = std::to_string(global_physics_id++);
+}
+
+void SPhysicsBaseUtility::Construct()
+{
+	Object::Construct();
+	dispatcher_system.AddEventDispatcher("OnCollision");
 }
 
 SPhysicsBaseUtility::~SPhysicsBaseUtility()
@@ -23,7 +34,7 @@ FRect SPhysicsBaseUtility::GetCollisionBox() const
 
 void SPhysicsBaseUtility::HandleVelocity(double delta_time)
 {
-	//after_location
+
 }
 
 // void SPhysicsBaseUtility::SetIsSimulatedPhysics(bool value)

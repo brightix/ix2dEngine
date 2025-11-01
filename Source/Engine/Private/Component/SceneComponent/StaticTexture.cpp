@@ -1,12 +1,13 @@
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
+#include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Types/RenderData.hpp"
 
 
 StaticTexture::StaticTexture()
 {
-	NAME;
+	CNAME;
 }
 
 
@@ -36,6 +37,33 @@ void StaticTexture::ComponentRender()
 	SDL_Renderer* renderer = GetRenderer();
 	const SDL_FRect dst(transform.location.x,transform.location.y, h, w);
 	SDL_RenderTexture(renderer,in_texture.get(),nullptr,&dst);
+}
+
+void StaticTexture::SetActiveCollision(const bool is_active)
+{
+	if (is_active)
+	{
+		if (!collision_box)
+		{
+			//开启碰撞属性
+			collision_box = MountedComponent(new CollisionBox);
+			collision_box->BindEventToDispatcher(this,"OnEffectTransform",Event([&](TEventParams e) {
+				auto t = e->Get<Location>("location");
+				SetComponentWorldLocation(*t);
+			}));
+			//collision_box->SetName("CollisionBox");
+			collision_box->SetBoundBox(Vec2<float>(in_texture->w,in_texture->h));
+		}
+	}
+	else
+	{
+		if (collision_box)
+		{
+			//关闭
+			RemoveSceneComponent(collision_box->name);
+			collision_box = nullptr;
+		}
+	}
 }
 
 // void StaticTexture::LoadDefaultTexture(const Vec2<int> size, const SDL_Color color, const bool is_fill)

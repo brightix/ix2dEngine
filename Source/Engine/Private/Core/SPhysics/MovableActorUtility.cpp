@@ -20,7 +20,7 @@ PhysicsType MovableUtility::GetPhysicsType()
 void MovableUtility::Init()
 {
     SPhysicsBaseUtility::Init();
-	NAME;
+	CNAME;
 }
 
 void MovableUtility::SetCollisionBound(FRect box)

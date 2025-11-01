@@ -31,7 +31,9 @@ public:
 	void DeRegister(SPhysicsBaseUtility* unit);
 	void simulation(double delta_time);
 
-	void HandlePhysics(double delta_time, SPhysicsBaseUtility* unit);
+	void HandlePhysics(double delta_time, SPhysicsBaseUtility* unit) const;
+	void Synchronization() const;
+
 
 	//void HandleVelocity(float delta_time);
     static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);

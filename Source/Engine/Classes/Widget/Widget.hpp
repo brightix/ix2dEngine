@@ -19,7 +19,9 @@ class Widget : public Object
 protected:
 	WidgetVisibility widget_visibility;
 	int layer_id;
+	//每一个控件都拥有父控件，通过 AddChild() 获得
 	GCWeakPtr<Widget> parent;
+
 	GCPtr<PanelSlot> Root;
 public:
 	bool dirty;

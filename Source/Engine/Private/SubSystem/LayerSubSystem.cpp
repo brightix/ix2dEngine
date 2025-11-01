@@ -4,5 +4,5 @@
 void LayerSubSystem::Init()
 {
     EngineSubSystem::Init();
-    NAME;
+    CNAME;
 }

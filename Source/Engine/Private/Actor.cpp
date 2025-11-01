@@ -2,6 +2,7 @@
 
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
 #include "../Classes/Component/SenceComponent/RootComponent.h"
+#include "Classes/Component/SenceComponent/SceneTextBlock.hpp"
 #include "Classes/Component/SenceComponent/StaticTexture.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
@@ -14,18 +15,23 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
                                     window(nullptr), transform(tf),
                                     mobility(ActorMobility::Static), open_physics(false)
 {
-	NAME;
+	CNAME;
 }
 
 void Actor::Construct()
 {
 	//事件
-
+	//event_system.AddEvent("");
+	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
 	//场景默认根组件
 	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
+	Root->SetOwner(this);
 	// TODO处理事件回调时机，先绑定事件还是先设置位置
 
-	Root->MountedComponent(new StaticTexture())->name = "default_texture";
+	auto tex = Root->MountedComponent(new StaticTexture());
+	tex->name = "default_texture";
+	tex->SetNewTexture(Create_FilledTexture_S({100,100}));
+	Root->MountedComponent(new SceneTextBlock)->SetText(name);
 	SetActorTransform(transform);
 }
 
@@ -56,6 +62,11 @@ void Actor::RootComponentTick(const double delta_time)
 }
 
 
+void Actor::HandleComponentPhysics(FPoint application_point, Vec2<float> force)
+{
+
+}
+
 void Actor::DestroyActor()
 {
 	//单线程
@@ -68,9 +79,20 @@ void Actor::DestroyActor()
 	GCUnlink();
 }
 
+void Actor::SetHiddenInGame(bool new_hidden_in_game)
+{
+	hidden_in_game = new_hidden_in_game;
+}
+
 void Actor::SetMobility(const ActorMobility target_mobility)
 {
 	mobility = target_mobility;
+	dispatcher_system.CallDispatcher("OnMobilityChanged");
+}
+
+ActorMobility Actor::GetMobility() const
+{
+	return mobility;
 }
 
 

@@ -25,11 +25,18 @@ public:
     void CallEvent(const std::string& event_name,std::optional<EventParams> params = std::nullopt);
     //添加事件分发器安全版本需要验证参数包类型
     void AddEventDispatcher(const std::string& event_name, EventMethod&& event_method);
-	void BindEvent(Object *target, const std::string &event_name, Event event);
+	void BindEventToDispatcher(Object *target, const std::string &event_name, Event event);
+
+    /**
+     * 监听目标对象事件
+     * @param target 监听对象
+     * @param event_name 事件名
+     * @param event 事件
+     */
+    void ListenDispatcher(Object* target, const std::string& event_name, Event event);
 
 
-
-	template<typename T>
+    template<typename T>
 	GCPtr<T> NewObject(T* object)
 	{
 		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");

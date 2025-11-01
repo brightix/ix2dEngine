@@ -7,7 +7,7 @@
 
 TextureStoreSubSystem::TextureStoreSubSystem()
 {
-	name = "TextureStoreSubSystem";
+	CNAME;
 	cached_texture.OnEvict = [](SDL_Texture* t) {
 		SDL_DestroyTexture(t);
 	};

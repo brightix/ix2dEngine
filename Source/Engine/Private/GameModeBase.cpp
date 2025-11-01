@@ -22,7 +22,7 @@ void GameModeBase::Tick(double deltaTime)
 void GameModeBase::Construct()
 {
 	Actor::Construct();
-
+	SetHiddenInGame(true);
 }
 
 void GameModeBase::EventBegin()

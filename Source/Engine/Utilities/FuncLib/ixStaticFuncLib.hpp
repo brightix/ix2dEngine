@@ -4,43 +4,38 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
-#include "Utilities/magic_enum.hpp"
+#include "Utilities/ThirdParty/magic_enum.hpp"
 #include "Enum/LogLevel.h"
-#include "Utilities/json.hpp"
-#include "GlobalMacros.hpp"
-
-#define Log(msg) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__))
-#define LogWithLevel(msg,level) LogToFile(msg, std::string(__FILE__), std::to_string(__LINE__), std::string(__func__), level)
-
-inline void LogToFile(const std::string msg, std::string file_name = "", std::string line = "", std::string func_name = "", LogLevel level = LogLevel::Tip)
+#include "../ThirdParty/json.hpp"
+#include "Utilities/FuncLib/GlobalMacros.hpp"
+#define Log(msg) LogToFile(msg, __FILE__, __LINE__, __func__)
+#define LogWithLevel(msg, level) LogToFile(msg, __FILE__, __LINE__, __func__, level)
+inline void LogToFile(const std::string& msg, const char* file_name = "", const int line = 0, const char* func_name = "", const LogLevel level = Tip)
 {
-    std::ofstream file("Log.log",std::ios::app);
-    if(!file.is_open())
-    {
-        std::cerr << "文件打开失败" << std::endl;
-    }
-    // 转换为 time_t （方便格式化输出）
-    std::time_t now_c = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::tm tm = *std::localtime(&now_c);
+	static std::ofstream file("Log.log", std::ios::app);
+	if(!file.is_open()) std::cerr << "文件打开失败" << std::endl;
 
-    std::ostringstream timeStream;
-    timeStream << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-    std::string logText = timeStream.str() + file_name + " at " + line + " line " + func_name;
+	auto now = std::chrono::system_clock::now();
+	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+	std::tm tm = *std::localtime(&now_c);
 
-	//时间 + 文件路径 + 行数 + 问题严重程度 + 问题描述
-    logText.append(" [" + std::string(magic_enum::enum_name(level)) + "]: " + msg);
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S")
+		<< " " << file_name << " at " << line << " line " << func_name
+		<< " [" << magic_enum::enum_name(level) << "]: " << msg;
+	std::string logText = oss.str();
 
-#ifdef DebugMod
-    std::cout << logText << std::endl;
+#if DEBUG == 1
+	std::cout << logText << std::endl;
 #endif
 
-    file << logText << std::endl;
-    file.close();
-    if (level == FatalError)
-    {
-        std::cerr << "致命错误" << std::endl;
-        std::abort();
-    }
+	file << logText << std::endl;
+
+	if (level == LogLevel::FatalError)
+	{
+		std::cerr << "致命错误" << std::endl;
+		std::abort();
+	}
 }
 
 inline std::ofstream OpenOutputFileSafety(std::string file_path, std::ios::openmode mode)
@@ -53,11 +48,6 @@ inline std::ofstream OpenOutputFileSafety(std::string file_path, std::ios::openm
     }
     return file;
 }
-template<typename T>
-inline T GetParam(T&& val)
-{
-
-}
 
 inline std::ifstream OpenInputFileSafety(std::string file_path, std::ios::openmode mode = std::ios::app)
 {
@@ -69,6 +59,36 @@ inline std::ifstream OpenInputFileSafety(std::string file_path, std::ios::openmo
     }
     return file;
 }
+
+template<typename T, typename U>
+T* Cast(U* before, const char* func_name = "")
+{
+	// 静态类型检查
+	static_assert(
+		std::is_base_of_v<T, U> ||
+		std::is_base_of_v<U, T> ||
+		std::is_same_v<T, U>,
+				  "Cast 检测出类型不兼容：目标类型不是源类型的基类");
+
+	if (!before)
+	{
+		std::cerr << func_name << " >> 指针为空，无法进行转换\n";
+		return nullptr;
+	}
+
+	// 如果类型相同，直接返回
+	if constexpr (std::is_same_v<T, U>)
+		return before;
+
+	// 尝试 dynamic_cast
+	if (auto t = dynamic_cast<T*>(before))
+		return t;
+
+	std::cerr << func_name << " >> dynamic_cast 失败："
+			  << typeid(U).name() << " → " << typeid(T).name() << "\n";
+	return nullptr;
+}
+
 
 //
 // inlin

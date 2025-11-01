@@ -1,12 +1,12 @@
 #include "Classes/InputMap.hpp"
 
-#include "Utilities/json.hpp"
+#include "../Utilities/ThirdParty/json.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 using json = nlohmann::json;
 using namespace std;
 InputMap::InputMap() 
 {
-	NAME;
+	CNAME;
 }
 
 void InputMap::Construct()

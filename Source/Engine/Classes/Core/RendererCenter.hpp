@@ -33,9 +33,9 @@ public:
 
 	void RenderWidget(GCWeakPtr<PanelWidget> viewport);
 
-	SDL_Texture* CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
+	std::shared_ptr<SDL_Texture> CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
 
-	SDL_Texture* CreateFilledTexture(Vec2<int> size, SDL_Color color = EmeraldGreen);
+	std::shared_ptr<SDL_Texture> CreateFilledTexture(Vec2<float> size, SDL_Color color = EmeraldGreen);
 	// TODO 添加AsyncSetTexture();
 	void SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
 	//static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);

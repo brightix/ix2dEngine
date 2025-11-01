@@ -5,7 +5,7 @@
 
 #include "Classes/Pawn.hpp"
 #include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
-#include "Utilities/json.hpp"
+#include "../Utilities/ThirdParty/json.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../Classes/Core/GameEngine.hpp"
 #include "System/Font.hpp"
@@ -15,7 +15,7 @@ using namespace std;
 using json = nlohmann::json;
 Controller::Controller() : show_mouse_cursor(false)
 {
-	name = "Controller";
+	CNAME;
 }
 
 void Controller::Control(GCPtr<Pawn> pawn)
@@ -27,6 +27,7 @@ void Controller::Construct()
 {
 	Actor::Construct();
 
+	SetHiddenInGame(true);
 	input_map = NewObject<InputMap>(new InputMap());
 	auto st = 	Root->MountedComponent(new StaticTexture);
 	SetTextureFromSurface_S(st.Peek(),GetTextSurface("                    "));

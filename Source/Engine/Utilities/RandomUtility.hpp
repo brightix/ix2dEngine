@@ -14,7 +14,7 @@ static double Rand()
 	return dist(rng);
 }
 
-class RandomUtility : public EngineSubSystem
+class RandomUtility final : public EngineSubSystem
 {
     uint32_t seed;
     std::mt19937 main_seed;
@@ -23,7 +23,7 @@ class RandomUtility : public EngineSubSystem
 public:
     explicit RandomUtility() : seed(std::random_device{}())
     {
-	    NAME;
+	    CNAME;
     }
 
     std::optional<int> GetRandom(const std::string& reg_name)
@@ -36,7 +36,8 @@ public:
             return std::nullopt;
         }
         auto& [engine, dist] = it->second;
-        return dist(engine);
+    	int ret = dist(engine);
+        return ret;
     }
 
     bool RegisterRandom(const std::string &reg_name, std::pair<int,int> min_max)

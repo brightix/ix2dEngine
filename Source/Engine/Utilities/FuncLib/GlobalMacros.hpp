@@ -6,11 +6,12 @@
 #define RightDir Vec2<int>(1, 0)
 #define PI 3.14159265
 
-#define DebugMod 0
-
+#define DEBUG 1
+#define TRACINGTEST 0
 
 //#define NAME(x) x + std::string("_") + std::to_string(glo_id); glo_id++
-#define NAME name = typeid(*this).name()
+#define CNAME class_name = typeid(*this).name(); \
+					name = class_name + std::to_string(id)
 
 #define TEventParams std::optional<EventParams>
 
@@ -35,7 +36,7 @@
 
 #define EmeraldGreen SDL_Color(80,200,120,255)
 
-#if DebugMod == 1
+#if TRACINGTEST == 1
 	#define TStart TracingUtility::Instance().StartTracing(__FUNCTION__)
 	#define TEnd TracingUtility::Instance().EndTracing(__FUNCTION__)
 	#define TStartF(file) TracingUtility::Instance().StartTracing(file)
@@ -47,5 +48,10 @@
 	#define TEndF(file)
 #endif
 
-#define BREAK std::cout << "break point tool" << std::endl;
+#if DEBUG == 1
+	#define BREAK std::cout << "break point tool" << std::endl;
+#else
+	#define BREAK
+#endif
+
 //#define AddComponent(name) AddActorComponent<x>(name, x)

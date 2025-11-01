@@ -9,7 +9,9 @@
 #include "Types/FontStyle.hpp"
 class FontRenderer// : public Object
 {
+	std::string class_name;
 	std::string name;
+	size_t id = -1;
     // LRUCache<std::string,std::shared_ptr<TTF_Font>> fontCache;
 	std::unordered_map<std::string,std::string> fontMap;
 	std::unordered_map<std::string,std::shared_ptr<TTF_Font>> fonts;

@@ -6,7 +6,7 @@ class ViewportSubSystem : public WorldSubSystem
 public:
     ViewportSubSystem()
     {
-	    NAME;
+	    CNAME;
     }
     ~ViewportSubSystem(){}
 };

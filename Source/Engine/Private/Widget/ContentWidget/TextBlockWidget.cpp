@@ -6,7 +6,7 @@
 #include "Types/FontStyle.hpp"
 TextBlockWidget::TextBlockWidget()
 {
-	NAME;
+	CNAME;
     text = "未命名";
 }
 

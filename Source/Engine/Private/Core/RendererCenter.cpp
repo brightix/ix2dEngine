@@ -22,7 +22,7 @@ void RendererCenter::Init()
 {
 	InitSDL();
 
-	NAME;
+	CNAME;
 	event_system.AddEvent(Event("OnRenderSceneDataReady",[&](TEventParams e) {
 		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
 		RenderScene(clips);
@@ -45,7 +45,7 @@ void RendererCenter::Init()
 		SDL_RenderClear(renderer);
 		TEndF("SDL_RenderClear");
 	}));
-	DefaultTexture = TTexture(CreateOutLineTexture({10.f,10.f}));
+	DefaultTexture = CreateOutLineTexture({100.f,100.f});
 }
 
 void RendererCenter::InitSDL()
@@ -106,7 +106,7 @@ void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
 	viewport->NativeWidgetRender({0,0,size.x,size.y});
 }
 
-SDL_Texture* RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_Color color)
+std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_Color color)
 {
 	if (!renderer)
 	{
@@ -119,21 +119,26 @@ SDL_Texture* RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_C
 		size.x,
 		size.y
 	);
+
 	SDL_SetRenderTarget(renderer, t);
 	// 清空背景
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // 透明背景
 	SDL_RenderClear(renderer);
+
 	SDL_SetRenderDrawColor(renderer, color.r,color.g,color.b,color.a); // 青色边框
-	int thickness = 3;
+
+	int thickness = 2;
 	for (int i = 0; i < thickness; ++i)
 	{
 		auto rect_bound = SDL_FRect(i,i, size.x - i * 2, size.y - i * 2);
 		SDL_RenderRect(renderer, &rect_bound);
 	}
+	//切回屏幕
 	SDL_SetRenderTarget(renderer,nullptr);
-	return t;
+	return TTexture(t);
 }
-SDL_Texture * RendererCenter::CreateFilledTexture(const Vec2<int> size, SDL_Color color)
+
+std::shared_ptr<SDL_Texture> RendererCenter::CreateFilledTexture(const Vec2<float> size, SDL_Color color)
 {
 	SDL_Texture* texture_T = SDL_CreateTexture(
 		renderer,
@@ -147,7 +152,7 @@ SDL_Texture * RendererCenter::CreateFilledTexture(const Vec2<int> size, SDL_Colo
 	const auto rect_T = SDL_FRect(0, 0, size.x, size.y);
 	SDL_RenderFillRect(renderer,&rect_T);
 	SDL_SetRenderTarget(renderer, nullptr);
-	return texture_T;
+	return TTexture(texture_T);
 }
 
 void RendererCenter::SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface)

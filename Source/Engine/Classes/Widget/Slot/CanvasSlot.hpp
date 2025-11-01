@@ -7,7 +7,7 @@ struct CanvasSlot : public PanelSlot
 public:
     CanvasSlot()
     {
-	    NAME;
+	    CNAME;
     }
     ~CanvasSlot(){}
 };

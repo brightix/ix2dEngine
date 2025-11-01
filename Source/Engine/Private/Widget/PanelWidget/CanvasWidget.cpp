@@ -6,7 +6,7 @@
 
 CanvasWidget::CanvasWidget()
 {
-	NAME;
+	CNAME;
 }
 
 GCWeakPtr<PanelSlot> CanvasWidget::AddChild(GCPtr<Widget> child)
@@ -22,7 +22,7 @@ GCWeakPtr<PanelSlot> CanvasWidget::AddChild(GCPtr<Widget> child)
     }
     else
     {
-        World()->BindEvent(this, "EventBegin", Event([child](TEventParams e) {
+        World()->BindEventToDispatcher(this, "EventBegin", Event([child](TEventParams e) {
             child->WidgetEventBegin();
         }));
     }

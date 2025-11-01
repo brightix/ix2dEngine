@@ -18,11 +18,12 @@ class Actor : public Object
     //Attribution
 	//GCPtr<StaticTexture> collision_box;
 	Transform transform;
+//质心就是旋转中心
 
 	//Component
-    bool isShowInGame;
-	bool is_active;
-	bool hidden_in_game;
+    bool isShowInGame;//render
+	bool is_active;//tick
+	bool hidden_in_game;//run render
 	bool is_begin_event_handled;
 
 //每个actor内部有个计时器组件，用来定时处理事件
@@ -55,26 +56,25 @@ public:
 	virtual void RootComponentTick(double delta_time);
     virtual void EventEnd(){}
 
-	//void SimulationPhysics();
+	void HandleComponentPhysics(FPoint application_point, Vec2<float> force);
 
 	void DestroyActor();
     //attribution
-
+	void SetHiddenInGame(bool new_hidden_in_game);
 	void SetMobility(ActorMobility target_mobility);
+	ActorMobility GetMobility() const;
 
-    void SetActorTransform(Transform trans);
-
-    void AddActorTransform(Transform trans);
-
-    //Add
-	void AddActorWorldLocation(Vec2<float> dis) const;
-
-    //Get
-    Location GetWorldLocation() const;
-    Vec2<float> GetRelativeLocation();
-
-
+//变换
 	Transform GetWorldTransform() const;
+    void SetActorTransform(Transform trans);
+    void AddActorTransform(Transform trans);
+//位置
+
+	Location GetWorldLocation() const;
+    Vec2<float> GetRelativeLocation();
+//旋转
+
+	void AddActorWorldLocation(Vec2<float> dis) const;
 
 
 

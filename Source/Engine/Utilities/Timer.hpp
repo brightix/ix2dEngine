@@ -79,7 +79,7 @@ public:
     NewTimer()
     {
         last = {};
-    	NAME;
+    	CNAME;
     }
 
     void Start()

@@ -6,7 +6,9 @@ template<typename T>
 class GCPtr;
 struct GCObject
 {
-    std::string name = "未命名";
+    std::string class_name = "UnknownClass";
+    std::string name;
+
 	bool bMarked = false;
 	bool is_pending_kill = false;
 	size_t id;
@@ -16,7 +18,10 @@ struct GCObject
 
     virtual ~GCObject();
 
-    bool IsActive();
+
+    bool IsActive() const;
+	std::string GetClassName();
+
 
     //GC安全 只创建实例，不执行construct和绑定事件
 	template<typename T, typename ...Args>

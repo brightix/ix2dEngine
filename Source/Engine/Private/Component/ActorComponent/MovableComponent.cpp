@@ -5,7 +5,7 @@
 MovableComponent::MovableComponent(): player_input_Vec(), base_move_speed(200) {}
 MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_input_Vec(), base_move_speed(200)
 {
-	NAME;
+	CNAME;
 }
 
 

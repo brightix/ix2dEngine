@@ -13,7 +13,7 @@ struct GCWeakPtr
 	{
 		static_assert(std::is_base_of_v<GCObject, T>,"使用Weak必须是继承自GCObject");
 		ptr = obj;
-		weak_id = obj->id;
+		weak_id = ptr != nullptr ? obj->id : -1;
 	}
 	T* Peek() const
 	{

@@ -4,7 +4,7 @@ RootComponent::RootComponent() : RootComponent(Transform{}) {}
 
 RootComponent::RootComponent(const Transform& transform)
 {
-	NAME;
+	CNAME;
 	this->transform = transform;
 }
 

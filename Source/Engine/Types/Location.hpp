@@ -10,7 +10,7 @@ struct Location : var_type
     float y;
     Location() : x(0), y(0) {}
     Location(const Vec2<float> l) : x(l.x), y(l.y) {}
-
+	Location(const float x_, const float y_) : x(x_), y(y_) {}
 	void RotateByAngle(float angle, Vec2<float> point)
     {
 		auto dx = x - point.x;
@@ -39,14 +39,14 @@ struct Location : var_type
         x += l.x;
         y += l.y;
     }
-	Vec2<float> operator+(Location& other) const
+	Vec2<float> operator+(const Location& other) const
 	{
-
 	    return Vec2(x+other.x,y+other.y);
     }
-	Vec2<float> operator-(Location& other) const
+	Vec2<float> operator-(const Location& other) const
     {
-
     	return Vec2(x-other.x,y-other.y);
     }
+	Vec2<float> operator+(const Vec2<float>& force) const { return Vec2(x + force.x,y + force.y); }
+	Vec2<float> operator-(const Vec2<float>& force) const { return Vec2(x - force.x,y - force.y); }
 };

@@ -31,14 +31,14 @@ struct PhysicsState
 	float force_attenuation;
 };
 
-class SPhysicsBaseUtility : public GCObject
+class SPhysicsBaseUtility : public Object
 {
 public:
 	~SPhysicsBaseUtility() override;
 //物理的位置跟随父场景组件
 	float w,h;
 	Vec2<float> velocity;
-	float quality = 10.f;
+	float quality = 2.f;
 	float force_attenuation = 1.0f;
 
 	PhysicsType type;
@@ -51,8 +51,13 @@ public:
 	Location after_location;
 	Rotation after_rotation;
 
-    SPhysicsBaseUtility();
 
+	// Hook
+	std::function<void()> physics_callback;
+	void SetPhysicsCallback(const std::function<void()>& physics_callback_);
+
+    SPhysicsBaseUtility();
+	void Construct() override;
 
 
 

@@ -4,5 +4,5 @@
 
 PanelSlot::PanelSlot()
 {
-	NAME;
+	CNAME;
 }

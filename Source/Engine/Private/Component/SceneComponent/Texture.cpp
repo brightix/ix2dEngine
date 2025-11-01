@@ -7,9 +7,8 @@
 Texture::Texture()
 {
 	//先引用默认渲染图
-	NAME;
+	CNAME;
 	in_texture = GetDefaultTexture();
-	name = "Texture";
 	w = in_texture->w;
 	h = in_texture->h;
 	// if (texture_)

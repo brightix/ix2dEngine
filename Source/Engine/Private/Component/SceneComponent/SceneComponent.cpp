@@ -2,9 +2,9 @@
 
 #include <SDL3/SDL_render.h>
 
+#include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Types/RenderData.hpp"
-#include "Utilities/FuncLib/Deleter.hpp"
 
 SceneComponent::SceneComponent() : SceneComponent(Transform{}){ }
 SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
@@ -12,7 +12,7 @@ SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
 void SceneComponent::Construct()
 {
 	Component::Construct();
-	dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
+	//dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
 }
 
 void SceneComponent::NativeSceneComponentEventBegin()
@@ -53,6 +53,32 @@ void SceneComponent::SceneComponentTick(double delta_time)
 		it->SceneComponentTick(delta_time);
 	}
 }
+
+void SceneComponent::RemoveSceneComponentFromParent() const
+{
+	parent_component->RemoveSceneComponent(name);
+}
+
+void SceneComponent::RemoveSceneComponent(const std::string& component_name)
+{
+	mounted_components.erase(component_name);
+}
+
+GCWeakPtr<SceneComponent> SceneComponent::GetSceneComponentByName(const std::string& searched_component_name)
+{
+	for (const auto& component : mounted_components | std::views::values)
+	{
+		if (component->name == searched_component_name)
+		{
+			return component;
+		}
+		if (auto ret = component->GetSceneComponentByName(searched_component_name); ret.IsValid())
+		{
+			return ret;
+		}
+	}
+	return {};
+}
 //递归调用接口
 void SceneComponent::ForRender()
 {
@@ -78,8 +104,7 @@ void SceneComponent::ForRenderData(std::vector<RenderData>& data)
 	}
 }
 
-void SceneComponent::OfferRenderData(std::vector<RenderData>& data)
-{}
+void SceneComponent::OfferRenderData(std::vector<RenderData>& data){}
 
 bool SceneComponent::IsSceneComponentOpenedPhysics() const { return open_physics; }
 
@@ -87,33 +112,34 @@ SDL_FRect SceneComponent::GetComponentRenderRect() const
 {
 	return SDL_FRect(transform.location.x - w * pivot.x, transform.location.y - h * pivot.y, w * transform.scaling.horizontal, h * transform.scaling.vertical);
 }
-
-Vec2<float> SceneComponent::GetComponentVisibleScale() const
-{
-	return {w * transform.scaling.horizontal, h * transform.scaling.vertical};
-}
-
-Vec2<float> SceneComponent::GetComponentRenderLocation() const
-{
-	return {transform.location.x - w * pivot.x, transform.location.y - h * pivot.y};
-}
+//
+// Vec2<float> SceneComponent::GetComponentVisibleScale() const
+// {
+// 	return {w * transform.scaling.horizontal, h * transform.scaling.vertical};
+// }
+//
+// Vec2<float> SceneComponent::GetComponentRenderLocation() const
+// {
+// 	return {transform.location.x - w * pivot.x, transform.location.y - h * pivot.y};
+// }
 
 void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 {
 	//单线程
-	auto t = TTexture(Create_OutLineTexture_S(Vec2<float>(w,h)));
+	auto t = Create_OutLineTexture_S(Vec2<float>(w,h));
 	data.emplace_back(RenderData{t ,transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
 }
 
 
-bool SceneComponent::SetComponentName(const std::string& new_name)
+bool SceneComponent::SetName(const std::string& new_name)
 {
-	if (parent_component && parent_component->OnMountedComponentNameChanged(name,new_name))
+	if (!parent_component || !parent_component->OnMountedComponentNameChanged(name,new_name))
 	{
-		name = new_name;
-		return true;
+		LogWithLevel("组件名已被占用", FatalError);
+		return false;
 	}
-	return false;
+	name = new_name;
+	return true;
 }
 
 bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name)
@@ -128,6 +154,11 @@ bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_
 	mounted_components[new_name] = std::move(mounted_components[component_name]);
 	mounted_components.erase(component_name);
 	return true;
+}
+
+Vec2<float> SceneComponent::GetComponentSize()
+{
+	return {w, h};
 }
 
 
@@ -170,7 +201,7 @@ void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 	{
 		val->SetComponentWorldLocation(absolute_location);
 	}
-	dispatcher_system.CallDispatcher("OnSceneComponentTeleport");
+	dispatcher_system.CallDispatcher("OnComponentWorldLocationChanged");
 }
 
 Location SceneComponent::GetComponentWorldLocation()

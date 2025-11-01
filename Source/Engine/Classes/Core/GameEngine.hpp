@@ -74,7 +74,7 @@ public:
 
     std::shared_ptr<SDL_Texture> GetDefaultTexture();
 
-    void Quit();
+    void Quit() const;
 
     ~GameEngine() override;
 //base
@@ -82,7 +82,7 @@ public:
     GCWeakPtr<GameWorld> GetGameWorld();
     GCObject *GetGCRoot() const;
 //Render
-	void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
+	//void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
 
     //Sys
 
@@ -96,6 +96,7 @@ public:
     //属性
 	EngineState GetEngineAttribution();
 
+    GCWeakPtr<SubSystemManager> GetEngineSubSystemManager();
 };
 
 
@@ -130,4 +131,5 @@ inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 
 GCWeakPtr<GameWorld> World();
 
-SDL_Texture* Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);
+std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);
+std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL_Color color = EmeraldGreen);

@@ -4,9 +4,10 @@
 
 class UserWidget : public Widget
 {
-    std::unordered_map<std::string, GCPtr<Widget>> child_widget;
 protected:
 
+	std::unordered_map<std::string, GCPtr<Widget>> child_widget;
+	//GCPtr<Widget> Root;
 public:
     UserWidget(){}
     virtual void Tick(double delta_time) override{}

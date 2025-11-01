@@ -12,7 +12,7 @@ TestFps::TestFps() : per_delta(0)
 void TestFps::PreConstructEvent()
 {
     UserWidget::PreConstructEvent();
-	NAME;
+	CNAME;
     auto text = CreateWidget(new TextBlockWidget);
     FontStyle fontStyle;
     fontStyle.font = FontRenderer::Instance().GetFont("simkai", 24);
@@ -26,13 +26,13 @@ void TestFps::PreConstructEvent()
 	}
     AddChild("Fps_Text", text);
 
-    Root->widget = text;
+    //Root->widget = text;
 }
 
 void TestFps::Tick(double delta_time)
 {
 	per_delta += delta_time;
-	if (per_delta > 0.3f)
+	if (per_delta > 0.15f)
 	{
 		per_delta = 0.f;
 		auto info = GameEngine::Instance().GetEngineAttribution();

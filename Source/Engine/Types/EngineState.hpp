@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Vec.hpp"
 struct EngineState
 {
     float FPS = 0.0f;

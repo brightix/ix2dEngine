@@ -1,11 +1,12 @@
 #pragma once
 #include <SDL3/SDL_rect.h>
-
+#include <format>
 #include "Classes/Component/Component.hpp"
 #include "Classes/Core/SPhysics/MovableActorUtility.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Enums/ActorVisibility.hpp"
 #include "Types/Enums/LayerHierachy.hpp"
+#include "Utilities/FuncLib/SystemLib.hpp"
 
 struct RenderData;
 
@@ -27,6 +28,7 @@ protected:
      */
     Vec2<float> pivot;
 	std::unordered_map<std::string, GCPtr<SceneComponent>> mounted_components;
+	//std::unordered_map<std::type_index,std::vector<GCPtr<SceneComponent>>> mounted_components_by_type;
 	SceneComponent* parent_component;
 	ComponentVisibility visibility = ComponentVisibility::Visible;
 	bool open_physics = false;
@@ -52,57 +54,110 @@ public:
 	template<typename T>
 	GCWeakPtr<T> MountedComponent(T* obj)
 	{
-		static_assert(std::is_base_of_v<SceneComponent, T>, "T must derive from Component");
-
-		SceneComponent* component = dynamic_cast<SceneComponent*>(obj);
-		assert(component && "Object must derive from Component");
-
+		SceneComponent* component = Cast<SceneComponent>(obj,__func__);
+#if DEBUG == 1
+		if (!owner)
+		{
+			std::cout << "有野组件" << std::endl;
+		}
+#endif
 		component->parent_component = this;
+		component->SetOwner(owner);
 		GCPtr<T> gc_component = NewObject(obj);
 
+		//这里的命名是初始类名+id
 		mounted_components.emplace(gc_component->GetComponentName(),gc_component);
 		//挂载组件需要已到父组件变换下
 		component->SetComponentWorldLocation(transform.location);
 		return gc_component;
 	}
 
+	void RemoveSceneComponentFromParent() const;
+	void RemoveSceneComponent(const std::string& component_name);
 
 
 	//Danger performance 递归找节点
-	GCWeakPtr<SceneComponent> GetSceneComponentByName(const std::string& searched_component_name)
-	{
-		for (const auto& component : mounted_components | std::views::values)
-		{
-			if (component->name == searched_component_name)
-			{
-				return component;
-			}
-			if (auto ret = component->GetSceneComponentByName(searched_component_name); ret.IsValid())
-			{
-				return ret;
-			}
-		}
-		return {};
-	}
+	GCWeakPtr<SceneComponent> GetSceneComponentByName(const std::string& searched_component_name);
+	//单层找节点
+	// template<typename T>
+	// GCWeakPtr<T> GetSceneComponentByName_SingleLayer(const std::string& searched_component_name)
+	// {
+	// 	auto it = mounted_components_by_type.find(std::type_index(typeid(T)));
+	// 	if (it == mounted_components_by_type.end())
+	// 	{
+	// 		return nullptr;
+	// 	}
+	// 	auto components = it->second;
+	// 	for (auto& component : components)
+	// 	{
+	// 		if (component->GetComponentName() == searched_component_name)
+	// 		{
+	// 			return component;
+	// 		}
+	// 	}
+	// 	return nullptr;
+	// }
+
+	//单层
+	// template<typename T>
+	// GCWeakPtr<T> GetSceneComponent(const std::string& component_name = std::string())
+	// {
+	// 	auto it = mounted_components_by_type.find(std::type_index(typeid(T)));
+	// 	if (it == mounted_components_by_type.end())
+	// 	{
+	// 		Log(std::format("没找到类型为 {} 的子组件",typeid(T).name()));
+	// 		return {};
+	// 	}
+	// 	if (!component_name.empty())
+	// 	{
+	// 		auto components = it->second;
+	// 		for (auto& component : components)
+	// 		{
+	// 			if (component->name == component_name)
+	// 			{
+	// 				return component;
+	// 			}
+	// 		}
+	// 		Log(std::format("没找到类型为 {},名为 {} 的子组件",typeid(T).name(), component_name));
+	// 		return {};
+	// 	}
+	// 	return it->second[0];
+	// }
+
+	//typeid 添加子组件
+	// template<typename T>
+	// GCWeakPtr<T> MountedSceneComponent(std::string component_name = std::string())
+	// {
+	// 	ix::IsChild<SceneComponent,T>();
+	//
+	// 	auto new_component = NewObject<T>(new T);
+	// 	if (!component_name.empty())
+	// 	{
+	// 		if (GetSceneComponentByName_SingleLayer<T>(component_name))
+	// 		{
+	// 			//重名了就换为 类名+id
+	// 			std::string s = new_component->GetClassName() + std::to_string(new_component.id);
+	// 			Log(std::format("命名 {} 已被占用,改名为 {}", component_name,s));
+	// 			component_name = std::move(s);
+	// 		}
+	// 	}
+	// 	new_component->SetComponentName(component_name);
+	//
+	// 	mounted_components_by_type[std::type_index(typeid(T))].emplace_back(new_component);
+	//
+	// 	return new_component;
+	// }
+
     void ForRender();
 	void ForRenderData(std::vector<RenderData>& data);
     virtual void OfferRenderData(std::vector<RenderData>& data);
 
 	bool IsSceneComponentOpenedPhysics() const;
 
-
 	SDL_FRect GetComponentRenderRect() const;
-	/**
-	 *
-	 * @return 返回组件的渲染缩放
-	 */
-	Vec2<float> GetComponentVisibleScale() const;
-    /**
-	 *
-	 * @return 返回Actor的渲染位置
-	 */
-	Vec2<float> GetComponentRenderLocation() const;
-/// DebugOnly
+
+
+	/// DebugOnly
 public:
 
 	virtual void Debug_RenderOutline(std::vector<RenderData>& data);
@@ -113,7 +168,7 @@ public:
 	 * @param new_name
 	 * @return new_name 未使用则改名成功，否则不做任何操作
 	 */
-	bool SetComponentName(const std::string& new_name) override;
+	bool SetName(const std::string& new_name) override;
 
 	/**
 	 * 在子组件触发改名时调用父组件修改挂载表的关系
@@ -122,6 +177,11 @@ public:
 	 * @return
 	 */
 	bool OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name);
+
+
+
+
+	Vec2<float> GetComponentSize();
 
 
 	Transform GetComponentTransform();

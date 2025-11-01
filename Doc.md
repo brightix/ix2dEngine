@@ -69,3 +69,9 @@ Cast<CollisionBox>(Root->GetSceneComponentByName("碰撞箱").Get())
 ```
 
 widget提供slot数量和自身尺寸，计算slot的大小，slot将大小传递给包裹的widget，递归
+
+release模式下相比debug模式下性能提升200000%
+
+
+
+
