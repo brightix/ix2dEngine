@@ -12,10 +12,20 @@ SceneTextBlock::SceneTextBlock()
 void SceneTextBlock::Construct()
 {
 	SceneComponent::Construct();
+	text_tex = MountedComponent(new StaticTexture);
+	text_tex->SetRenderLayer(Foreground);
 }
+
+void SceneTextBlock::OfferRenderData(std::vector<RenderData>& data)
+{
+	//SceneComponent::OfferRenderData(data);
+	//data.emplace_back(RenderData(this,text_tex->GetTexture()));
+}
+
 
 void SceneTextBlock::SetText(const std::string &new_text)
 {
-	auto name_tex = MountedComponent(new StaticTexture);
-	SetTextureFromSurface_S(name_tex.Peek(), GetTextSurface(new_text));
+	SetTextureFromSurface_S(text_tex.Peek(), GetTextSurface(new_text));
+	w = text_tex->w;
+	h = text_tex->h;
 }

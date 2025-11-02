@@ -22,5 +22,6 @@ public:
 	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param);
 	void CallEnhancedInputEventDouble(EnhancedInputParam<double> param);
 	EnhancedInputSubSystem* GetEnhancedInputSubSystem();
+	Vec2<float> GetVelocity_Debug() const;
 };
 

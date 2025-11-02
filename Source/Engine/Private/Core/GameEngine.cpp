@@ -47,7 +47,12 @@ void GameEngine::Construct()
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
-	SysConfig = {120, {640, 480}};
+	nlohmann::json j;
+	std::ifstream in("Source/Engine/Config/EngineConfig.json");
+	in >> j;
+	in.close();
+
+	SysConfig = {j["TargetFps"], {j["ScreenWidth"], j["ScreenHeight"]}};
 
 
 	tick_timer = NewObject(new NewTimer());
@@ -58,6 +63,7 @@ void GameEngine::Construct()
 
 	//Engine子系统
 	GCSys = engine_subsystem->CreateSubSystem<GarbageCollection>("GarbageCollection");
+	physicsSys = engine_subsystem->CreateSubSystem<SPhysics>("SPhysics");
 	random_utility = engine_subsystem->CreateSubSystem<RandomUtility>("RandomUtility");
 	//random_utility->SetSeed(123456);
 	texture_store = engine_subsystem->CreateSubSystem<TextureStoreSubSystem>("TextureStoreSubSystem");
@@ -72,7 +78,7 @@ void GameEngine::EventBegin()
 {
 	engine_subsystem->ForAllSubSystemInit();
 
-	random_utility->RegisterRandom("SPhysicsBaseUtility_quality",{0,100});
+	random_utility->RegisterRandom("SPhysicsBaseUtility_quality",{10,100});
 	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
 	timer_system.SetTimer(500,[gc]() {
 		int cnt{};
@@ -139,14 +145,13 @@ GameEngine::~GameEngine()
 	{
 		engine_subsystem->DeInitAllSubSystem();
 	}
-	timeEndPeriod(1);
 
 	Quit();
 	SDL_GetError();
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
-	Sleep(10);
 	SDL_Quit();
+	timeEndPeriod(1);
 	std::cout << "程序退出" << std::endl;
 }
 
@@ -230,6 +235,11 @@ GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> new_widget)
 GCWeakPtr<GameWorld> World()
 {
 	return GameEngine::Instance().GetGameWorld();
+}
+
+GameEngine& Engine()
+{
+	return GameEngine::Instance();
 }
 
 std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color)

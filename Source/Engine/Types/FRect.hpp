@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL3/SDL_rect.h>
 #include "Vec.hpp"
+#include "Enums/CollisionType.hpp"
+
 struct FRect
 {
 	float x;
@@ -27,6 +29,28 @@ struct FRect
 			   (other.x + other.w <= x + w) &&
 			   (other.y >= y) &&
 			   (other.y + other.h <= y + h);
+	}
+	RectCollisionTypeNoRot CollisionDir(const FRect& other) const
+	{
+		float dx = (x + w / 2) - (other.x + other.w / 2); // 中心X差
+		float dy = (y + h / 2) - (other.y + other.h / 2); // 中心Y差
+
+		float combinedHalfWidth = (w + other.w) / 2;
+		float combinedHalfHeight = (h + other.h) / 2;
+
+		float overlapX = combinedHalfWidth - abs(dx);
+		float overlapY = combinedHalfHeight - abs(dy);
+
+		// if (overlapX < 0 || overlapY < 0)
+		// 	return NONE; // 没有碰撞
+
+		if (overlapX < overlapY) {
+			// 横向碰撞
+			return dx > 0 ? LEFT : RIGHT; // A在other右侧碰到other左边→碰撞方向是LEFT
+		} else {
+			// 纵向碰撞
+			return dy > 0 ? TOP : BOTTOM; // A在other下方碰到other上边→碰撞方向是TOP
+		}
 	}
 
 	// 判断是否与另一个矩形相交

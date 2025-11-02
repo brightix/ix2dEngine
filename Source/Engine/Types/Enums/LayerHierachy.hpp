@@ -1,6 +1,6 @@
 #pragma once
 
-enum class LayerHierarchy : int
+enum LayerHierarchy : int
 {
     Foreground = 0,
     ForegroundObject,

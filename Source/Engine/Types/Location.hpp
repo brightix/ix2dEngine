@@ -49,4 +49,8 @@ struct Location : var_type
     }
 	Vec2<float> operator+(const Vec2<float>& force) const { return Vec2(x + force.x,y + force.y); }
 	Vec2<float> operator-(const Vec2<float>& force) const { return Vec2(x - force.x,y - force.y); }
+	bool operator==(const Location& other) const
+    {
+	    return x == other.x && y == other.y;
+    }
 };

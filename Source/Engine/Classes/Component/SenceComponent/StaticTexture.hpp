@@ -5,8 +5,10 @@ class CollisionBox;
 struct RenderData;
 class StaticTexture : public Texture
 {
-	bool active_collision;
-	GCWeakPtr<CollisionBox> collision_box;
+	//GCWeakPtr<CollisionBox> collision_box;
+	GCPtr<SPhysicsBaseUtility> physics_body;
+	bool simulation_physics;
+
 public:
 	//Vec2<float> transform;
 	StaticTexture();
@@ -21,11 +23,18 @@ public:
 
 	//StaticTexture(StaticTexture&& other) noexcept ;
 	void Construct() override;
-	TextureType GetTextureType() override;
+	void ComponentEventBegin() override;
 	void ComponentRender() override;
+	//Get
+	TextureType GetTextureType() override;
+	GCWeakPtr<SPhysicsBaseUtility> GetPhysicsBody();
+	//Set
+	void SetActiveCollision(bool is_active, PhysicsType new_type = PhysicsType::Static) const;
+	void SetPhysicsType(PhysicsType new_type) const;
+
 
 	//void LoadDefaultTexture(Vec2<int> size, SDL_Color color = {255,255,255,255}, bool is_fill = false);
-	void SetActiveCollision(bool is_active);
+	//void SetActiveCollision(bool is_active);
 	void OfferRenderData(std::vector<RenderData>& data) override;
 };
 

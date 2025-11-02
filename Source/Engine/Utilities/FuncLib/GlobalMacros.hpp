@@ -54,4 +54,4 @@
 	#define BREAK
 #endif
 
-//#define AddComponent(name) AddActorComponent<x>(name, x)
+#define STOP_IF(x) if(x) STOP();

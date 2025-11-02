@@ -47,7 +47,7 @@ class GameWorld : public Object
 
 public:
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
-	SPhysics physicsSys;
+
 	bool is_simulation;
 
 	GCPtr<CanvasWidget> viewport;

@@ -31,6 +31,15 @@ void Controller::Construct()
 	input_map = NewObject<InputMap>(new InputMap());
 	auto st = 	Root->MountedComponent(new StaticTexture);
 	SetTextureFromSurface_S(st.Peek(),GetTextSurface("                    "));
+
+	pawn_info = CreateWidget(new TextBlockWidget,this);
+	auto p_slot = AddToViewport(pawn_info);
+	p_slot->display_area.x = 400.f;
+
+	pawn_physics_info = CreateWidget(new TextBlockWidget,this);
+	auto p_phys_slot = AddToViewport(pawn_info);
+	p_phys_slot->display_area.x = 400.f;
+	p_phys_slot->display_area.y = 24.f;
 }
 
 void Controller::Tick(double delta)
@@ -116,6 +125,8 @@ void Controller::Tick(double delta)
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
+	pawn_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetComponentWorldLocation().str());
+	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity.str());
 }
 
 Vec2<float> Controller::GetMousePos() const

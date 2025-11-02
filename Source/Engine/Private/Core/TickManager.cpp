@@ -8,26 +8,25 @@
 
 void TickSubSystem::Tick(double delta_time)
 {
-	TStart;
+TStart;
 
-	TStartF("TickSubInit");
+TStartF("TickSubInit");
     auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
     std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
-	auto& physics = world->physicsSys;
+	auto& physics = Engine().physicsSys;
 	std::vector<RenderData> render_data;
 	render_data.reserve(actors.size());
-	TEndF("TickSubInit");
+TEndF("TickSubInit");
 
 	if (buffer_type == 1)
 	{
 		NewTimer timer;
 		//计算物理
-		physics.simulation(delta_time);
 
 		//普通Tick
 		timer.Start();
-		TStartF("NormalTick");
+TStartF("NormalTick");
 		 for (auto& a : actors)
 		 {
 		 	if (a->IsActive())
@@ -36,21 +35,27 @@ void TickSubSystem::Tick(double delta_time)
 		 		a->RootComponentTick(delta_time);
 		 	}
 		 }
-		TEndF("NormalTick");
+TEndF("NormalTick");
 
-		TStartF("SetTexts");
+		physics->simulation(delta_time);
+
+TStartF("SetTexts");
 		texts[0]->SetText("TickDelay: " + std::to_string(timer.Click()));
-		TEndF("SetTexts");
+TEndF("SetTexts");
 
-		TStartF("viewportTick");
+TStartF("viewportTick");
 		world->viewport->ForTick(delta_time);
-		TEndF("viewportTick");
+TEndF("viewportTick");
 
 
 		texts[1]->SetText("WidgetTickDelay: " + std::to_string(timer.Click()));
-		//渲染纹理
 
-		TStartF("收集渲染数据");
+
+
+		physics->Synchronization();
+
+		//渲染纹理
+TStartF("收集渲染数据");
 		for (auto& a : actors)
 		{
 			if (a->is_pre_kill)
@@ -64,7 +69,7 @@ void TickSubSystem::Tick(double delta_time)
 				a->ForRenderOrder(render_data);
 			}
 		}
-		TEndF("收集渲染数据");
+TEndF("收集渲染数据");
 
 		//清屏
 
@@ -85,22 +90,21 @@ void TickSubSystem::Tick(double delta_time)
 		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
-		physics.DebugTree();
+		physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
 
 		dispatcher_system.CallDispatcher("RenderPresent");
 
-		physics.Synchronization();
 
 
-		TStartF("SDL_ControllerTick");
+TStartF("SDL_ControllerTick");
 		for (auto& controller : controllers)
 		{
 			controller->Tick(delta_time);
 		}
-		TEndF("SDL_ControllerTick");
+TEndF("SDL_ControllerTick");
 	}
-	TEnd;
+TEnd;
 }
 
 void TickSubSystem::Init()

@@ -89,6 +89,11 @@ T* Cast(U* before, const char* func_name = "")
 	return nullptr;
 }
 
+inline void STOP()
+{
+	std::cout << "stop" << std::endl;
+}
+
 
 //
 // inlin

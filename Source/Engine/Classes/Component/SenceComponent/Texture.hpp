@@ -17,8 +17,6 @@ class Texture : public SceneComponent
 protected:
 	std::shared_ptr<SDL_Texture> in_texture;
 public:
-	float w;
-	float h;
 	Vec2<float> pivot;
 	Texture();
 

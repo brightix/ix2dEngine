@@ -93,19 +93,28 @@ public:
 
     // 检测当前节点的对象对
 
-	TCollisionPairs Query(TCollisionPairs& collision_pairs)
+	TCollisionPairs Query(TCollisionPairs& collision_pairs, const int depth = 0)
     {
+    	TStartF("Query" + std::to_string(depth));
         size_t n = objects.size();
         for (size_t i = 0; i < n; ++i)
         {
             for (size_t j = i + 1; j < n; ++j)
             {
-                if (objects[i]->GetCollisionBox().intersects(objects[j]->GetCollisionBox()))
+            	auto& A = objects[i];
+            	auto& B = objects[j];
+                if (A->GetCollisionBox().intersects(B->GetCollisionBox()))
                 {
                     // if (collision_callback)
                     //     collision_callback(objects[i], objects[j]);
-
-                	collision_pairs[objects[i]].insert(objects[j]);
+                	if (A->type != PhysicsType::Static)
+                	{
+                		collision_pairs[A].insert(B);
+                	}
+                	else if (B->type != PhysicsType::Static)
+                	{
+                		collision_pairs[B].insert(A);
+                	}
                 }
             }
         }
@@ -114,8 +123,9 @@ public:
         for (auto& child : tree_slots)
         {
             if (child)
-                child->Query(collision_pairs);
+                child->Query(collision_pairs, depth + 1);
         }
+    	TEndF("Query" + std::to_string(depth));
     	return collision_pairs;
     }
 

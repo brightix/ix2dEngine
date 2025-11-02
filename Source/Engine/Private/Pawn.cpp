@@ -49,3 +49,8 @@ EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem()
 {
 	return enhanced_input_sub_system.Get();
 }
+
+Vec2<float> Pawn::GetVelocity_Debug() const
+{
+	return GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity;
+}

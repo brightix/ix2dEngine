@@ -127,6 +127,12 @@ public:
 		auto& parents = child->referenced;
 		std::erase(parents, parent);
 	}
+	void Reset()
+	{
+		GCUnLink(ptr,outer);
+		outer = nullptr;
+		ptr = nullptr;
+	}
 	bool IsValid()
 	{
 		return ptr != nullptr;

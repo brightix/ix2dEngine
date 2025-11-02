@@ -20,9 +20,6 @@ void CollisionBox::Construct()
 
 	//物理组件
 	physics_body = NewObject(new SPhysicsBaseUtility());
-
-
-
 	physics_body->SetOwner(this);
 	dispatcher_system.AddEventDispatcher("OnEffectTransform");
 
@@ -48,6 +45,10 @@ void CollisionBox::ComponentEventBegin()
 	SceneComponent::ComponentEventBegin();
 	physics_body->BindEventToDispatcher(this,"OnCollision",Event([this](TEventParams e) {
 		dispatcher_system.CallDispatcher("OnCollision", e);
+	}));
+	ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams e) {
+		//Location after_location = physics_body->after_location;
+		SetComponentWorldLocation(physics_body->after_location);
 	}));
 	ListenDispatcher(owner, "OnMobilityChanged", Event([this](TEventParams e) {
 		if (owner->GetMobility() == ActorMobility::Static)
@@ -84,7 +85,7 @@ void CollisionBox::SetBoundBox(const Vec2<float>& size)
 	{
 		t.Cast<StaticTexture>()->SetNewTexture(Create_OutLineTexture_S({w,h}));;
 	}
-	physics_body->SetBodyBox(size);
+	//physics_body->SetBodyBox(size);
 }
 
 void CollisionBox::OfferRenderData(std::vector<RenderData>& data)

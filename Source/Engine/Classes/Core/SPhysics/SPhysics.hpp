@@ -13,7 +13,7 @@ struct WorldPhysics
     float GravityForce = -1.f;
 };
 
-class SPhysics 
+class SPhysics : public EngineSubSystem
 {
 	//task
     WorldPhysics world_physics;
@@ -25,7 +25,7 @@ public:
     SPhysics();
 
 
-    ~SPhysics()= default;
+    ~SPhysics();
 
     void Register(SPhysicsBaseUtility* unit);
 	void DeRegister(SPhysicsBaseUtility* unit);
@@ -40,7 +40,11 @@ public:
 
 	void DebugTree()
 	{
+#if DEBUG == 1
+		TStart;
 		collision_tree.DebugTree();
+		TEnd;
+#endif
 	}
 	//void Clear();
 };

@@ -30,8 +30,10 @@ class Controller : public Actor
 
     //bool
     bool show_mouse_cursor;
+    GCPtr<TextBlockWidget> pawn_info;
+    GCPtr<TextBlockWidget> pawn_physics_info;
 
-	//Debug
+    //Debug
 	//GCPtr<StaticTexture> pawn_location_tex;
 
 public:

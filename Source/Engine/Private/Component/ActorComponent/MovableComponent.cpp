@@ -12,12 +12,11 @@ MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_
 void MovableComponent::Construct()
 {
     ActorComponent::Construct();
-    if (auto t = Cast<Pawn>(owner))
+    if (const auto t = Cast<Pawn>(owner))
     {
         EnhancedInputSubSystem* enhanced_input_sub_system = t->GetEnhancedInputSubSystem();
         enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[this](EnhancedInputParam<bool> eip) {
-            auto f = eip.status;
-            switch (f)
+	        switch (auto f = eip.status)
             {
                 case Triggered:
                     player_input_Vec+=UpDir*1.f;

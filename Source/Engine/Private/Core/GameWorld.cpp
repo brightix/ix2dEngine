@@ -24,6 +24,7 @@ void GameWorld::Unload()
 	{
 		actor->is_pending_kill = true;
 	}
+	viewport->is_pending_kill = true;
 }
 
 void GameWorld::ConstructWorld()
@@ -58,19 +59,21 @@ void GameWorld::StartSimulation()
 	auto fps = CreateWidget(new TestFps);
 	AddToViewport(fps);
 
- 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
-	GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
-		dd->DestroyActor();
-		return -1;
-	});
+ // 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
+	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
+	// 	dd->DestroyActor();
+	// 	return -1;
+	// });
 
 
 
 
 	//测试地面
 	auto ground = SpawnActor(new TestPawn(Transform({0,800})));
-
-	ground->GetSceneComponent("default_texture").Cast<StaticTexture>()->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
+	auto g_s = ground->GetSceneComponent("default_texture").Cast<StaticTexture>();
+	g_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
+	g_s->SetName("Ground");
+	g_s->SetPhysicsType(PhysicsType::Static);
 
 	auto size = GameEngine::Instance().GetEngineAttribution().ScreenSize;
 	FRect bound(0,0,size.x,size.y);

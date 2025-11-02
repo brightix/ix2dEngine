@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 option(DebugMode "Enable debug build" ON)
 
 
-
 # 工程源码
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
@@ -24,16 +23,13 @@ set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}"
         RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}"
 )
-add_compile_options(/utf-8)
 if(MSVC)
     # 通用 MSVC 编译选项
-    target_compile_options(ix2d PRIVATE /utf-8 /permissive-)
-
-    # Debug / Release 特定选项
     target_compile_options(ix2d PRIVATE
-            #$<$<CONFIG:Debug>:/MDd /Zi /Od /RTC1>    # 调试模式，禁优化，运行时检查
-#            $<$<CONFIG:Debug>:/MDd /Zi /Od /Zo /Zf /Oy- /fp:fast /GS- /GL->
-            $<$<CONFIG:Release>:/Oi /Ob2 /GL /fp:fast /arch:AVX2 /Gy /DNDEBUG /Gw /Oi> # 发布模式，最高优化
+            /utf-8
+            /permissive-
+            #$<$<CONFIG:Debug>:/Zi /Od /Zo /Zf /Oy- /fp:fast /GS- /MDd>
+            #$<$<CONFIG:Release>:/Oi /Ob2 /arch:AVX2 /Gy /DNDEBUG /Gw /MD>
     )
     # Debug 模式下启用内存泄漏检测
     if(DebugMode)
@@ -46,9 +42,6 @@ else()
             $<$<CONFIG:Release>:-O3 -DNDEBUG -march=native -flto -fomit-frame-pointer>
     )
 endif()
-
-
-
 
 
 # 头文件搜索路径
@@ -76,5 +69,5 @@ target_link_libraries(ix2d PRIVATE
 )
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "DebugMode: ${DebugMode}")
-message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
+#message(STATUS "DebugMode: ${DebugMode}")
+#message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")

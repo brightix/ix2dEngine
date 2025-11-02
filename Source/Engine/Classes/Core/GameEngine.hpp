@@ -15,6 +15,7 @@
 #include "Types/EngineState.hpp"
 #include "Utilities/RandomUtility.hpp"
 
+class SPhysics;
 class CanvasWidget;
 class Widget;
 class RendererCenter;
@@ -58,6 +59,7 @@ public:
 	GCWeakPtr<TickSubSystem> tick_SubSystem;
 	GCWeakPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
+	GCWeakPtr<SPhysics> physicsSys;
 public:
 
     static GameEngine& Instance()
@@ -130,6 +132,6 @@ inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 }
 
 GCWeakPtr<GameWorld> World();
-
+GameEngine& Engine();
 std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);
 std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL_Color color = EmeraldGreen);

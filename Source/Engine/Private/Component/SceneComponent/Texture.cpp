@@ -57,11 +57,11 @@ void Texture::SafeDestroyTexture(SDL_Texture* texture)
 
 void Texture::SetNewTexture(std::shared_ptr<SDL_Texture> new_texture)
 {
-	in_texture = new_texture;
 	if (new_texture)
 	{
 		w = new_texture->w;
 		h = new_texture->h;
+		in_texture = new_texture;
 	}
 	else
 	{

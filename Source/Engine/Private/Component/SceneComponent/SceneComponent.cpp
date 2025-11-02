@@ -7,11 +7,14 @@
 #include "Types/RenderData.hpp"
 
 SceneComponent::SceneComponent() : SceneComponent(Transform{}){ }
-SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0) { }
+SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0), parent_component(nullptr), layer() { }
 
 void SceneComponent::Construct()
 {
 	Component::Construct();
+	dispatcher_system.AddEventDispatcher("OnComponentLocationChanged");
+	dispatcher_system.AddEventDispatcher("OnComponentRotationChanged");
+	dispatcher_system.AddEventDispatcher("OnComponentScalingChanged");
 	//dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
 }
 
@@ -110,7 +113,10 @@ bool SceneComponent::IsSceneComponentOpenedPhysics() const { return open_physics
 
 SDL_FRect SceneComponent::GetComponentRenderRect() const
 {
-	return SDL_FRect(transform.location.x - w * pivot.x, transform.location.y - h * pivot.y, w * transform.scaling.horizontal, h * transform.scaling.vertical);
+	return SDL_FRect(world_transform.location.x - w * pivot.x,
+						world_transform.location.y - h * pivot.y,
+						w * world_transform.scaling.horizontal,
+						h * world_transform.scaling.vertical);
 }
 //
 // Vec2<float> SceneComponent::GetComponentVisibleScale() const
@@ -127,7 +133,7 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 {
 	//单线程
 	auto t = Create_OutLineTexture_S(Vec2<float>(w,h));
-	data.emplace_back(RenderData{t ,transform,{},SDL_FRect(transform.location.x,transform.location.y,w,h)});
+	data.emplace_back(RenderData{t ,world_transform,{},SDL_FRect(world_transform.location.x,world_transform.location.y,w,h)});
 }
 
 
@@ -140,6 +146,11 @@ bool SceneComponent::SetName(const std::string& new_name)
 	}
 	name = new_name;
 	return true;
+}
+
+void SceneComponent::SetRenderLayer(LayerHierarchy layer_id)
+{
+	layer = layer_id;
 }
 
 bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name)
@@ -164,28 +175,28 @@ Vec2<float> SceneComponent::GetComponentSize()
 
 Transform SceneComponent::GetComponentTransform()
 {
-	return transform;
+	return world_transform;
 }
 
 //变换
 void SceneComponent::SetComponentTransform(Transform new_transform)
 {
 	new_transform.location += {relative_location.x,relative_location.y};
-	transform = new_transform;
+	world_transform = new_transform;
 	// if (open_physics)
 	// {
 	// 	physics_body->SetComponentTransform(transform);
 	// }
 	for (const auto& val : mounted_components | std::views::values)
 	{
-		val->SetComponentTransform(transform);
+		val->SetComponentTransform(world_transform);
 	}
 }
 
 //位置
 void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
 {
-	transform.location += added_loc;
+	world_transform.location += added_loc;
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		val->AddComponentWorldLocation(added_loc);
@@ -193,20 +204,33 @@ void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
 }
 void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 {
-	//传递一个新位置，所有的子组件都需要以父位置为基准，偏移 相对量 位置
-	Location absolute_location = new_loc + relative_location;
-	transform.location = absolute_location;
-
+	if (world_transform.location == new_loc)
+	{
+		//如果位置无变化就不做处理，防止循环依赖
+		return ;
+	}
+	world_transform.location = new_loc;
+	if (parent_component)
+	{
+		relative_location = world_transform.location - parent_component->GetComponentWorldLocation();
+	}
 	for (const auto& val : mounted_components | std::views::values)
 	{
+		//手动获取组件的  相对位置，然后告诉他应该的  绝对位置
+		const Location absolute_location = new_loc + val->GetComponentRelativeLocation();
 		val->SetComponentWorldLocation(absolute_location);
 	}
-	dispatcher_system.CallDispatcher("OnComponentWorldLocationChanged");
+	dispatcher_system.CallDispatcher("OnComponentLocationChanged");
 }
 
 Location SceneComponent::GetComponentWorldLocation()
 {
-	return transform.location;
+	return world_transform.location;
+}
+
+Location SceneComponent::GetComponentRelativeLocation()
+{
+	return relative_location;
 }
 
 
@@ -221,11 +245,11 @@ void SceneComponent::SetComponentWorldRotation(const Rotation& rotation)
 		// {
 		// 	physics_body->SetBodyWorldRotation(rotation);
 		// }
-		transform.location.RotateByAngle(rotation.Angle,{rotation.Point->x,rotation.Point->y});
+		world_transform.location.RotateByAngle(rotation.Angle,{rotation.Point->x,rotation.Point->y});
 
 		//TODO 自转
 	}
-	transform.rotation.Angle = rotation.Angle;
+	world_transform.rotation.Angle = rotation.Angle;
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		val->SetComponentWorldRotation(rotation);
@@ -235,4 +259,14 @@ void SceneComponent::SetComponentWorldRotation(const Rotation& rotation)
 void SceneComponent::AddComponentWorldRotation(const Rotation& rotation)
 {
 	SetComponentWorldRotation({Rotation::Normalize(rotation.Angle),rotation.Point});
+}
+
+Rotation SceneComponent::GetComponentWorldRotation()
+{
+	return world_transform.rotation;
+}
+
+Rotation SceneComponent::GetComponentRelativeRotation()
+{
+	return relative_rotation;
 }

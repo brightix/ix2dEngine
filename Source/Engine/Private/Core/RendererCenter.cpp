@@ -76,7 +76,7 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 {
 	//数据预处理
 	TStart;
-	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer < B.layer;});
+	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer > B.layer;});
 
 	for (auto& clip : clips)
 	{
