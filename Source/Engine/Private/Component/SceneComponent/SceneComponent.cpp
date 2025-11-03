@@ -181,7 +181,7 @@ Transform SceneComponent::GetComponentTransform()
 //变换
 void SceneComponent::SetComponentTransform(Transform new_transform)
 {
-	new_transform.location += {relative_location.x,relative_location.y};
+	new_transform.location += relative_location;
 	world_transform = new_transform;
 	// if (open_physics)
 	// {
@@ -202,7 +202,7 @@ void SceneComponent::AddComponentWorldLocation(const Vec2<float>& added_loc)
 		val->AddComponentWorldLocation(added_loc);
 	}
 }
-void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
+void SceneComponent::SetComponentWorldLocation(const Vec2<float>& new_loc)
 {
 	if (world_transform.location == new_loc)
 	{
@@ -217,18 +217,18 @@ void SceneComponent::SetComponentWorldLocation(const Location& new_loc)
 	for (const auto& val : mounted_components | std::views::values)
 	{
 		//手动获取组件的  相对位置，然后告诉他应该的  绝对位置
-		const Location absolute_location = new_loc + val->GetComponentRelativeLocation();
+		const Vec2<float> absolute_location = new_loc + val->GetComponentRelativeLocation();
 		val->SetComponentWorldLocation(absolute_location);
 	}
 	dispatcher_system.CallDispatcher("OnComponentLocationChanged");
 }
 
-Location SceneComponent::GetComponentWorldLocation()
+Vec2<float> SceneComponent::GetComponentWorldLocation()
 {
 	return world_transform.location;
 }
 
-Location SceneComponent::GetComponentRelativeLocation()
+Vec2<float> SceneComponent::GetComponentRelativeLocation()
 {
 	return relative_location;
 }

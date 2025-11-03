@@ -18,7 +18,7 @@ protected:
      * 逻辑变换
      */
     Transform world_transform;
-	Location relative_location;
+	Vec2<float> relative_location;
 	Rotation relative_rotation;
 
 	/**
@@ -121,9 +121,9 @@ public:
 
 //Location
 	void AddComponentWorldLocation(const Vec2<float>& added_loc);
-	void SetComponentWorldLocation(const Location& new_loc);
-	Location GetComponentWorldLocation();
-	Location GetComponentRelativeLocation();
+	void SetComponentWorldLocation(const Vec2<float>& new_loc);
+	Vec2<float> GetComponentWorldLocation();
+	Vec2<float> GetComponentRelativeLocation();
 //Rotation
 	void SetComponentWorldRotation(const Rotation& rotation);
 	void AddComponentWorldRotation(const Rotation& rotation);

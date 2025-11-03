@@ -100,14 +100,15 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
 {
-	unit->velocity.y -= world_physics.GravityForce * delta_time * unit->quality;
+	float acceleration = world_physics.GravityForce / unit->quality;
+	unit->velocity.y -= acceleration * delta_time;
 
 	//处理冲量 可能来自 其他物体 或 主观
 	unit->velocity += unit->added_force;	unit->added_force.Reset();	//消费
 	//STOP_IF(unit->velocity.Length() < 1)
 	//作用
-	unit->after_location = unit->collision_owner->GetComponentWorldLocation() + unit->velocity;
-
+	;
+	unit->after_location = (unit->collision_owner->GetComponentWorldLocation() + unit->velocity * delta_time).Cast<float>();
 }
 
 void SPhysics::Synchronization() const

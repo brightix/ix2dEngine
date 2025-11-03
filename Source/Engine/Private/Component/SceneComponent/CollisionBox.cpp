@@ -25,7 +25,7 @@ void CollisionBox::Construct()
 
 	physics_body->SetPhysicsCallback([this]() {
 		EventParams e;
-		e.Add<Location>("location",physics_body->after_location);
+		e.Add<Vec2<float>>("location",physics_body->after_location);
 		dispatcher_system.CallDispatcher("OnEffectTransform", e);
 	});
 

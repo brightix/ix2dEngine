@@ -2,6 +2,7 @@
 #include <cmath>
 #include "var_type.hpp"
 #include <format>
+#include "Utilities/FuncLib/GlobalMacros.hpp"
 template<typename T>
 struct Vec2 : var_type
 {
@@ -29,49 +30,102 @@ struct Vec2 : var_type
 	}
 
 	template<typename U>
-	auto operator+=(U val) const
+	constexpr auto& operator+=(const Vec2<U>& val) noexcept
     {
-    	using R = decltype(x - val); // 自动推导结果类型
-    	return Vec2<R>(x - val, y - val);
+    	x += val.x;
+    	y += val.y;
+    	return *this;
     }
 	template<typename U>
-	auto operator+=(Vec2<U> val) const
+	constexpr auto& operator+=(U val) noexcept
     {
-    	using R = decltype(x - val.x); // 自动推导结果类型
-    	return Vec2<R>(x - val.x, y - val.y);
+    	x += val;
+    	y += val;
+    	return *this;
+    }
+	template<typename U>
+
+	constexpr auto& operator-=(const Vec2<U>& val) noexcept
+    {
+    	x -= val.x;
+    	y -= val.y;
+    	return *this;
+    }
+	template<typename U>
+	constexpr auto& operator-=(U val) noexcept
+    {
+    	x -= val;
+    	y -= val;
+    	return *this;
     }
 
 	template<typename U>
-	auto operator-=(U val)
+	constexpr auto operator+(const Vec2<U>& val) const noexcept
     {
-    	x-=val;
-    	y-=val;
+    	using R = std::common_type_t<T, U>;
+    	return Vec2<R>{x + val.x, y + val.y};
     }
 	template<typename U>
-	auto operator-=(Vec2<U> val)
+	constexpr auto operator-(const Vec2<U>& val) const noexcept
     {
-    	x-=val.x;
-    	y-=val.y;
+    	using R = std::common_type_t<T, U>;
+    	return Vec2<R>{x - val.x, y - val.y};
+    }
+
+	// --- 数乘 ---
+	template<typename U>
+	constexpr auto operator*(U val) const noexcept {
+    	using R = std::common_type_t<T, U>;
+    	return Vec2<R>{x * val, y * val};
     }
 
 	template<typename U>
-	auto operator*(U val) const
-    {
-    	using R = decltype(x * val); // 自动推导结果类型
-    	return Vec2<R>(x * val, y * val);
+	constexpr Vec2& operator*=(U val) noexcept {
+    	x *= val;
+    	y *= val;
+    	return *this;
     }
-	// template<typename U>
-	// Vec2<U> operator*(U val)
- //    {
-	//     return Vec2(x*val,y*val);
- //    }
-	Vec2<float> operator/(float val)
+
+	template<typename U>
+	constexpr Vec2& operator*=(const Vec2<U>& val) noexcept {
+    	x *= val.x;
+    	y *= val.y;
+    	return *this;
+    }
+
+	// --- 数除 ---
+	template<typename U>
+	constexpr auto operator/(U val) const noexcept
+	{
+    	using R = std::common_type_t<T, U>;
+    	return Vec2<R>{x / val, y / val};
+    }
+
+	template<typename U>
+	constexpr auto operator/(const Vec2<U>& val) const noexcept
+	{
+    	using R = std::common_type_t<T, U>;
+    	return Vec2<R>{x / val.x, y / val.y};
+    }
+
+	template<typename U>
+	constexpr Vec2& operator/=(U val) noexcept
+	{
+    	x /= val;
+    	y /= val;
+    	return *this;
+    }
+
+	template<typename U>
+	constexpr Vec2& operator/=(const Vec2<U>& val) noexcept
+	{
+    	x /= val.x;
+    	y /= val.y;
+    	return *this;
+    }
+	bool operator==(Vec2<T> other)
     {
-    	if constexpr (std::is_fundamental_v<T>)
-    	{
-    		return {x/val,y/val};
-    	}
-    	return {0.f,0.f};
+    	return x == other.x && y == other.y;
     }
 	//Attr
 	float Length()
@@ -89,6 +143,16 @@ struct Vec2 : var_type
     	}
     	return *this/len;
     }
+	// TODO 使用angle
+	void RotateByAngle(float angle, Vec2<float> point)
+    {
+    	auto dx = x - point.x;
+    	auto dy = y - point.y;
+    	float x_new = dx * cos(PI) - dy * sin(PI);
+    	float y_new = dx * sin(PI) + dy * cos(PI);
+    	x += x_new;
+    	y += y_new;
+    }
 	void Reset()
     {
 	    x = T{};
@@ -97,6 +161,11 @@ struct Vec2 : var_type
 	std::string str() override
     {
     	return std::format("Vec.x: {}，Vec.y: {}", x, y);
+    }
+	template<typename U>
+	Vec2<U> Cast()
+    {
+	    return Vec2<U>(x, y);
     }
 };
 

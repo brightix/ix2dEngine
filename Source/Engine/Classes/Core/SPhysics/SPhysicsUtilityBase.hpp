@@ -3,7 +3,6 @@
 
 #include "Classes/Object.hpp"
 #include "Types/FRect.hpp"
-#include "Types/Location.hpp"
 #include "Types/Rotation.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
@@ -51,7 +50,7 @@ public:
 	Vec2<float> added_force;	//冲量
 
 	//结果
-	Location after_location;
+	Vec2<float> after_location;
 	Rotation after_rotation;
 
 
@@ -90,6 +89,6 @@ public:
 	// void SetBodyBox(Vec2<float> size);
 	void SetBodyTransform(Transform transform);
 
-	void SetBodyWorldLocation(const Location& location);
+	void SetBodyWorldLocation(const Vec2<float>& location);
 	void SetBodyWorldRotation(const Rotation& rotation);
 };

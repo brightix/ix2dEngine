@@ -147,7 +147,7 @@ void Actor::AddActorWorldLocation(Vec2<float> dis) const
 //=====================================================
 // Get 属性
 //=====================================================
-Location Actor::GetWorldLocation() const
+Vec2<float> Actor::GetWorldLocation() const
 {
 	return Root->GetComponentTransform().location;
 }

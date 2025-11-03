@@ -2,7 +2,6 @@
 #include <SDL3/SDL.h>
 
 #include "Object.hpp"
-#include "Types/Location.hpp"
 #include "Types/Transform.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
@@ -70,7 +69,7 @@ public:
     void AddActorTransform(Transform trans);
 //位置
 
-	Location GetWorldLocation() const;
+	Vec2<float> GetWorldLocation() const;
     Vec2<float> GetRelativeLocation();
 //旋转
 

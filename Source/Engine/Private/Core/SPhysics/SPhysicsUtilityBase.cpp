@@ -39,7 +39,7 @@ SPhysicsBaseUtility::~SPhysicsBaseUtility()
 
 FRect SPhysicsBaseUtility::GetCollisionBox() const
 {
-	Location loc = collision_owner->GetComponentWorldLocation();
+	Vec2<float> loc = collision_owner->GetComponentWorldLocation();
 	Vec2<float> size = collision_owner->GetComponentSize();
     return {loc.x,loc.y,size.x,size.y};
 }
@@ -109,7 +109,7 @@ void SPhysicsBaseUtility::SetBodyTransform(Transform transform)
 
 }
 
-void SPhysicsBaseUtility::SetBodyWorldLocation(const Location& location)
+void SPhysicsBaseUtility::SetBodyWorldLocation(const Vec2<float>& location)
 {
 	// collision_rect.x = location.x;
 	// collision_rect.y = location.y;
