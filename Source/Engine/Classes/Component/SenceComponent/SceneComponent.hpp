@@ -101,7 +101,7 @@ public:
 	 * @param new_name
 	 * @return new_name 未使用则改名成功，否则不做任何操作
 	 */
-	bool SetName(const std::string& new_name) override;
+	bool SetComponentName(const std::string& new_name);
 	void SetRenderLayer(LayerHierarchy layer_id);
 	/**
 	 * 在子组件触发改名时调用父组件修改挂载表的关系

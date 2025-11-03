@@ -30,7 +30,7 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActor(new TestPawn());
+	auto_generate_pawn = SpawnActor(new TestPawn(Transform({300,300})));
 	//auto_generate_pawn->EventBegin();
 
 	controller->Control(auto_generate_pawn);

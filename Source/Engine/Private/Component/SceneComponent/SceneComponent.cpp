@@ -137,7 +137,7 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 }
 
 
-bool SceneComponent::SetName(const std::string& new_name)
+bool SceneComponent::SetComponentName(const std::string& new_name)
 {
 	if (!parent_component || !parent_component->OnMountedComponentNameChanged(name,new_name))
 	{

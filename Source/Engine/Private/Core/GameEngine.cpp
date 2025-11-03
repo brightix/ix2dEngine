@@ -82,7 +82,7 @@ void GameEngine::EventBegin()
 	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
 	timer_system.SetTimer(500,[gc]() {
 		int cnt{};
-		if (auto p = gc.Peek())
+		if (const auto p = gc.Peek())
 		{
 			cnt = p->GCSweep();
 		}
@@ -167,7 +167,7 @@ GCWeakPtr<PanelSlot> GameEngine::AddWidgetToViewport(GCPtr<Widget> widget) const
 	return viewport->AddChild(widget);
 }
 
-EngineState GameEngine::GetEngineAttribution()
+EngineState GameEngine::GetEngineAttribution() const
 {
 	EngineState engine_state;
 	engine_state.DeltaTime = delta_time;

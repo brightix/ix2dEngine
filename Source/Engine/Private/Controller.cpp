@@ -37,7 +37,7 @@ void Controller::Construct()
 	p_slot->display_area.x = 400.f;
 
 	pawn_physics_info = CreateWidget(new TextBlockWidget,this);
-	auto p_phys_slot = AddToViewport(pawn_info);
+	auto p_phys_slot = AddToViewport(pawn_physics_info);
 	p_phys_slot->display_area.x = 400.f;
 	p_phys_slot->display_area.y = 24.f;
 }
@@ -125,8 +125,11 @@ void Controller::Tick(double delta)
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
-	pawn_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetComponentWorldLocation().str());
-	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity.str());
+	auto pawn_loc = controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetComponentWorldLocation();
+	pawn_info->SetText(pawn_loc.str());
+
+	auto physics_info = controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity;
+	pawn_physics_info->SetText(physics_info.str());
 }
 
 Vec2<float> Controller::GetMousePos() const

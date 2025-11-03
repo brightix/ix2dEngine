@@ -1,21 +1,40 @@
 #pragma once
 #include <string>
+#include <vector>
 
 #include "Core/EventDispatcherSystem.hpp"
 #include "Core/EventSystem.hpp"
-#include "Core/GCObject.hpp"
 
-class Object : public GCObject
+inline static size_t glo_id = 0;  // C++17
+
+template<typename T>
+class GCPtr;
+
+class Object
 {
-protected:
-    //事件分发器
-    //EventDelegateSystem delegate_system;
-
 public:
+	//GC
+	bool bMarked = false;
+	bool is_pending_kill = false;
+	size_t id;
+	std::vector<Object*> referenced;
+	std::vector<Object*> referencing;
+
 	//委托
 	EventDispatcherSystem dispatcher_system;
 	//事件系统
 	EventSystem event_system;
+	std::string class_name = "UnknownClass";
+	std::string name;
+
+
+
+	[[nodiscard]] bool IsActive() const;
+	[[nodiscard]] std::string GetClassName() const;
+	void SetName(const std::string& new_name);
+
+
+
     Object();
 
 	virtual void Construct(){}
@@ -33,7 +52,7 @@ public:
      * @param event_name 事件名
      * @param event 事件
      */
-    void ListenDispatcher(Object* target, const std::string& event_name, Event event);
+	static void ListenDispatcher(Object* target, const std::string& event_name, Event event);
 
 
     template<typename T>
@@ -53,5 +72,28 @@ public:
 		return it;
 	}
 
-    ~Object() override = default;
+    virtual ~Object();
+	//GC安全 只创建实例，不执行construct和绑定事件
+	template<typename T, typename ...Args>
+	GCPtr<T> NewGCPtr(Args&&...args)
+	{
+		return GCPtr<T>(new T(std::forward<Args>(args)...), this);
+	}
+	template<typename T>
+	GCPtr<T> NewGCPtr(T* p)
+	{
+		return GCPtr<T>(p, this);
+	}
+
+	void GCUnlink()
+	{
+		for (auto parent : referenced)
+		{
+			std::erase(parent->referencing,this);
+		}
+		for (auto child : referencing)
+		{
+			std::erase(child->referenced,this);
+		}
+	}
 };

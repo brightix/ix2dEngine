@@ -1,9 +1,14 @@
 #pragma once
-#include <unordered_set>
-#include "Utilities/Event.hpp"
+
+#include <functional>
+#include <optional>
+#include <string>
+
+#include "Types/EventParams.hpp"
 #include "Utilities/GCWeakPtr.hpp"
 
 
+struct Event;
 class Object;
 using EventMethod = std::function<void(std::optional<EventParams>)>;
 //多播委托

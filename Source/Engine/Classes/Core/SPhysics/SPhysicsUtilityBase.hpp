@@ -1,11 +1,10 @@
 #pragma once
-#include <string>
-
 #include "Classes/Object.hpp"
 #include "Types/FRect.hpp"
 #include "Types/Rotation.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
+#include "Utilities/GCWeakPtr.hpp"
 
 class SPhysicsBaseUtility;
 class SceneComponent;
@@ -38,10 +37,12 @@ public:
 	~SPhysicsBaseUtility() override;
 
 //物理的位置跟随父场景组件
+	Vec2<float> center;
 	Vec2<float> velocity;		//当前移动向量
-	float quality = 2.f;		//物体质量
+	float quality = 100.f;		//物体质量
 	float force_attenuation = 1.0f;		//力衰减
-	float bounciness = 0.5f;
+	float bounciness = 0.5f;		//弹性势能
+
 
 	PhysicsType type;
 	SceneComponent* collision_owner;
@@ -81,13 +82,19 @@ public:
     virtual void Init();
     // void SetIsSimulatedPhysics(bool value);
 	void SetOwner(SceneComponent* new_owner);
+	void SetMassCenter(const Vec2<float>& new_center);
 	void SetSubscribeCollision(bool is_subscribe);
+
+
+
+
 //同步
 	void SynchronizationTransform();
 
 
 	// void SetBodyBox(Vec2<float> size);
 	void SetBodyTransform(Transform transform);
+
 
 	void SetBodyWorldLocation(const Vec2<float>& location);
 	void SetBodyWorldRotation(const Rotation& rotation);

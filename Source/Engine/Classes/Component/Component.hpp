@@ -16,7 +16,7 @@ public:
 	void SetOwner(Actor* actor);
 	Actor* GetOwner() const;
 	std::string GetComponentName();
-	virtual bool SetName(const std::string& new_name);
+	//virtual bool SetName(const std::string& new_name);
 
 	virtual void ComponentTick(double delta_time) {}
 };

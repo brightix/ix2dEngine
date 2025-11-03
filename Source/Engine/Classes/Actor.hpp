@@ -5,6 +5,8 @@
 #include "Types/Transform.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
+#include "Utilities/GCWeakPtr.hpp"
+#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 
 struct RenderData;
 class SceneComponent;
@@ -61,16 +63,16 @@ public:
     //attribution
 	void SetHiddenInGame(bool new_hidden_in_game);
 	void SetMobility(ActorMobility target_mobility);
-	ActorMobility GetMobility() const;
+	[[nodiscard]] ActorMobility GetMobility() const;
 
 //变换
-	Transform GetWorldTransform() const;
+	[[nodiscard]] Transform GetWorldTransform() const;
     void SetActorTransform(Transform trans);
     void AddActorTransform(Transform trans);
 //位置
 
-	Vec2<float> GetWorldLocation() const;
-    Vec2<float> GetRelativeLocation();
+	[[nodiscard]] Vec2<float> GetWorldLocation() const;
+    [[nodiscard]] Vec2<float> GetRelativeLocation();
 //旋转
 
 	void AddActorWorldLocation(Vec2<float> dis) const;
@@ -96,14 +98,14 @@ public:
 	{
 		return Cast<T>(actor_components[component_name].Get());
 	}
-	GCWeakPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
+	[[nodiscard]] GCWeakPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
 
 //Sys
 	virtual void RenderOnScreen();
 
     void ForRenderOrder(std::vector<RenderData>& data) const;
 
-	bool IsVisible() const;
+	[[nodiscard]] bool IsVisible() const;
 };
 
 template<typename T>

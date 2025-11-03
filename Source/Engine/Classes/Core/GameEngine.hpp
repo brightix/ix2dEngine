@@ -1,5 +1,5 @@
 #pragma once
-
+#include <unordered_set>
 #include <SDL3/SDL.h>
 
 #include "RendererCenter.hpp"
@@ -7,7 +7,6 @@
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Utilities/Timer.hpp"
 #include "Structure/SystemConfig.hpp"
-#include "Utilities/ExternalWrapper.hpp"
 #include "Utilities/GCPtr.hpp"
 #include "Classes/SubSystem/TextureStoreSubSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
@@ -35,7 +34,7 @@ class GameEngine final : public Object
     GCPtr<NewTimer> consume_timer;
 
 
-    mutable GCObject* GCRoot;
+    mutable Object* GCRoot;
 
 
 	//组件
@@ -91,12 +90,12 @@ public:
 //Widget
 
 	//GCWeakPtr<CanvasWidget> GetViewport();
-	Vec2<int> GetViewportSize() { return SysConfig.ViewportSize; }
+	Vec2<int> GetViewportSize() const { return SysConfig.ViewportSize; }
 
     GCWeakPtr<PanelSlot> AddWidgetToViewport(GCPtr<Widget> widget) const;
 
     //属性
-	EngineState GetEngineAttribution();
+	EngineState GetEngineAttribution() const;
 
     GCWeakPtr<SubSystemManager> GetEngineSubSystemManager();
 };
@@ -116,10 +115,10 @@ inline SDL_Renderer* GetRenderer()
 
 inline bool IsValid(const size_t id)
 {
-	return Global_GCObject_Registry.contains(id) && !Global_GCObject_Registry[id]->is_pending_kill;
+	return Global_Object_Registry.contains(id) && !Global_Object_Registry[id]->is_pending_kill;
 }
 
-inline bool IsValid(const GCObject* obj)
+inline bool IsValid(const Object* obj)
 {
 	return IsValid(obj->id);
 }

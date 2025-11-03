@@ -2,8 +2,6 @@
 #include <optional>
 #include <unordered_map>
 #include <any>
-#include "Classes/Core/GCObject.hpp"
-
 
 enum class ParamType
 {
@@ -14,15 +12,14 @@ enum class ParamType
 	String,
 };
 
-struct IEventParam : GCObject{};
+struct IEventParam{};
 
 template<typename T>
 struct EventParam : IEventParam
 {
 	T value;
 	template<typename U>
-	explicit EventParam(U&& v) : value(std::forward<U>(v))
-	{}
+	explicit EventParam(U&& v) : value(std::forward<U>(v)){}
 };
 
 struct EventParams

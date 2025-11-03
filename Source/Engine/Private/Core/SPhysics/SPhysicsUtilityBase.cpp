@@ -6,11 +6,11 @@ static int global_physics_id = 0;
 void SPhysicsBaseUtility::SetPhysicsCallback(const std::function<void()>& physics_callback_)
 {
 	physics_callback = physics_callback_;
-	quality = 0.046f * *GameEngine::Instance().GetEngineSubSystemManager()->GetSubSystem<RandomUtility>("RandomUtility")->GetRandom("SPhysicsBaseUtility_quality");
-	if (quality == 0)
-	{
-		std::cout << "有问题 " << quality << std::endl;
-	}
+	// quality = 0.046f * *GameEngine::Instance().GetEngineSubSystemManager()->GetSubSystem<RandomUtility>("RandomUtility")->GetRandom("SPhysicsBaseUtility_quality");
+	// if (quality == 0)
+	// {
+	// 	std::cout << "有问题 " << quality << std::endl;
+	// }
 }
 
 SPhysicsBaseUtility::SPhysicsBaseUtility()
@@ -84,6 +84,12 @@ void SPhysicsBaseUtility::HandleVelocity(double delta_time)
 void SPhysicsBaseUtility::SetOwner(SceneComponent* new_owner)
 {
 	collision_owner = new_owner;
+	center = collision_owner->GetComponentSize() / 2;
+}
+
+void SPhysicsBaseUtility::SetMassCenter(const Vec2<float>& new_center)
+{
+	center = new_center;
 }
 
 void SPhysicsBaseUtility::SetSubscribeCollision(const bool is_subscribe)

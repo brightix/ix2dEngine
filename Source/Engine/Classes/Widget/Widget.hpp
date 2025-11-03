@@ -3,6 +3,7 @@
 #include "Slot/PanelSlot.hpp"
 #include "Types/FRect.hpp"
 #include "Classes/Widget/Slot/PanelSlot.hpp"
+#include "Utilities/GCWeakPtr.hpp"
 
 enum class WidgetVisibility;
 enum class WidgetType
@@ -79,7 +80,7 @@ public:
  * @return Wrappered by GCPtr
  */
 template<typename T>
-GCPtr<T> CreateWidget(T* widget, GCObject* outer = nullptr)
+GCPtr<T> CreateWidget(T* widget, Object* outer = nullptr)
 {
 	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
 	auto it = GCPtr<T>(widget,outer);

@@ -29,9 +29,10 @@ void Actor::Construct()
 	// TODO处理事件回调时机，先绑定事件还是先设置位置
 
 	auto tex = Root->MountedComponent(new StaticTexture());
-	tex->SetName("default_texture");
+	tex->SetComponentName("default_texture");
 	tex->SetNewTexture(Create_FilledTexture_S({100,100}));
-	Root->MountedComponent(new SceneTextBlock)->SetText(name);
+	auto scene_text = Root->MountedComponent(new SceneTextBlock);
+	scene_text->SetText(name);
 	SetActorTransform(transform);
 }
 

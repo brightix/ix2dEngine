@@ -2,6 +2,7 @@
 
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "Classes/Object.hpp"
+#include "Utilities/GCWeakPtr.hpp"
 using namespace std;
 EventDispatcherSystem::EventDispatcherSystem() {}
 void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)

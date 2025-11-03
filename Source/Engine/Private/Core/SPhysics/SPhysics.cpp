@@ -58,12 +58,16 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 
 			if (col->type == PhysicsType::Static)
 			{
-				switch (A->GetCollisionBox().CollisionDir(col->GetCollisionBox()))
+				auto ARect = A->GetCollisionBox();
+				auto col_rect = col->GetCollisionBox();
+				switch (ARect.CollisionDir(col_rect))
 				{
 					case TOP:
+						A->after_location.y = col_rect.y + col_rect.h;
+						A->added_force -= A->velocity;
 						break;
 					case BOTTOM:
-
+						A->after_location.y = col_rect.y - ARect.h;
 						A->added_force -= A->velocity;
 						break;
 					case LEFT:
@@ -100,14 +104,14 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
 {
-	float acceleration = world_physics.GravityForce / unit->quality;
+	float acceleration = world_physics.GravityForce * unit->quality;
 	unit->velocity.y -= acceleration * delta_time;
 
 	//处理冲量 可能来自 其他物体 或 主观
 	unit->velocity += unit->added_force;	unit->added_force.Reset();	//消费
 	//STOP_IF(unit->velocity.Length() < 1)
 	//作用
-	;
+
 	unit->after_location = (unit->collision_owner->GetComponentWorldLocation() + unit->velocity * delta_time).Cast<float>();
 }
 

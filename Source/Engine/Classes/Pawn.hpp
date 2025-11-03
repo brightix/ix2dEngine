@@ -6,10 +6,7 @@ class MovableComponent;
 
 class Pawn : public Actor
 {
-	//Vec2d<float> player_input_Vec;
 	float base_move_speed;
-	//GCPtr<> sprite;
-protected:
 public:
 	GCPtr<EnhancedInputSubSystem> enhanced_input_sub_system;
 	using Actor::Actor;
@@ -19,9 +16,9 @@ public:
     void Tick(double deltaTime) override;
 
 	//增强输入
-	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param);
+	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const;
 	void CallEnhancedInputEventDouble(EnhancedInputParam<double> param);
-	EnhancedInputSubSystem* GetEnhancedInputSubSystem();
-	Vec2<float> GetVelocity_Debug() const;
+	[[nodiscard]] EnhancedInputSubSystem* GetEnhancedInputSubSystem() const;
+	[[nodiscard]] Vec2<float> GetVelocity_Debug() const;
 };
 

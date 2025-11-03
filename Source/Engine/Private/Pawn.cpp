@@ -39,13 +39,13 @@ void Pawn::Tick(double deltaTime)
 	//dispatcher_system.CallEvent("TestDispatcher",eip);
 }
 
-void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param)
+void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const
 {
 	enhanced_input_sub_system->ExecuteBool(std::move(param));
 }
 void Pawn::CallEnhancedInputEventDouble(EnhancedInputParam<double> param) {}
 
-EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem()
+EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem() const
 {
 	return enhanced_input_sub_system.Get();
 }

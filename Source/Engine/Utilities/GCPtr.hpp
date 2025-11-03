@@ -1,31 +1,23 @@
 #pragma once
-#include "../Classes/Core/GCObject.hpp"
-#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-inline std::vector<GCObject*> GCAllObjects;
-inline std::unordered_map<size_t,GCObject*> Global_GCObject_Registry;
 #include <functional>
 
-template<typename T>
-struct std::hash<GCPtr<T>> {
-	size_t operator()(const GCPtr<T>& Ptr) const noexcept {
-		return std::hash<T*>()(Ptr.Get()); // 使用裸指针地址做哈希
-	}
-};
-
+#include "FuncLib/ixStaticFuncLib.hpp"
+#include "Classes/Object.hpp"
+#include "FuncLib/GlobalVariable.hpp"
 
 template<typename T>
 class GCPtr
 {
 	T* ptr;
-	GCObject* outer;
+	Object* outer;
 	// 构造
 public:
 	size_t id;
 	GCPtr() : ptr(nullptr), outer(nullptr), id(0) { }
 	//新对象
-	explicit GCPtr(T* p, GCObject* outer) : ptr(p), outer(outer)
+	explicit GCPtr(T* p, Object* outer) : ptr(p), outer(outer)
 	{
-		static_assert(std::is_base_of_v<GCObject, T>, "T 必须继承自 GCObject");
+		static_assert(std::is_base_of_v<Object, T>, "T 必须继承自 Object");
 		if(!outer)
 		{
 			Log("构造了野指针");
@@ -80,7 +72,7 @@ public:
 
 	//assets
 	T* Get() const { return ptr; }
-	[[nodiscard]] GCObject* GetOuter() const { return outer; }
+	[[nodiscard]] Object* GetOuter() const { return outer; }
 	T* operator->() const
 	{
 		return ptr;
@@ -93,40 +85,15 @@ public:
 	{
 		return ptr != nullptr;
 	}
-	void SetOuter(GCObject* owner)
+	void SetOuter(Object* owner)
 	{
 		GCUnLink(ptr,outer);
 		outer = owner;
 		GCLink(ptr,outer);
 	}
 //绑定GC关系
-	static void GCLink(GCObject* child, GCObject* parent)
-	{
-		if (!child || !parent)
-		{
-			//Log("GCLink 绑定到空指针");
-			//std::cout << "绑定到空指针" << std::endl;
-			return ;
-		}
-		child->referenced.push_back(parent);
-		parent->referencing.push_back(child);
-	}
-	void GCUnLink(GCObject* child, GCObject* parent)
-	{
-		if (!child || !parent)
-		{
-			//Log("GCLink 绑定到空指针");
-			//std::cout << "接触到空指针" << std::endl;
-			return ;
-		}
-		// 从 parent->referencing 移除 child
-		auto& refs = parent->referencing;
-		std::erase(refs, child);
 
-		// 从 child->referenced 移除 parent
-		auto& parents = child->referenced;
-		std::erase(parents, parent);
-	}
+
 	void Reset()
 	{
 		GCUnLink(ptr,outer);
@@ -144,15 +111,24 @@ public:
 };
 
 
-
 template<typename T>
-GCPtr<T> share_GCPtr(T* ptr, GCObject* owner)
+GCPtr<T> share_GCPtr(T* ptr, Object* owner)
 {
 
 	return GCPtr<T>(ptr,owner);
 }
 
-inline void AddToObject(GCObject* ptr)
+inline void AddToObject(Object* ptr)
 {
 	GCAllObjects.push_back(ptr);
 }
+
+void GCLink(Object* child, Object* parent);
+void GCUnLink(Object* child, Object* parent);
+
+// template<typename T>
+// struct std::hash<GCPtr<T>> {
+// 	size_t operator()(const GCPtr<T>& Ptr) const noexcept {
+// 		return std::hash<T*>()(Ptr.Get()); // 使用裸指针地址做哈希
+// 	}
+// };

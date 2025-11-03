@@ -69,17 +69,37 @@ void GameWorld::StartSimulation()
 
 
 	//测试地面
-	auto ground = SpawnActor(new TestPawn(Transform({0,800})));
+	const auto ground = SpawnActor(new TestPawn(Transform({0,800})));
 	auto g_s = ground->GetSceneComponent("default_texture").Cast<StaticTexture>();
 	g_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
-	g_s->SetName("Ground");
+	g_s->SetComponentName("Ground");
 	g_s->SetPhysicsType(PhysicsType::Static);
+
+	const auto roof = SpawnActor(new TestPawn(Transform({300,500})));
+	auto roof_s = roof->GetSceneComponent("default_texture").Cast<StaticTexture>();
+	roof_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
+	roof_s->SetComponentName("Roof");
+	roof_s->SetPhysicsType(PhysicsType::Static);
+
+	const auto left_wall = SpawnActor(new TestPawn(Transform({-900,0})));
+	auto lw_s = left_wall->GetSceneComponent("default_texture").Cast<StaticTexture>();
+	lw_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
+	lw_s->SetComponentName("LeftWall");
+	lw_s->SetPhysicsType(PhysicsType::Static);
+
+	const auto right_wall = SpawnActor(new TestPawn(Transform({1000,0})));
+	right_wall->SetName();
+	auto rw_s = right_wall->GetSceneComponent("default_texture").Cast<StaticTexture>();
+	rw_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
+	rw_s->SetComponentName("RightWall");
+	rw_s->SetPhysicsType(PhysicsType::Static);
+
 
 	auto size = GameEngine::Instance().GetEngineAttribution().ScreenSize;
 	FRect bound(0,0,size.x,size.y);
 
 	nlohmann::json world_config;
-	std::ifstream file = std::ifstream("Source/Engine/Config/WorldConfig.json");
+	auto file = std::ifstream("Source/Engine/Config/WorldConfig.json");
 	file >> world_config;
 	file.close();
 	RandCreateActorInBox<TestPawn>(bound,world_config["WorldActorCnt"].get<int>());
@@ -91,6 +111,9 @@ void GameWorld::StartSimulation()
 
 //在真正Begin后才建议设置对象属性
 	ground->SetMobility(ActorMobility::Static);
+	roof->SetMobility(ActorMobility::Static);
+	left_wall->SetMobility(ActorMobility::Static);
+	right_wall->SetMobility(ActorMobility::Static);
 }
 
 std::vector<GCPtr<Controller>> GameWorld::GetControllers()
@@ -112,7 +135,7 @@ std::vector<GCPtr<Actor>> *GameWorld::GetActors()
 	return &actors;
 }
 
-std::vector<GCWeakPtr<Widget>> GameWorld::GetWidgets()
+std::vector<GCWeakPtr<Widget>> GameWorld::GetWidgets() const
 {
 	std::vector<GCWeakPtr<Widget>> v;
 	for (auto& item : widgets)

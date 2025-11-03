@@ -1,6 +1,5 @@
 #pragma once
 #include "GCPtr.hpp"
-#include "Classes/Core/GCObject.hpp"
 
 template<typename T>
 struct GCWeakPtr
@@ -11,21 +10,21 @@ struct GCWeakPtr
 
 	GCWeakPtr(T* obj)
 	{
-		static_assert(std::is_base_of_v<GCObject, T>,"使用Weak必须是继承自GCObject");
+		static_assert(std::is_base_of_v<Object, T>,"使用Weak必须是继承自GCObject");
 		ptr = obj;
 		weak_id = ptr != nullptr ? obj->id : -1;
 	}
 	T* Peek() const
 	{
-		const auto it = Global_GCObject_Registry.find(weak_id);
-		if (it != Global_GCObject_Registry.end() && !it->second->is_pending_kill)
+		const auto it = Global_Object_Registry.find(weak_id);
+		if (it != Global_Object_Registry.end() && !it->second->is_pending_kill)
 			return ptr;
 
 		return nullptr;
 	}
 	explicit operator bool() const noexcept
 	{
-		if (Global_GCObject_Registry.contains(weak_id) && !Global_GCObject_Registry[weak_id]->is_pending_kill)
+		if (Global_Object_Registry.contains(weak_id) && !Global_Object_Registry[weak_id]->is_pending_kill)
 		{
 			return true;
 		}
@@ -34,7 +33,7 @@ struct GCWeakPtr
 
 	bool IsValid() const
 	{
-		return Global_GCObject_Registry.contains(weak_id) && !Global_GCObject_Registry[weak_id]->is_pending_kill;
+		return Global_Object_Registry.contains(weak_id) && !Global_Object_Registry[weak_id]->is_pending_kill;
 	}
 
 	//不检查合法性

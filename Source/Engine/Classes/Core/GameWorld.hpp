@@ -71,7 +71,7 @@ public:
 
 	std::vector<GCPtr<Actor>> *GetActors();
 
-	std::vector<GCWeakPtr<Widget>> GetWidgets();
+	std::vector<GCWeakPtr<Widget>> GetWidgets() const;
 	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
 
 	//Set
