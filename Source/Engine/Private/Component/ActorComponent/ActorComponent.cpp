@@ -8,5 +8,5 @@ void ActorComponent::Construct()
 
 void ActorComponent::SetOwnerActor(Actor *actor)
 {
-    owner = actor;
+    owned_actor = actor;
 }

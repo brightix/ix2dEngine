@@ -127,10 +127,10 @@ void TickSubSystem::Init()
 	texts.resize(4);
 	for (int i = 0; i < 4; i++)
 	{
-		auto text = CreateWidget(new TextBlockWidget);
-		auto slot = AddToViewport(text);
-		slot->display_area.y = (i+3)*26;
-		texts[i] = slot->widget;
+		const auto text = CreateWidget<TextBlockWidget>(this);
+		AddToViewport(text)->display_area.y = static_cast<float>(3 + i) * 26;
+
+		texts[i] = text;
 	}
 }
 

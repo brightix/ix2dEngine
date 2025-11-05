@@ -35,13 +35,14 @@ void SceneComponent::SetOwnerActor(Actor *actor)
 	{
 		Log(name + "被空Actor拥有");
 	}
-	if (!owner && actor)
+	if (!owned_actor && actor)
 	{
 		Log(name + "已经重新被" + actor->name + "拥有");
 	}
 
 #endif
-	owner = actor;
+	owned_actor = actor;
+	outer = actor;
 	for (const auto& component : mounted_components | std::views::values)
 	{
 		component->SetOwnerActor(actor);
@@ -314,37 +315,33 @@ Rotation SceneComponent::GetComponentRelativeRotation()
 }
 
 
-bool SceneComponent::Replace(SceneComponent *old_component, SceneComponent *new_component)
+bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 {
-	// if (old_component->parent_component && !force)
-	// {
-	//
-	// 	Log("父组件不为 Root 并且行为是 非强制");
-	// 	return false;
-	// }
-	const auto parent_actor = old_component->GetOwner();
-	const auto parent_component = old_component->outer;
+	const auto parent_actor = old_com->GetOwner();
+	const auto parent_com = old_com->parent_component;
 	//old_component->Destroy();
 	//传递挂载组件
-	for (auto& component : old_component->mounted_components | std::views::values)
+	for (auto& component : old_com->mounted_components | std::views::values)
 	{
-		new_component->MountedComponent(component.Get());
+		new_com->MountedComponent(component.Get());
 	}
 
-	if (!outer)
+	if (!parent_com)
 	{
 		if (!parent_actor)
 		{
 			Log("组件既不属于Actor，也没有挂载在父组件上");
 			return false;
 		}
-		parent_actor->SetRoot(new_component);
+		//替换 Actor根
+		parent_actor->SetRoot(new_com);
+		return true;
 	}
-	else
-	{
-		GCUnLink(new_component->outer,new_component);
-		new_component->GCUnlink_self();
-		new_component->outer = outer;
-	}
+
+	//非 根组件
+	//解除 旧的组件关联
+	GCUnLink(new_com->outer,old_com);
+	//连接新组件
+	GCLink(parent_com, new_com);
 	return true;
 }

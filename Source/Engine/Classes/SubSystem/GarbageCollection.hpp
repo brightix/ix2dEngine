@@ -16,8 +16,5 @@ public:
 	static void GCPtrMark();
 
 	int GCSweep();
-	~GarbageCollection() override
-	{
-	}
 };
 

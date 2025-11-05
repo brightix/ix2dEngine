@@ -36,7 +36,10 @@ void Widget::NativeWidgetRender(FRect display_area)
 PanelSlot* Widget::AddChild(Widget* child)
 {
     PanelSlot* slot = CreateSlot();
+
     slot->widget = child;
+	child->parent_slot = slot;
+
     child->outer = slot;
     if (is_initialized && !child->is_initialized)
     {
@@ -81,10 +84,10 @@ int Widget::GetLayerId() const
 void Widget::MakeDirty()
 {
     dirty = true;
-    Widget* p = parent.Peek();
+    Widget* p = parent_widget.Peek();
     while (p)
     {
         p->dirty = true;
-        p = p->parent.Peek();
+        p = p->parent_widget.Peek();
     }
 }

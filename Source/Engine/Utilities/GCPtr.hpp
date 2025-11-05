@@ -162,7 +162,7 @@ class GCStrongPtr
 	T* ptr = nullptr;
 public:
 	size_t id = -1;
-	GCStrongPtr(){}
+	GCStrongPtr()= default;
 	GCStrongPtr& operator=(T* other)
 	{
 		ptr = other;

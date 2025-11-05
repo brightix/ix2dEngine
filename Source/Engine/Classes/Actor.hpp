@@ -36,7 +36,6 @@ protected:
 	GCPtr<SceneComponent> Root;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
 	//可移动性
-	ActorMobility mobility;
 public:
 	bool is_pre_kill = false; // for render thread 防止悬空指正延迟删除
 	bool open_physics;

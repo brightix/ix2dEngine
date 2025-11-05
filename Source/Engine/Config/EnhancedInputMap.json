@@ -1,5 +1,6 @@
 {
-  "EnhancedInputAction": [
+  "EnhancedInputAction":
+  [
     { "KeyName": "IA_W", "ScanCode": 26, "InputMode": 0 },
     { "KeyName": "IA_A", "ScanCode": 4,  "InputMode": 0 },
     { "KeyName": "IA_S", "ScanCode": 22, "InputMode": 0 },
@@ -18,5 +19,32 @@
     { "KeyName": "IA_MouseRight", "ScanCode": 0, "InputMode": 1 },
     { "KeyName": "IA_MouseWheelUp", "ScanCode": 0, "InputMode": 1 },
     { "KeyName": "IA_MouseWheelDown", "ScanCode": 0, "InputMode": 1 }
+  ],
+  "InputAction":
+  [
+    { "KeyName": "Key_W", "ScanCode": 26, "InputMode": 0 },
+    { "KeyName": "Key_A", "ScanCode": 4,  "InputMode": 0 },
+    { "KeyName": "Key_S", "ScanCode": 22, "InputMode": 0 },
+    { "KeyName": "Key_D", "ScanCode": 7,  "InputMode": 0 },
+    { "KeyName": "Key_E", "ScanCode": 8,  "InputMode": 0 },
+    { "KeyName": "Key_F", "ScanCode": 9,  "InputMode": 0 },
+    { "KeyName": "Key_Q", "ScanCode": 20, "InputMode": 0 },
+    { "KeyName": "Key_R", "ScanCode": 21, "InputMode": 0 },
+    { "KeyName": "Key_Space", "ScanCode": 44, "InputMode": 0 },
+    { "KeyName": "Key_LeftShift", "ScanCode": 225, "InputMode": 0 },
+    { "KeyName": "Key_LeftCtrl",  "ScanCode": 224, "InputMode": 0 },
+    { "KeyName": "Key_1", "ScanCode": 30, "InputMode": 0 },
+    { "KeyName": "Key_2", "ScanCode": 31, "InputMode": 0 },
+    { "KeyName": "Key_3", "ScanCode": 32, "InputMode": 0 },
+    { "KeyName": "Key_MouseLeft", "ScanCode": 0, "InputMode": 1 },
+    { "KeyName": "Key_MouseRight", "ScanCode": 0, "InputMode": 1 },
+    { "KeyName": "Key_MouseWheelUp", "ScanCode": 0, "InputMode": 1 },
+    { "KeyName": "Key_MouseWheelDown", "ScanCode": 0, "InputMode": 1 }
+  ],
+  "MouseAction" :
+  [
+    {"ButtonName": "MouseLeft", "ButtonId": 0, "InputMode": 0},
+    {"ButtonName": "MouseRight", "ButtonId": 2, "InputMode": 0},
+    {"ButtonName": "MouseWheelUp", "ButtonId": 0, "InputMode": 1}
   ]
 }

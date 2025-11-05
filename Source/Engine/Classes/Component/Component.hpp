@@ -7,7 +7,7 @@ class Component : public Object
 {
 protected:
 	std::string component_name;
-	Actor* owner;
+	Actor* owned_actor;
 public:
 	Component();
 

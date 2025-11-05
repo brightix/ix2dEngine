@@ -46,11 +46,11 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 
 	dispatcher_system.AddEventDispatcher("EventBegin");
-	viewport = CreateWidget(new CanvasWidget, this);
+	viewport = CreateWidget<CanvasWidget>(this);
 	//viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
 
-	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
+	game_mode = SpawnActor<GameModeBase>();
 
 	auto fps = CreateWidget(new TestFps);
 	AddToViewport(fps);

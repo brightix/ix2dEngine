@@ -4,6 +4,7 @@
 #include <SDL3/SDL_scancode.h>
 
 #include "Object.hpp"
+#include "Types/Enums/EMouseCode.hpp"
 
 enum class EnhancedInputParamType
 {
@@ -20,10 +21,18 @@ struct InputAction
 	EnhancedInputParamType type;
 };
 
+struct MouseAction
+{
+	std::string button_name;
+	MouseCode mouse_code;
+	EnhancedInputParamType type;
+};
+
 struct InputMap : public Object
 {
 	std::unordered_map<SDL_Scancode,InputAction> Enhanced;
 	std::unordered_map<SDL_Scancode,InputAction> Normal;
+	std::unordered_map<Uint8,MouseAction> Mouse;
 	InputMap();
 	void Construct() override;
 };

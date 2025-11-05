@@ -3,13 +3,13 @@
 #include "Classes/Actor.hpp"
 
 Component::Component() : Component(nullptr){ }
-Component::Component(Actor* owner) : owner(owner) { }
+Component::Component(Actor* owner) : owned_actor(owner) { }
 
 
 
 Actor* Component::GetOwner() const
 {
-	return owner;
+	return owned_actor;
 }
 
 std::string Component::GetComponentName()

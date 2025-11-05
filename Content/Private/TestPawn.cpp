@@ -13,7 +13,6 @@ TestPawn::TestPawn()
 void TestPawn::Construct()
 {
 	Pawn::Construct();
-	mobility = ActorMobility::Movable;
 
 	default_texture = GetSceneComponent("default_texture").Cast<StaticTexture>();
 	default_texture->SetNewTexture(Create_FilledTexture_S({100,100}));

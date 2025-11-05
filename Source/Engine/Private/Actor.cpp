@@ -13,7 +13,7 @@ Actor::Actor() : Actor(Transform()){}
 Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
                                     is_begin_event_handled(false),
                                     window(nullptr), transform(tf),
-                                    mobility(ActorMobility::Static), open_physics(false)
+                                    open_physics(false)
 {
 	CNAME;
 }
@@ -26,6 +26,7 @@ void Actor::Construct()
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
 	Root->SetOwnerActor(this);
+
 	// TODO处理事件回调时机，先绑定事件还是先设置位置
 
 
@@ -89,16 +90,16 @@ void Actor::SetHiddenInGame(bool new_hidden_in_game)
 	hidden_in_game = new_hidden_in_game;
 }
 
-void Actor::SetMobility(const ActorMobility target_mobility)
-{
-	mobility = target_mobility;
-	dispatcher_system.CallDispatcher("OnMobilityChanged");
-}
-
-ActorMobility Actor::GetMobility() const
-{
-	return mobility;
-}
+// void Actor::SetMobility(const ActorMobility target_mobility)
+// {
+// 	mobility = target_mobility;
+// 	dispatcher_system.CallDispatcher("OnMobilityChanged");
+// }
+//
+// ActorMobility Actor::GetMobility() const
+// {
+// 	return mobility;
+// }
 
 void Actor::SetActorName(const std::string &new_name)
 {

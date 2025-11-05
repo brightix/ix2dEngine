@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 # 定义一个可控开关变量，用于区分 Debug / Release
 option(DebugMode "Enable debug build" ON)
 
+
 # 工程源码
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
@@ -16,6 +17,7 @@ add_executable(ix2d
         ${ENGINE_SOURCES}
         ${CMAKE_SOURCE_DIR}/main.cpp
 )
+
 set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
         RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}"
@@ -79,6 +81,6 @@ target_link_libraries(ix2d PRIVATE
         winmm
 )
 
-#message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 #message(STATUS "DebugMode: ${DebugMode}")
 #message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")

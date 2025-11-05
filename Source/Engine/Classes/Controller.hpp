@@ -10,8 +10,6 @@ enum EnhancedInputParamStatus : int;
 class Object;
 class Pawn;
 
-
-
 using EnhancedInputParamVariant = std::variant<bool,float,Vec2<double>,Vec<double>>;
 
 class Controller : public Actor
@@ -23,10 +21,11 @@ class Controller : public Actor
     GCPtr<Object> CurrentFocus;
 	GCPtr<InputMap> input_map;
 	//各种输入数据
-	Vec2<float> mouse_pos;
 
 	std::unordered_map<SDL_Scancode,EnhancedInputParamStatus> keys_state;
 
+	Vec2<float> mouse_pos;
+	std::unordered_map<SDL_Scancode,EnhancedInputParamStatus> mouse_state;
 
     //bool
     bool show_mouse_cursor;
@@ -47,7 +46,7 @@ public:
 	Vec2<float> GetMousePos() const;
 
 
-    Pawn *GetControlledPawn() const;
+    [[nodiscard]] Pawn* GetControlledPawn() const;
 
 };
 
@@ -57,3 +56,49 @@ static void BindNormalKeyEvent(Object* obj, const std::string& event_name, const
 }
 
 Vec2<float> GetMousePos();
+
+
+/**
+ *  This widget has no parent unless it is added to a viewport or to another widget.
+ * @tparam T
+ * @param widget
+ * @param outer
+ * @return Wrappered by GCPtr
+ */
+template<typename T>
+T* CreateWidget(T* widget, GCObject* outer = nullptr)
+{
+	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
+	if (outer)
+	{
+		widget->outer = outer;
+		GCLink(outer,widget);
+	}
+	widget->PreConstructEvent();
+	return widget;
+}
+
+template<typename T,typename ...Args>
+T* CreateWidget(Controller* outer = nullptr,Args...args)
+{
+
+	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
+	T* widget = new T(std::forward<Args>(args)...);
+	if (outer)
+	{
+		widget->outer = outer;
+	}
+	// else
+	// {
+	// 	//用户控件没有 PlayerController 默认添加进世界上下文
+	// 	widget->outer = World();
+	// }
+#if DEBUG
+	if (!outer)
+	{
+		Log("构造了野 控件 ");
+	}
+#endif
+	widget->PreConstructEvent();
+	return widget;
+}

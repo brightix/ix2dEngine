@@ -2,8 +2,6 @@
 #include "Classes/Object.hpp"
 #include "Slot/PanelSlot.hpp"
 #include "Types/FRect.hpp"
-#include "Classes/Widget/Slot/PanelSlot.hpp"
-
 enum class WidgetVisibility;
 enum class WidgetType
 {
@@ -20,9 +18,9 @@ protected:
 	WidgetVisibility widget_visibility;
 	int layer_id;
 	//每一个控件都拥有父控件，通过 AddChild() 获得
-	GCPtr<Widget> parent;
+	GCPtr<Widget> parent_widget;
+	GCPtr<PanelSlot> parent_slot;
 
-	GCPtr<PanelSlot> WidgetRoot;
 public:
 	bool dirty;
 	bool is_initialized;
@@ -31,7 +29,6 @@ public:
 	void Construct() final {}
 	virtual void PreConstructEvent()
 	{
-		WidgetRoot = NewObject<PanelSlot>(this);
 	}
 	virtual void ConstructEvent(){}
 
@@ -72,34 +69,4 @@ public:
 	Widget(Widget&&) noexcept = default;         // 显式允许移动
 	~Widget() override = default;
 };
-
-/**
- *  This widget has no parent unless it is added to a viewport or to another widget.
- * @tparam T
- * @param widget
- * @param outer
- * @return Wrappered by GCPtr
- */
-template<typename T>
-T* CreateWidget(T* widget, GCObject* outer = nullptr)
-{
-	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
-	if (outer)
-	{
-		widget->outer = outer;
-		GCLink(outer,widget);
-	}
-	widget->PreConstructEvent();
-	return widget;
-}
-
-template<typename T,typename ...Args>
-T* CreateWidget(GCObject* outer = nullptr,Args...args)
-{
-	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
-	T* widget = new T(std::forward<Args>(args)...);
-	widget->outer = outer;
-	widget->PreConstructEvent();
-	return widget;
-}
 

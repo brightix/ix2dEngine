@@ -1,6 +1,5 @@
 #include "Classes/Controller.hpp"
 
-#include <fstream>
 #include <SDL3/SDL.h>
 
 #include "Classes/Pawn.hpp"
@@ -28,8 +27,9 @@ void Controller::Construct()
 	Actor::Construct();
 
 	SetHiddenInGame(true);
-	input_map = NewObject<InputMap>(new InputMap());
-	auto st = 	Root->MountedComponent(NewObject<StaticTexture>());
+	input_map = NewObject<InputMap>();
+
+	auto st = Root->MountedComponent(NewObject<StaticTexture>());
 	SetTextureFromSurface_S(st,GetTextSurface("                    "));
 
 	pawn_info = CreateWidget<TextBlockWidget>(this);
@@ -37,7 +37,7 @@ void Controller::Construct()
 	p_slot->display_area.x = 400.f;
 
 	pawn_physics_info = CreateWidget<TextBlockWidget>(this);
-	auto p_phys_slot = AddToViewport(pawn_info.Get());
+	auto p_phys_slot = AddToViewport(pawn_physics_info.Get());
 	p_phys_slot->display_area.x = 400.f;
 	p_phys_slot->display_area.y = 24.f;
 }
@@ -52,6 +52,9 @@ void Controller::Tick(double delta)
     	auto t = event.type;
 
     	SDL_Scancode scancode = event.key.scancode;
+    	EventParams e;
+
+    	Uint8 button_id;
 	    switch (t)
         {
 	        case SDL_EVENT_QUIT:
@@ -79,7 +82,6 @@ void Controller::Tick(double delta)
 	    		if (controlled_pawn)
 	    		{
 	    			// Completed
-	    			SDL_Scancode scancode = event.key.scancode;
 
 	    			auto& key = keys_state[scancode];
 	    			key = Complete;
@@ -91,19 +93,27 @@ void Controller::Tick(double delta)
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_DOWN: // 鼠标按下
         		// event.button.button 获取按钮
-
+	    		button_id = event.button.button;
+	    		e.Add("pressed",true);
+	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
         		break;
 
         	case SDL_EVENT_MOUSE_BUTTON_UP:   // 鼠标松开
+	    		button_id = event.button.button;
+	    		e.Add("pressed",false);
+	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
         		break;
-
         	case SDL_EVENT_MOUSE_MOTION:     // 鼠标移动
         		// event.motion.x / y / xrel / yrel
 	    		mouse_pos = {event.motion.x,event.motion.y};
+	    		e.Add("mouse_pos",Vec2<float>(mouse_pos.x,mouse_pos.y));
+	    		//dispatcher_system.CallDispatcher(input_map->Mouse[scancode].key_name,e);
         		break;
 
         	case SDL_EVENT_MOUSE_WHEEL:      // 鼠标滚轮
         		// event.wheel.x / y
+	    		e.Add("mouse_wheel",event.wheel.y);
+	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name,e);
         		break;
         	default:
         		break;
@@ -134,12 +144,12 @@ Vec2<float> Controller::GetMousePos() const
 	return mouse_pos;
 }
 
-Pawn *Controller::GetControlledPawn() const
+Pawn* Controller::GetControlledPawn() const
 {
 	return controlled_pawn.Get();
 }
 
-Vec2<float> GetMousePos(GCPtr<Controller> controller)
+Vec2<float> GetMousePos(const Controller* controller)
 {
 	return controller->GetMousePos();
 }

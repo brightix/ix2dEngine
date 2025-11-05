@@ -12,7 +12,7 @@ MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_
 void MovableComponent::Construct()
 {
     ActorComponent::Construct();
-    if (const auto t = Cast<Pawn>(owner))
+    if (const auto t = Cast<Pawn>(owned_actor))
     {
         EnhancedInputSubSystem* enhanced_input_sub_system = t->GetEnhancedInputSubSystem();
         enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[this](EnhancedInputParam<bool> eip) {
@@ -89,6 +89,6 @@ void MovableComponent::Construct()
 
 void MovableComponent::ActorComponentTick(double deltaTime)
 {
-    owner->AddActorWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
+    owned_actor->AddActorWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
     player_input_Vec = {};
 }

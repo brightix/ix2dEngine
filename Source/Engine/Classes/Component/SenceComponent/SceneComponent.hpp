@@ -8,7 +8,6 @@
 #include "Types/Enums/ActorVisibility.hpp"
 #include "Types/Enums/LayerHierachy.hpp"
 #include "Utilities/FuncLib/SystemLib.hpp"
-
 struct RenderData;
 
 class SceneComponent : public Component
@@ -56,6 +55,7 @@ public:
     virtual void ComponentRender();
 	virtual void SceneComponentTick(double delta_time);
 	//挂载子场景组件
+
 	template<typename T>
 	T* MountedComponent(T* obj)
 	{
@@ -66,12 +66,14 @@ public:
 			return nullptr;
 		}
 #if DEBUG == 1
-		if (!owner)
+		if (!owned_actor)
 		{
 			Log("构造了野组件，可能是批量构造的子组件树，需要重绑定");
 		}
 #endif
-		component->SetOwnerActor(owner);
+		component->SetOwnerActor(owned_actor);
+
+		component->SetOuter(owned_actor);
 		component->parent_component = this;
 		//这里的命名是初始类名+id
 		mounted_components.emplace(component->GetComponentName(),component);
@@ -92,12 +94,11 @@ public:
 	void ForRenderData(std::vector<RenderData>& data);
     virtual void OfferRenderData(std::vector<RenderData>& data);
 
-	bool IsSceneComponentOpenedPhysics() const;
+	[[nodiscard]] bool IsSceneComponentOpenedPhysics() const;
 
-	SDL_FRect GetComponentRenderRect() const;
+	[[nodiscard]] SDL_FRect GetComponentRenderRect() const;
 
 
-	/// DebugOnly
 public:
 
 	virtual void Debug_RenderOutline(std::vector<RenderData>& data);
@@ -138,7 +139,7 @@ public:
 	Rotation GetComponentWorldRotation() const;
 	Rotation GetComponentRelativeRotation();
 
-	static bool Replace(SceneComponent *old_component, SceneComponent *new_component);
+	static bool Replace(SceneComponent *old_com, SceneComponent *new_component);
 };
 
 //单层找节点

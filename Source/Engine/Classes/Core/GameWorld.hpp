@@ -10,8 +10,6 @@
 #include "Utilities/Timer.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
-#include "Utilities/FuncLib/SystemLib.hpp"
-class ViewportSubSystem;
 class Controller;
 class GameModeBase;
 class TickSubSystem;
@@ -39,7 +37,6 @@ class GameWorld : public Object
 	//子系统
 	TimerSystem timer_system;
 	SubSystemManager* world_subsystem;
-	GCPtr<ViewportSubSystem> viewport_sub;
 
 
 
@@ -136,7 +133,8 @@ T* SpawnActor(Args...args)
 			actor->EventBegin();
 		}));
 	}
-	World()->AddToWorld(actor);
+	//后面可以推进使用 level 分级
+	world->AddToWorld(actor);
 	return actor;
 }
 

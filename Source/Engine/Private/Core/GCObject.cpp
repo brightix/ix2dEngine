@@ -6,6 +6,10 @@ GCObject::GCObject()
 {
 	//printf("s\n");
 	id = glo_id++;
+	if (id == 18)
+	{
+		BREAK;
+	}
 	Global_GCObject_Registry[id] = this;
 }
 GCObject::~GCObject()
@@ -22,3 +26,8 @@ std::string GCObject::GetClassName()
 {
 	return class_name;
 }
+
+// void GCObject::SetOuter(GCObject* new_outer)
+// {
+// 	outer = new_outer;
+// }

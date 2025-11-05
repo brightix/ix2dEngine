@@ -50,16 +50,16 @@ void CollisionBox::ComponentEventBegin()
 		//Location after_location = physics_body->after_location;
 		SetComponentWorldLocation(physics_body->after_location);
 	}));
-	ListenDispatcher(owner, "OnMobilityChanged", Event([this](TEventParams e) {
-		if (owner->GetMobility() == ActorMobility::Static)
-		{
-			physics_body->type = PhysicsType::Static;
-		}
-		else
-		{
-			physics_body->type = PhysicsType::Movable;
-		}
-	}));
+	// ListenDispatcher(owner, "OnMobilityChanged", Event([this](TEventParams e) {
+	// 	if (owner->GetMobility() == ActorMobility::Static)
+	// 	{
+	// 		physics_body->type = PhysicsType::Static;
+	// 	}
+	// 	else
+	// 	{
+	// 		physics_body->type = PhysicsType::Movable;
+	// 	}
+	// }));
 	// BindEvent(this, "OnSceneComponentTeleport",Event([&](TEventParams e) {
 	// 	Synchronization();
 	// }));

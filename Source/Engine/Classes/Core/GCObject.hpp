@@ -26,20 +26,12 @@ struct GCObject
 
     bool IsActive() const;
 	std::string GetClassName();
-
-
-    //GC安全 只创建实例，不执行construct和绑定事件
-	template<typename T, typename ...Args>
-	GCPtr<T> NewGCPtr(Args&&...args)
-	{
-		return GCPtr<T>(new T(std::forward<Args>(args)...), this);
-	}
 	template<typename T>
-	GCPtr<T> NewGCPtr(T* p)
+	void SetOuter(T* new_outer)
 	{
-		return GCPtr<T>(p, this);
+		static_assert(std::is_base_of_v<GCObject,T>);
+		outer = static_cast<GCObject*>(new_outer);
 	}
-
 
 	void GCUnlink_self()
 	{

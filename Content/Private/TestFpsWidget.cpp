@@ -1,5 +1,6 @@
 #include "../Public/TestFpsWidget.hpp"
 
+#include "Classes/Controller.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Widget/ContentWidget/TextBlockWidget.hpp"
 #include "System/Font.hpp"
@@ -13,7 +14,7 @@ void TestFps::PreConstructEvent()
 {
     UserWidget::PreConstructEvent();
 	CNAME;
-    auto text = CreateWidget(new TextBlockWidget);
+    auto text = CreateWidget<TextBlockWidget>();
     FontStyle fontStyle;
     fontStyle.font = FontRenderer::Instance().GetFont("simkai", 24);
     try{

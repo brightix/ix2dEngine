@@ -16,7 +16,6 @@ Character::Character()
 void Character::Construct()
 {
     Pawn::Construct();
-    mobility = ActorMobility::Movable;
 
 
     auto cap = NewObject<Capsule2d>(this);
