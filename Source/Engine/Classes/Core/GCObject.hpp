@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
-static size_t glo_id;
+
+#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
+static size_t glo_id = 1;
 template<typename T>
 class GCPtr;
 struct GCObject
@@ -14,6 +16,9 @@ struct GCObject
 	size_t id;
 	std::vector<GCObject*> referenced;
 	std::vector<GCObject*> referencing;
+
+
+	GCObject* outer;
 	GCObject();
 
     virtual ~GCObject();
@@ -35,7 +40,8 @@ struct GCObject
 		return GCPtr<T>(p, this);
 	}
 
-	void GCUnlink()
+
+	void GCUnlink_self()
 	{
 		for (auto parent : referenced)
 		{
@@ -47,4 +53,25 @@ struct GCObject
 		}
 	}
 };
+
+inline void GCLink(GCObject* parent,GCObject* child)
+{
+	if (!child || !parent)
+	{
+		Log("GCLink 绑定到空指针");
+		return ;
+	}
+	parent->referencing.push_back(child);
+	child->referenced.push_back(parent);
+}
+inline void GCUnLink(GCObject* parent,GCObject* child)
+{
+	if (!child || !parent)
+	{
+		Log("GCUnLink 解绑定到空指针");
+		return ;
+	}
+	std::erase(parent->referencing,child);
+	std::erase(child->referenced,parent);
+}
 

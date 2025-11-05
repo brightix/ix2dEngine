@@ -2,7 +2,6 @@
 
 #include "FPoint.hpp"
 #include "var_type.hpp"
-#include "Vec.hpp"
 
 struct Rotation  : var_type
 {

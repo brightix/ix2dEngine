@@ -3,11 +3,10 @@
 
 #include "Object.hpp"
 #include "Types/Transform.hpp"
-#include "Utilities/FuncLib/StaticCast.hpp"
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
+#include "Component/SenceComponent/SceneComponent.hpp"
 
 struct RenderData;
-class SceneComponent;
 enum class ActorMobility;
 class ActorComponent;
 class GameWorld;
@@ -32,7 +31,7 @@ protected:
 
 	//关卡 负责管理生命周期
 	SDL_Window* window;
-	GCWeakPtr<GameWorld> game_world;
+	GCPtr<GameWorld> game_world;
 
 	GCPtr<SceneComponent> Root;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
@@ -63,6 +62,9 @@ public:
 	void SetMobility(ActorMobility target_mobility);
 	ActorMobility GetMobility() const;
 
+	void SetActorName(const std::string& new_name);
+
+
 //变换
 	Transform GetWorldTransform() const;
     void SetActorTransform(Transform trans);
@@ -88,7 +90,7 @@ public:
 	{
 		static_assert(std::is_base_of_v<ActorComponent, T>, "类必须继承自ActorComponent");
 		actor_components[component_name] = NewObject<T>(component);
-		component->SetOwner(this);
+		component->SetOwnerActor(this);
 	}
 
 	template<typename T>
@@ -96,7 +98,8 @@ public:
 	{
 		return Cast<T>(actor_components[component_name].Get());
 	}
-	GCWeakPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
+	GCPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
+	void SetRoot(SceneComponent* new_root);
 
 //Sys
 	virtual void RenderOnScreen();

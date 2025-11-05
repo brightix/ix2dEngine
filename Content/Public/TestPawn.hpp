@@ -6,9 +6,7 @@
 
 class TestPawn final : public Pawn
 {
-	GCWeakPtr<CollisionBox> collision_box;
-	GCWeakPtr<StaticTexture> default_texture;
-
+	GCPtr<StaticTexture> default_texture;
 public:
 	using Pawn::Pawn;
     TestPawn();

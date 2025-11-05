@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <typeindex>
 #include <unordered_map>
 
 #include "Utilities/GCPtr.hpp"
@@ -8,51 +9,30 @@
 
 class SubSystemManager : public Object
 {
-	std::unordered_map<uint32_t,GCPtr<SubSystemBase>> mounted_subSystem;
+	std::unordered_map<std::type_index,SubsystemBase*> mounted_subsystem;
+	//std::unordered_map<uint32_t,GCPtr<SubsystemBase>> mounted_subSystem_;
 public:
     SubSystemManager()
     {
 	    CNAME;
     }
-    ~SubSystemManager()= default;
-
-	template<typename T>
-	T* CreateSubSystem(const std::string& subSys_name)
+    ~SubSystemManager() override
+    {
+    	DeInitAllSubSystem();
+    }
+	std::vector<SubsystemBase*> GetAllSubSystem()
 	{
-		//static_assert(std::is_base_of_v<T, U>, "U 必须继承自指定基类");
-		const uint32_t id = ix::Hash(subSys_name.c_str());
-		if (!mounted_subSystem.contains(id))
+		std::vector<SubsystemBase*> ret;
+		for (auto& sub : mounted_subsystem | std::views::values)
 		{
-			GCPtr<T> sub = NewObject<T>(new T());
-			mounted_subSystem.emplace(id,std::move(sub));
-			return sub.Get();
-		}
-		Log("重复添加子系统");
-		return nullptr;
-	}
-	template<typename T>
-	GCWeakPtr<T> GetSubSystem(const std::string& subSys_name)
-	{
-		uint32_t id = ix::Hash(subSys_name.c_str());
-		if (mounted_subSystem.contains(id))
-		{
-			return GCWeakPtr(mounted_subSystem[id].Get());
-		}
-		return {};
-	}
-	std::vector<GCWeakPtr<SubSystemBase>> GetAllSubSystem()
-	{
-		std::vector<GCWeakPtr<SubSystemBase>> ret;
-		for (auto& sub : mounted_subSystem | std::views::values)
-		{
-			ret.emplace_back(GCWeakPtr(sub.Get()));
+			ret.emplace_back(sub);
 		}
 		return ret;
 	}
 
 	void ForAllSubSystemInit()
 	{
-		for (auto& sub : mounted_subSystem | std::views::values)
+		for (auto& sub : mounted_subsystem | std::views::values)
 		{
 			sub->Init();
 		}
@@ -60,10 +40,37 @@ public:
 
 	void DeInitAllSubSystem()
 	{
-		for (auto& sub : mounted_subSystem | std::views::values)
+		for (auto& sub : mounted_subsystem | std::views::values)
 		{
 			sub->DeInit();
 		}
+    	mounted_subsystem.clear();
+	}
+	template<typename T>
+	T* CreateSubsystem()
+	{
+		const std::type_index id = typeid(T);
+		auto it = mounted_subsystem.find(id);
+		if (it != mounted_subsystem.end())
+		{
+			Log("重复添加子系统");
+			return nullptr;
+		}
+		mounted_subsystem[id] = new T();
+		mounted_subsystem[id]->Construct();
+		return static_cast<T*>(mounted_subsystem[id]);
+	}
+	template<typename T>
+	T* GetSubsystem()
+	{
+		const std::type_index id = typeid(T);
+		auto it = mounted_subsystem.find(id);
+		if (it == mounted_subsystem.end())
+		{
+			Log(std::string("没有实例化改子系统：") + typeid(T).name());
+			return nullptr;
+		}
+		return static_cast<T*>(mounted_subsystem[id]);
 	}
 };
 

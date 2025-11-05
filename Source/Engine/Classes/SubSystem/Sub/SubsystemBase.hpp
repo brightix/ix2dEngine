@@ -1,10 +1,10 @@
 #pragma once
 #include "Classes/Object.hpp"
 
-class SubSystemBase : public Object
+class SubsystemBase : public Object
 {
 public:
-	SubSystemBase();
+	SubsystemBase();
 	virtual void Init(){}
 	virtual void DeInit(){}
 

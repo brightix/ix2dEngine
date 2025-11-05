@@ -13,10 +13,10 @@ public:
 
 	explicit Component(Actor* owner);
 	virtual void ComponentEventBegin(){}
-	void SetOwner(Actor* actor);
-	Actor* GetOwner() const;
+	//void SetOwner(Actor* actor);
+	[[nodiscard]] Actor* GetOwner() const;
 	std::string GetComponentName();
-	virtual bool SetName(const std::string& new_name);
+	virtual bool SetComponentName(const std::string& new_name);
 
 	virtual void ComponentTick(double delta_time) {}
 };

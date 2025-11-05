@@ -13,8 +13,10 @@
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "System/Font.hpp"
 #include "Types/EngineState.hpp"
+#include "Utilities/Ptr.hpp"
 #include "Utilities/RandomUtility.hpp"
 
+class TestPawn;
 class SPhysics;
 class CanvasWidget;
 class Widget;
@@ -42,11 +44,11 @@ class GameEngine final : public Object
 	GCPtr<GameWorld> game_world;
 
 	//子系统
-	GCPtr<SubSystemManager> engine_subsystem;
+	SubSystemManager* engine_subsystem;
 	GCPtr<CanvasWidget> viewport;
-	std::unordered_set<GCPtr<Widget>> widgets;
-	GCWeakPtr<RandomUtility> random_utility;
-    GCWeakPtr<GarbageCollection> GCSys;
+	//std::unordered_set<GCPtr<Widget>> widgets;
+	RandomUtility* random_utility;
+    GarbageCollection* GCSys;
 
 private:
     //只放全局变量初始化
@@ -54,12 +56,13 @@ private:
 public:
 	SDL_Renderer * renderer;
 	SDL_Window * window;
-	GCWeakPtr<RendererCenter> renderer_center;
+	GCPtr<RendererCenter> renderer_center;
 	FontRenderer* font_manager;
-	GCWeakPtr<TickSubSystem> tick_SubSystem;
-	GCWeakPtr<TextureStoreSubSystem> texture_store;
+	GCPtr<TickSubSystem> tick_SubSystem;
+	GCPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
-	GCWeakPtr<SPhysics> physicsSys;
+	GCStrongPtr<SPhysics> physicsSys;
+	GCPtr<TestPawn> test_d;
 public:
 
     static GameEngine& Instance()
@@ -74,14 +77,14 @@ public:
 
     void OnChangeWorld(GameWorld *new_world);
 
-    std::shared_ptr<SDL_Texture> GetDefaultTexture();
+    std::shared_ptr<SDL_Texture> GetDefaultTexture() const;
 
     void Quit() const;
 
     ~GameEngine() override;
 //base
     //SDL_Renderer* GetRenderer() { return renderer; }
-    GCWeakPtr<GameWorld> GetGameWorld();
+    GameWorld *GetGameWorld() const;
     GCObject *GetGCRoot() const;
 //Render
 	//void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
@@ -90,15 +93,15 @@ public:
 
 //Widget
 
-	//GCWeakPtr<CanvasWidget> GetViewport();
+	//GCPtr<CanvasWidget> GetViewport();
 	Vec2<int> GetViewportSize() { return SysConfig.ViewportSize; }
 
-    GCWeakPtr<PanelSlot> AddWidgetToViewport(GCPtr<Widget> widget) const;
+    PanelSlot *AddWidgetToViewport(Widget *widget) const;
 
     //属性
-	EngineState GetEngineAttribution();
+	EngineState GetEngineAttribution() const;
 
-    GCWeakPtr<SubSystemManager> GetEngineSubSystemManager();
+    GCPtr<SubSystemManager> GetEngineSubSystemManager() const;
 };
 
 
@@ -124,14 +127,14 @@ inline bool IsValid(const GCObject* obj)
 	return IsValid(obj->id);
 }
 
-GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> new_widget);
+PanelSlot* AddToViewport(Widget* new_widget);
 
 inline std::shared_ptr<SDL_Texture> GetDefaultTexture()
 {
 	return GameEngine::Instance().renderer_center->DefaultTexture;
 }
 
-GCWeakPtr<GameWorld> World();
+GameWorld *World();
 GameEngine& Engine();
 std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);
 std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL_Color color = EmeraldGreen);

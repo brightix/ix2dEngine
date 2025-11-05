@@ -16,8 +16,8 @@ Pawn::~Pawn()= default;
 void Pawn::Construct()
 {
 	Actor::Construct();
-	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem());
-	actor_components.emplace("movable",NewObject(new MovableComponent(this)));
+	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem(),this);
+	actor_components.emplace("movable",NewObject(new MovableComponent(this),this));
 
 	base_move_speed = 200.f;
 }

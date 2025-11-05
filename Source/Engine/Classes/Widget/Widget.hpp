@@ -20,9 +20,9 @@ protected:
 	WidgetVisibility widget_visibility;
 	int layer_id;
 	//每一个控件都拥有父控件，通过 AddChild() 获得
-	GCWeakPtr<Widget> parent;
+	GCPtr<Widget> parent;
 
-	GCPtr<PanelSlot> Root;
+	GCPtr<PanelSlot> WidgetRoot;
 public:
 	bool dirty;
 	bool is_initialized;
@@ -31,7 +31,7 @@ public:
 	void Construct() final {}
 	virtual void PreConstructEvent()
 	{
-		Root = NewObject(new PanelSlot);
+		WidgetRoot = NewObject<PanelSlot>(this);
 	}
 	virtual void ConstructEvent(){}
 
@@ -44,8 +44,10 @@ public:
 	//系统调用的render
     virtual void NativeWidgetRender(FRect display_area);
 
-	virtual GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child)= 0;
-	WidgetVisibility GetVisibility();
+	virtual PanelSlot* AddChild(Widget *child);
+	virtual PanelSlot* CreateSlot()= 0;
+	virtual void ReceiveSlot(PanelSlot* slot)= 0;
+	WidgetVisibility GetVisibility() const;
 	void SetVisibility(WidgetVisibility new_Visibility);
 
 	virtual void WidgetEventBegin(){}
@@ -54,7 +56,7 @@ public:
 
 	void RemoveFromParent();
 	virtual void RemoveChild(Widget* UI){}
-	virtual std::vector<GCWeakPtr<PanelSlot>> GetChildren(){ return {}; }
+	virtual std::vector<GCPtr<PanelSlot>> GetChildren(){ return {}; }
 
 
 	int GetLayerId() const;
@@ -79,11 +81,25 @@ public:
  * @return Wrappered by GCPtr
  */
 template<typename T>
-GCPtr<T> CreateWidget(T* widget, GCObject* outer = nullptr)
+T* CreateWidget(T* widget, GCObject* outer = nullptr)
 {
 	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
-	auto it = GCPtr<T>(widget,outer);
+	if (outer)
+	{
+		widget->outer = outer;
+		GCLink(outer,widget);
+	}
 	widget->PreConstructEvent();
-	return it;
+	return widget;
+}
+
+template<typename T,typename ...Args>
+T* CreateWidget(GCObject* outer = nullptr,Args...args)
+{
+	static_assert(std::is_base_of_v<Widget, T>,"T must be derived by Widget");
+	T* widget = new T(std::forward<Args>(args)...);
+	widget->outer = outer;
+	widget->PreConstructEvent();
+	return widget;
 }
 

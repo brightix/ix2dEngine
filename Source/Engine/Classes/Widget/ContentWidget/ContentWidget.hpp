@@ -9,7 +9,8 @@ protected:
 public:
     ContentWidget();
     void PreConstructEvent() override;
-    GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child) final { return {}; }
-
+    PanelSlot* AddChild(Widget *) final { return {}; }
+    PanelSlot *CreateSlot() final { return nullptr; }
     WidgetType GetWidgetType() override;
+    void ReceiveSlot(PanelSlot* slot) final {}
 };

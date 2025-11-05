@@ -1,7 +1,7 @@
 #pragma once
-#include "Classes/SubSystem/Sub/SubSystemBase.hpp"
+#include "Classes/SubSystem/Sub/SubsystemBase.hpp"
 
-class EngineSubSystem : public SubSystemBase
+class EngineSubSystem : public SubsystemBase
 {
 public:
 	//static void ForEngineInit();

@@ -23,11 +23,12 @@ class TickSubSystem : public EngineSubSystem
     std::condition_variable cv;
     int buffer_type;
     int write_head = 0;
-    std::vector<GCWeakPtr<TextBlockWidget>> texts;
+    std::vector<GCPtr<TextBlockWidget>> texts;
 public:
-    TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(buffer_cnt){}
+    TickSubSystem(int buffer_cnt);
 	TickSubSystem() : buffer_type(0) { }
 
+    void Construct() override;
     void Tick(double delta_time);
 
 

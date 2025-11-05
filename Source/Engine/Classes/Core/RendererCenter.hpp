@@ -31,14 +31,14 @@ public:
 	//收到新数据我就渲染上一帧
 	void RenderScene(std::vector<RenderData>& clips);
 
-	void RenderWidget(GCWeakPtr<PanelWidget> viewport);
+	void RenderWidget(GCPtr<PanelWidget> viewport);
 
 	std::shared_ptr<SDL_Texture> CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
 
 	std::shared_ptr<SDL_Texture> CreateFilledTexture(Vec2<float> size, SDL_Color color = EmeraldGreen);
 	// TODO 添加AsyncSetTexture();
 	void SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surface> new_surface);
-	//static void AsyncGetTextureFromSurface(GCWeakPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
+	//static void AsyncGetTextureFromSurface(GCPtr<Texture> owner, std::shared_ptr<SDL_Surface> new_surface);
 
 	void InitSDL();
 

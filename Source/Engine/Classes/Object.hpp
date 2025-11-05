@@ -4,6 +4,7 @@
 #include "Core/EventDispatcherSystem.hpp"
 #include "Core/EventSystem.hpp"
 #include "Core/GCObject.hpp"
+#include "Utilities/FuncLib/SystemLib.hpp"
 
 class Object : public GCObject
 {
@@ -36,14 +37,61 @@ public:
     void ListenDispatcher(Object* target, const std::string& event_name, Event event);
 
 
-    template<typename T>
-	GCPtr<T> NewObject(T* object)
+ //    template<typename T>
+	// GCPtr<T> NewObject(T* object)
+	// {
+	// 	static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
+	// 	auto it = GCPtr<T>(object,this);
+	// 	it->Construct();
+	// 	return it;
+	// }
+
+	template<typename T>
+	T* NewObject(T* ptr, Object *outer = nullptr)
+    {
+    	static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
+		auto object = IsDerived<Object>(ptr);
+    	if (!object)
+    	{
+    		return nullptr;
+    	}
+    	object->Construct();
+		GCAllObjects.push_back(object);
+		if (outer)
+		{
+    		object->outer = outer;
+			GCLink(outer,object);
+		}
+#if DEBUG
+		if (!outer)
+		{
+			LogWithLevel("构造了没有outer的对象",Warning);
+		}
+#endif
+    	return ptr;
+    }
+	template<typename T,typename ...Args>
+	T* NewObject(Object *outer = nullptr, Args... args)
 	{
 		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
-		auto it = GCPtr<T>(object,this);
-		it->Construct();
-		return it;
+		T* object = new T(std::forward<Args>(args)...);
+		object->Construct();
+		object->outer = outer;
+		GCAllObjects.push_back(object);
+		if (outer)
+		{
+			object->outer = outer;
+			GCLink(outer,object);
+		}
+#if DEBUG
+		if (!outer)
+		{
+			LogWithLevel("构造了没有outer的对象",Warning);
+		}
+#endif
+		return object;
 	}
+
 	template<typename T>
 	GCPtr<T> NewObjectNoOuter(T* object)
 	{

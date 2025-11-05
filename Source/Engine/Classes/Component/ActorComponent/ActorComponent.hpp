@@ -9,4 +9,5 @@ public:
 	using Component::Component;
     void Construct() override;
     virtual void ActorComponentTick(double delta_time){}
+	void SetOwnerActor(Actor* actor);
 };

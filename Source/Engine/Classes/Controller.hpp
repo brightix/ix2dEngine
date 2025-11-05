@@ -16,7 +16,7 @@ using EnhancedInputParamVariant = std::variant<bool,float,Vec2<double>,Vec<doubl
 
 class Controller : public Actor
 {
-    GCWeakPtr<Pawn> controlled_pawn;
+    GCPtr<Pawn> controlled_pawn;
     //std::unordered_map<std::string,std::function<void()>>;
     std::unordered_map<std::string,EventMethod> enhancedInput;
 
@@ -47,13 +47,13 @@ public:
 	Vec2<float> GetMousePos() const;
 
 
-    GCWeakPtr<Pawn> GetControlledPawn() const;
+    Pawn *GetControlledPawn() const;
 
 };
 
 static void BindNormalKeyEvent(Object* obj, const std::string& event_name, const Event &event)
 {
-	GetWorld()->GetController(0)->dispatcher_system.BindEventTo(obj, event_name, event);
+	World()->GetController(0)->dispatcher_system.BindEventTo(obj, event_name, event);
 }
 
 Vec2<float> GetMousePos();

@@ -5,7 +5,7 @@ class CollisionBox;
 struct RenderData;
 class StaticTexture : public Texture
 {
-	//GCWeakPtr<CollisionBox> collision_box;
+	//GCPtr<CollisionBox> collision_box;
 	GCPtr<SPhysicsBaseUtility> physics_body;
 	bool simulation_physics;
 
@@ -27,7 +27,7 @@ public:
 	void ComponentRender() override;
 	//Get
 	TextureType GetTextureType() override;
-	GCWeakPtr<SPhysicsBaseUtility> GetPhysicsBody();
+	GCPtr<SPhysicsBaseUtility> GetPhysicsBody();
 	//Set
 	void SetActiveCollision(bool is_active, PhysicsType new_type = PhysicsType::Static) const;
 	void SetPhysicsType(PhysicsType new_type) const;

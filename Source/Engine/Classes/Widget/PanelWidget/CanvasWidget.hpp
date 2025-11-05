@@ -18,11 +18,11 @@ class CanvasWidget : public PanelWidget
 public:
     CanvasWidgetFillRule fill_rule = FillScreen;
     CanvasWidget();
-    GCWeakPtr<PanelSlot> AddChild(GCPtr<Widget> child) override;
-
+    PanelSlot *CreateSlot() override;
+    void ReceiveSlot(PanelSlot* slot) override;
     //继承
     void flush() override;
-    std::vector<GCWeakPtr<PanelSlot>> GetSlot() override;
+    std::vector<GCPtr<PanelSlot>> GetSlot() override;
 };
 
 

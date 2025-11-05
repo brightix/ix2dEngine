@@ -4,6 +4,7 @@
 
 struct GCObject;
 
+//std::vector<Ptr<Object>> GlobalPtr;
 class GarbageCollection : public EngineSubSystem
 {
 	//std::vector<GCObject*> GCAllObjects;
@@ -11,7 +12,12 @@ class GarbageCollection : public EngineSubSystem
 public:
     GarbageCollection();
 	void GCMark(GCObject *gc_object);
-    int GCSweep();
 
+	static void GCPtrMark();
+
+	int GCSweep();
+	~GarbageCollection() override
+	{
+	}
 };
 

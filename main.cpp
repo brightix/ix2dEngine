@@ -1,7 +1,10 @@
 #include <iostream>
-#include "Source/Engine/Classes/Core/GameEngine.hpp"
-#include <crtdbg.h>
-#include "Utilities/FuncLib/GlobalMacros.hpp"
+#include <windows.h>
+
+#include "Classes/Core/GameEngine.hpp"
+#include "Utilities/TracingUtility.hpp"
+
+// #include "Utilities/FuncLib/GlobalMacros.hpp"
 
 using namespace std;
 int main()
@@ -19,10 +22,9 @@ int main()
     auto& game_engine = GameEngine::Instance();
 
 	game_engine.Construct();
-
-	int a = 0;
+	//
 	game_engine.EventBegin();
-
+	//
 	game_engine.Tick();
 
     return 0;

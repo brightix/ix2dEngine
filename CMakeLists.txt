@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 23)
 # 定义一个可控开关变量，用于区分 Debug / Release
 option(DebugMode "Enable debug build" ON)
 
-
 # 工程源码
 file(GLOB_RECURSE ENGINE_SOURCES
         ${CMAKE_SOURCE_DIR}/Source/Engine/Private/*.cpp
@@ -17,20 +16,32 @@ add_executable(ix2d
         ${ENGINE_SOURCES}
         ${CMAKE_SOURCE_DIR}/main.cpp
 )
-
 set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
         RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}"
         RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}"
 )
+
+
+
+
+
 if(MSVC)
     # 通用 MSVC 编译选项
     target_compile_options(ix2d PRIVATE
             /utf-8
-            /permissive-
-            #$<$<CONFIG:Debug>:/Zi /Od /Zo /Zf /Oy- /fp:fast /GS- /MDd>
-            #$<$<CONFIG:Release>:/Oi /Ob2 /arch:AVX2 /Gy /DNDEBUG /Gw /MD>
+            /Od
+            /Zi
+            /RTC1
+            /GS-
+            /Oy-
     )
+#    target_compile_options(ix2d PRIVATE
+#            /utf-8
+#            /permissive-
+#            $<$<CONFIG:Debug>:/Zi /Od /Zo /Zf /Oy- /fp:fast /GS- /MDd>
+#            #$<$<CONFIG:Release>:/Oi /Ob2 /arch:AVX2 /Gy /DNDEBUG /Gw /MD>
+#    )
     # Debug 模式下启用内存泄漏检测
     if(DebugMode)
         #add_definitions(-D_CRTDBG_MAP_ALLOC)
@@ -68,6 +79,6 @@ target_link_libraries(ix2d PRIVATE
         winmm
 )
 
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+#message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 #message(STATUS "DebugMode: ${DebugMode}")
 #message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")

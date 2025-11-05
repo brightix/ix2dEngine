@@ -19,7 +19,7 @@ inline std::unordered_map<size_t,size_t> NameTable;
 inline std::unordered_map<size_t,GCPtr<Object>> allObject;
 
 template<typename T>
-class GCWeakPtr;
+class GCPtr;
 
 struct Name
 {

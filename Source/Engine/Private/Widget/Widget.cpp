@@ -4,6 +4,8 @@
 
 #include "Classes/Widget/Widget.hpp"
 
+#include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "Types/Enums/WidgetVisibility.hpp"
 
 Widget::Widget() : widget_visibility(WidgetVisibility::Visible), layer_id(0), dirty(true)
@@ -31,9 +33,30 @@ void Widget::NativeWidgetRender(FRect display_area)
     }
 }
 
-// GCWeakPtr<PanelSlot> Widget::AddChild(GCPtr<Widget> child);
+PanelSlot* Widget::AddChild(Widget* child)
+{
+    PanelSlot* slot = CreateSlot();
+    slot->widget = child;
+    child->outer = slot;
+    if (is_initialized && !child->is_initialized)
+    {
+        child->WidgetEventBegin();
+    }
+    else
+    {
+        child->ListenDispatcher(World(), "EventBegin", Event([child](TEventParams e) {
+            child->WidgetEventBegin();
+        }));
+    }
+    //加入新元素需要刷新
+    dirty = true;
+    ReceiveSlot(slot);
+    return slot;
+}
 
-WidgetVisibility Widget::GetVisibility()
+// GCPtr<PanelSlot> Widget::AddChild(GCPtr<Widget> child);
+
+WidgetVisibility Widget::GetVisibility() const
 {
     return widget_visibility;
 }

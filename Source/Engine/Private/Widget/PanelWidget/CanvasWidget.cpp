@@ -9,34 +9,21 @@ CanvasWidget::CanvasWidget()
 	CNAME;
 }
 
-GCWeakPtr<PanelSlot> CanvasWidget::AddChild(GCPtr<Widget> child)
+PanelSlot * CanvasWidget::CreateSlot()
 {
-    //Widget::AddChild(child);
-
-    auto slot = NewObject(new CanvasSlot());
-	slot->widget = child;
-    child.SetOuter(slot.Get());
-    if (is_initialized && !child->is_initialized)
-    {
-        child->WidgetEventBegin();
-    }
-    else
-    {
-        World()->BindEventToDispatcher(this, "EventBegin", Event([child](TEventParams e) {
-            child->WidgetEventBegin();
-        }));
-    }
-
-    slots.emplace_back(slot);
-    //加入新元素需要刷新
-    dirty = true;
-    return slot;
+    return NewObject(new CanvasSlot,this);
 }
+
+void CanvasWidget::ReceiveSlot(PanelSlot* slot)
+{
+    slots.emplace_back(slot);
+}
+
 
 void CanvasWidget::flush()
 {
     Widget::flush();
-    for (auto& slot : slots)
+    for (const auto& slot : slots)
     {
         if (slot->widget->dirty)
         {
@@ -54,9 +41,9 @@ void CanvasWidget::flush()
 }
 
 
-std::vector<GCWeakPtr<PanelSlot>> CanvasWidget::GetSlot()
+std::vector<GCPtr<PanelSlot>> CanvasWidget::GetSlot()
 {
-    std::vector<GCWeakPtr<PanelSlot>> s(slots.size());
+    std::vector<GCPtr<PanelSlot>> s(slots.size());
     for (auto& slot : slots)
     {
         s.emplace_back(slot);

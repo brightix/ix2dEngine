@@ -9,16 +9,16 @@ protected:
 public:
     PanelWidget(){}
 
-    virtual std::vector<GCWeakPtr<PanelSlot>> GetSlot()
+    virtual std::vector<GCPtr<PanelSlot>> GetSlot()
     {
-        std::vector<GCWeakPtr<PanelSlot>> ret(slots.size());
+        std::vector<GCPtr<PanelSlot>> ret(slots.size());
         for (auto& it : slots)
         {
             ret.emplace_back(it);
         }
         return ret;
     }
-    std::vector<GCWeakPtr<PanelSlot>> GetChildren() override;
+    std::vector<GCPtr<PanelSlot>> GetChildren() override;
     WidgetType GetWidgetType() override;
 };
 

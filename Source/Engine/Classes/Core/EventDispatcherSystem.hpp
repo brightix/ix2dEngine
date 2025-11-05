@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include "Utilities/Event.hpp"
-#include "Utilities/GCWeakPtr.hpp"
+#include "Utilities/GCPtr.hpp"
 
 
 class Object;
@@ -10,7 +10,7 @@ using EventMethod = std::function<void(std::optional<EventParams>)>;
 class EventDispatcherSystem
 {
 	//分发器-> 事件对象-> 事件
-	std::unordered_map<std::string,std::unordered_map<GCWeakPtr<Object>,std::vector<Event>>> bound_dispatcher;
+	std::unordered_map<std::string,std::unordered_map<GCPtr<Object>,std::vector<Event>>> bound_dispatcher;
 
 //	std::unordered_map<> ;
 public:

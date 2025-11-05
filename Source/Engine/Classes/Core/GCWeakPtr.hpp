@@ -1,7 +1,7 @@
 #pragma once
 
 template<typename T>
-struct GCWeakPtr
+struct GCPtr
 {
     T* ptr;
     GCObject gc_ptr;

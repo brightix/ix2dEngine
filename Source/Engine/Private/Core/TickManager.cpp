@@ -6,6 +6,21 @@
 #include "Types/RenderData.hpp"
 #include "Utilities/TracingUtility.hpp"
 
+TickSubSystem::TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(buffer_cnt)
+{
+	CNAME;
+}
+
+void TickSubSystem::Construct()
+{
+	EngineSubSystem::Construct();
+
+	dispatcher_system.AddEventDispatcher("RenderClear");
+	dispatcher_system.AddEventDispatcher("RenderPresent");
+	dispatcher_system.AddEventDispatcher("RenderSceneDataReady");
+	dispatcher_system.AddEventDispatcher("RenderWidgetDataReady");
+}
+
 void TickSubSystem::Tick(double delta_time)
 {
 TStart;
@@ -87,7 +102,7 @@ TEndF("收集渲染数据");
 
 		//Widget
 		EventParams widget_data;
-		widget_data.Add<GCWeakPtr<GameWorld>>("widget_data", world);
+		widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
 		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
 		physics->DebugTree();
@@ -109,12 +124,6 @@ TEnd;
 
 void TickSubSystem::Init()
 {
-	CNAME;
-	dispatcher_system.AddEventDispatcher("RenderClear");
-	dispatcher_system.AddEventDispatcher("RenderPresent");
-	dispatcher_system.AddEventDispatcher("RenderSceneDataReady");
-	dispatcher_system.AddEventDispatcher("RenderWidgetDataReady");
-
 	texts.resize(4);
 	for (int i = 0; i < 4; i++)
 	{

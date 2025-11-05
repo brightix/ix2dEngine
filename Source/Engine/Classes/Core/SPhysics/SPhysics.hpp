@@ -2,7 +2,7 @@
 #include <unordered_set>
 
 #include "SPhysicsUtilityBase.hpp"
-#include "Utilities/GCWeakPtr.hpp"
+#include "Utilities/GCPtr.hpp"
 #include "Utilities/QuadTree.hpp"
 
 

@@ -4,8 +4,7 @@
 #include <SDL3/SDL_render.h>
 #include <memory>
 #include "Transform.hpp"
-
-class SceneComponent;
+#include "Classes/Component/SenceComponent/SceneComponent.hpp"
 
 struct RenderData
 {

@@ -15,7 +15,6 @@ SPhysics::SPhysics()
 
 SPhysics::~SPhysics()
 {
-	BREAK;
 }
 
 void SPhysics::Register(SPhysicsBaseUtility* unit)

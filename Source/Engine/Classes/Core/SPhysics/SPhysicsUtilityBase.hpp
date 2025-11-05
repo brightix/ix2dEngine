@@ -1,14 +1,12 @@
 #pragma once
-#include <string>
-
 #include "Classes/Object.hpp"
 #include "Types/FRect.hpp"
 #include "Types/Rotation.hpp"
 #include "Types/Transform.hpp"
 #include "Types/Vec.hpp"
 
-class SPhysicsBaseUtility;
 class SceneComponent;
+class SPhysicsBaseUtility;
 
 enum class PhysicsType
 {
@@ -20,7 +18,7 @@ enum class PhysicsType
 struct PhysicsState
 {
 	//用于表示物理包属于谁
-	GCWeakPtr<SPhysicsBaseUtility> physics_object;
+	GCPtr<SPhysicsBaseUtility> physics_object;
 
 	Vec2<float> position;
 
@@ -80,7 +78,7 @@ public:
 
     virtual void Init();
     // void SetIsSimulatedPhysics(bool value);
-	void SetOwner(SceneComponent* new_owner);
+	void SetPhysicsBodyOwner(SceneComponent* new_owner);
 	void SetSubscribeCollision(bool is_subscribe);
 //同步
 	void SynchronizationTransform();

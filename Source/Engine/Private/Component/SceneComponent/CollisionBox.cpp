@@ -20,7 +20,7 @@ void CollisionBox::Construct()
 
 	//物理组件
 	physics_body = NewObject(new SPhysicsBaseUtility());
-	physics_body->SetOwner(this);
+	physics_body->SetPhysicsBodyOwner(this);
 	dispatcher_system.AddEventDispatcher("OnEffectTransform");
 
 	physics_body->SetPhysicsCallback([this]() {

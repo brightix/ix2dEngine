@@ -6,6 +6,7 @@
 #include "Public/TestFpsWidget.hpp"
 #include "Classes/Widget/PanelWidget/CanvasWidget.hpp"
 #include "Enum/ActorEnum.hpp"
+#include "Public/TestGround.hpp"
 #include "public/TestPawn.hpp"
 
 GameWorld::GameWorld() : is_simulation(false), is_server(false)
@@ -31,27 +32,22 @@ void GameWorld::ConstructWorld()
 {
 	is_server = true;
 
-	world_subsystem = NewObject<SubSystemManager>(new SubSystemManager);
+	world_subsystem = NewObject<SubSystemManager>(this);
 	//窗口
 	//viewport_sub = world_subsystem->CreateSubSystem<ViewportSubSystem>("ViewportSubSystem");
 	//tick管理器
-	tick_SubSystem = world_subsystem->CreateSubSystem<TickSubSystem>("TickSubSystem");
+	tick_SubSystem = world_subsystem->CreateSubsystem<TickSubSystem>();
 	tick_SubSystem->SetBufferType(1);
 	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");//可以加在该子系统的构造函数内
-
-	//world_subsystem->ForAllSubSystemInit();
-
-
-
-	dispatcher_system.AddEventDispatcher("EventBegin");
 }
 
 void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
 
+	dispatcher_system.AddEventDispatcher("EventBegin");
 	viewport = CreateWidget(new CanvasWidget, this);
-	viewport->ConstructEvent();
+	//viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
 
 	game_mode = SpawnActor<GameModeBase>(new GameModeBase());
@@ -66,14 +62,14 @@ void GameWorld::StartSimulation()
 	// });
 
 
-
+	auto config = Engine().GetEngineAttribution();
 
 	//测试地面
-	auto ground = SpawnActor(new TestPawn(Transform({0,800})));
-	auto g_s = ground->GetSceneComponent("default_texture").Cast<StaticTexture>();
-	g_s->SetNewTexture(Create_OutLineTexture_S({1000,1000}));
-	g_s->SetName("Ground");
-	g_s->SetPhysicsType(PhysicsType::Static);
+	const auto ground = SpawnActor<TestGround>(Transform(Vec2<float>(-100, config.ScreenSize.y - 100)));
+	const auto roof= SpawnActor<TestGround>(Transform(Vec2<float>(-100, -900)));
+	const auto left_wall= SpawnActor<TestGround>(Transform(Vec2<float>(-900, -100)));
+	const auto right_wall= SpawnActor<TestGround>(Transform(Vec2<float>(config.ScreenSize.x - 100, -100)));
+
 
 	auto size = GameEngine::Instance().GetEngineAttribution().ScreenSize;
 	FRect bound(0,0,size.x,size.y);
@@ -90,7 +86,7 @@ void GameWorld::StartSimulation()
 	dispatcher_system.CallDispatcher("EventBegin");
 
 //在真正Begin后才建议设置对象属性
-	ground->SetMobility(ActorMobility::Static);
+	//ground->SetMobility(ActorMobility::Static);
 }
 
 std::vector<GCPtr<Controller>> GameWorld::GetControllers()
@@ -98,7 +94,7 @@ std::vector<GCPtr<Controller>> GameWorld::GetControllers()
 	return controllers;
 }
 
-GCWeakPtr<Controller> GameWorld::GetController(int id) const
+GCPtr<Controller> GameWorld::GetController(int id) const
 {
 	if (id >= 0 && id < controllers.size())
 	{
@@ -112,9 +108,9 @@ std::vector<GCPtr<Actor>> *GameWorld::GetActors()
 	return &actors;
 }
 
-std::vector<GCWeakPtr<Widget>> GameWorld::GetWidgets()
+std::vector<GCPtr<Widget>> GameWorld::GetWidgets()
 {
-	std::vector<GCWeakPtr<Widget>> v;
+	std::vector<GCPtr<Widget>> v;
 	for (auto& item : widgets)
 	{
 		v.emplace_back(item);
@@ -138,7 +134,7 @@ GCPtr<Controller> GameWorld::AddController(Controller *controller)
 	return {};
 }
 
-void GameWorld::AddToWorld(GCPtr<Actor> actor)
+void GameWorld::AddToWorld(Actor* actor)
 {
 	actors.emplace_back(actor);
 }
@@ -155,14 +151,11 @@ void GameWorld::Tick(double delta_time)
 	tick_SubSystem->Tick(delta_time);
 }
 
-void GameWorld::WorldDestroy()
+void GameWorld::WorldDestroy() const
 {
 	for (const auto subsystem = world_subsystem->GetAllSubSystem(); auto& it : subsystem)
 	{
-		if (const auto ret = it.Peek())
-		{
-			ret->DeInit();
-		}
+		it->DeInit();
 	}
 }
 
@@ -176,7 +169,7 @@ bool GameWorld::IsClient() const
 	return !is_server;
 }
 
-GCWeakPtr<PanelSlot> GameWorld::AddToViewport(GCPtr<Widget> w) const
+PanelSlot* GameWorld::AddToViewport(Widget* w) const
 {
 	return viewport->AddChild(w);
 }

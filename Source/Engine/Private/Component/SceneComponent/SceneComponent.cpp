@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL_render.h>
 
+#include "Classes/Actor.hpp"
 #include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Types/RenderData.hpp"
@@ -27,6 +28,26 @@ void SceneComponent::NativeSceneComponentEventBegin()
 	}
 }
 
+void SceneComponent::SetOwnerActor(Actor *actor)
+{
+#if DEBUG
+	if (!actor)
+	{
+		Log(name + "被空Actor拥有");
+	}
+	if (!owner && actor)
+	{
+		Log(name + "已经重新被" + actor->name + "拥有");
+	}
+
+#endif
+	owner = actor;
+	for (const auto& component : mounted_components | std::views::values)
+	{
+		component->SetOwnerActor(actor);
+	}
+}
+
 void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
 {
 	visibility = new_visibility;
@@ -43,6 +64,27 @@ ComponentVisibility SceneComponent::GetVisibility()
 bool SceneComponent::IsVisible() const
 {
 	return visibility == ComponentVisibility::Visible || visibility == ComponentVisibility::OnlyDraw;
+}
+
+void SceneComponent::Clear()
+{
+
+
+}
+
+void SceneComponent::NativeClear()
+{
+	Clear();
+	for (auto& component : mounted_components | std::views::values)
+	{
+		component->NativeClear();
+	}
+}
+
+//TODO 可能没什么用
+void SceneComponent::Destroy()
+{
+	is_pending_kill = true;
 }
 
 void SceneComponent::ComponentRender() {}
@@ -67,7 +109,7 @@ void SceneComponent::RemoveSceneComponent(const std::string& component_name)
 	mounted_components.erase(component_name);
 }
 
-GCWeakPtr<SceneComponent> SceneComponent::GetSceneComponentByName(const std::string& searched_component_name)
+GCPtr<SceneComponent> SceneComponent::GetSceneComponentByName(const std::string& searched_component_name)
 {
 	for (const auto& component : mounted_components | std::views::values)
 	{
@@ -137,7 +179,7 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 }
 
 
-bool SceneComponent::SetName(const std::string& new_name)
+bool SceneComponent::SetComponentName(const std::string& new_name)
 {
 	if (!parent_component || !parent_component->OnMountedComponentNameChanged(name,new_name))
 	{
@@ -261,7 +303,7 @@ void SceneComponent::AddComponentWorldRotation(const Rotation& rotation)
 	SetComponentWorldRotation({Rotation::Normalize(rotation.Angle),rotation.Point});
 }
 
-Rotation SceneComponent::GetComponentWorldRotation()
+Rotation SceneComponent::GetComponentWorldRotation() const
 {
 	return world_transform.rotation;
 }
@@ -269,4 +311,40 @@ Rotation SceneComponent::GetComponentWorldRotation()
 Rotation SceneComponent::GetComponentRelativeRotation()
 {
 	return relative_rotation;
+}
+
+
+bool SceneComponent::Replace(SceneComponent *old_component, SceneComponent *new_component)
+{
+	// if (old_component->parent_component && !force)
+	// {
+	//
+	// 	Log("父组件不为 Root 并且行为是 非强制");
+	// 	return false;
+	// }
+	const auto parent_actor = old_component->GetOwner();
+	const auto parent_component = old_component->outer;
+	//old_component->Destroy();
+	//传递挂载组件
+	for (auto& component : old_component->mounted_components | std::views::values)
+	{
+		new_component->MountedComponent(component.Get());
+	}
+
+	if (!outer)
+	{
+		if (!parent_actor)
+		{
+			Log("组件既不属于Actor，也没有挂载在父组件上");
+			return false;
+		}
+		parent_actor->SetRoot(new_component);
+	}
+	else
+	{
+		GCUnLink(new_component->outer,new_component);
+		new_component->GCUnlink_self();
+		new_component->outer = outer;
+	}
+	return true;
 }

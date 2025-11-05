@@ -10,6 +10,7 @@
 #include "Utilities/FuncLib/GlobalMacros.hpp"
 #define Log(msg) LogToFile(msg, __FILE__, __LINE__, __func__)
 #define LogWithLevel(msg, level) LogToFile(msg, __FILE__, __LINE__, __func__, level)
+#define CAST(x) Cast(x,__func__)
 inline void LogToFile(const std::string& msg, const char* file_name = "", const int line = 0, const char* func_name = "", const LogLevel level = Tip)
 {
 	static std::ofstream file("Log.log", std::ios::app);

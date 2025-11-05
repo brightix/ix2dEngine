@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL_rect.h>
 #include <format>
+#include "Utilities/GCPtr.hpp"
 #include "Classes/Component/Component.hpp"
 #include "Classes/Core/SPhysics/MovableActorUtility.hpp"
 #include "Types/Transform.hpp"
@@ -41,35 +42,42 @@ public:
 
 	void NativeSceneComponentEventBegin();
 
-
+	void SetOwnerActor(Actor* actor);
 	//可视性
 	void SetVisibility(ComponentVisibility new_visibility);
 	ComponentVisibility GetVisibility();
 	bool IsVisible() const;
 
+
+	void Clear();
+	void NativeClear();
+	void Destroy();
 	//单线程用
     virtual void ComponentRender();
 	virtual void SceneComponentTick(double delta_time);
 	//挂载子场景组件
 	template<typename T>
-	GCWeakPtr<T> MountedComponent(T* obj)
+	T* MountedComponent(T* obj)
 	{
-		SceneComponent* component = Cast<SceneComponent>(obj,__func__);
+		//SceneComponent* component = Cast<SceneComponent>(obj,__func__);
+		auto component = IsDerived<SceneComponent>(obj);
+		if (!component)
+		{
+			return nullptr;
+		}
 #if DEBUG == 1
 		if (!owner)
 		{
-			std::cout << "有野组件" << std::endl;
+			Log("构造了野组件，可能是批量构造的子组件树，需要重绑定");
 		}
 #endif
+		component->SetOwnerActor(owner);
 		component->parent_component = this;
-		component->SetOwner(owner);
-		GCPtr<T> gc_component = NewObject(obj);
-
 		//这里的命名是初始类名+id
-		mounted_components.emplace(gc_component->GetComponentName(),gc_component);
+		mounted_components.emplace(component->GetComponentName(),component);
 		//挂载组件需要已到父组件变换下
 		component->SetComponentWorldLocation(world_transform.location);
-		return gc_component;
+		return obj;
 	}
 
 	void RemoveSceneComponentFromParent() const;
@@ -77,7 +85,7 @@ public:
 
 
 	//Danger performance 递归找节点
-	GCWeakPtr<SceneComponent> GetSceneComponentByName(const std::string& searched_component_name);
+	GCPtr<SceneComponent> GetSceneComponentByName(const std::string& searched_component_name);
 
 
     void ForRender();
@@ -101,7 +109,7 @@ public:
 	 * @param new_name
 	 * @return new_name 未使用则改名成功，否则不做任何操作
 	 */
-	bool SetName(const std::string& new_name) override;
+	bool SetComponentName(const std::string& new_name) override;
 	void SetRenderLayer(LayerHierarchy layer_id);
 	/**
 	 * 在子组件触发改名时调用父组件修改挂载表的关系
@@ -127,13 +135,15 @@ public:
 //Rotation
 	void SetComponentWorldRotation(const Rotation& rotation);
 	void AddComponentWorldRotation(const Rotation& rotation);
-	Rotation GetComponentWorldRotation();
+	Rotation GetComponentWorldRotation() const;
 	Rotation GetComponentRelativeRotation();
+
+	static bool Replace(SceneComponent *old_component, SceneComponent *new_component);
 };
 
 //单层找节点
 // template<typename T>
-// GCWeakPtr<T> GetSceneComponentByName_SingleLayer(const std::string& searched_component_name)
+// GCPtr<T> GetSceneComponentByName_SingleLayer(const std::string& searched_component_name)
 // {
 // 	auto it = mounted_components_by_type.find(std::type_index(typeid(T)));
 // 	if (it == mounted_components_by_type.end())
@@ -153,7 +163,7 @@ public:
 
 //单层
 // template<typename T>
-// GCWeakPtr<T> GetSceneComponent(const std::string& component_name = std::string())
+// GCPtr<T> GetSceneComponent(const std::string& component_name = std::string())
 // {
 // 	auto it = mounted_components_by_type.find(std::type_index(typeid(T)));
 // 	if (it == mounted_components_by_type.end())
@@ -179,7 +189,7 @@ public:
 
 //typeid 添加子组件
 // template<typename T>
-// GCWeakPtr<T> MountedSceneComponent(std::string component_name = std::string())
+// GCPtr<T> MountedSceneComponent(std::string component_name = std::string())
 // {
 // 	ix::IsChild<SceneComponent,T>();
 //

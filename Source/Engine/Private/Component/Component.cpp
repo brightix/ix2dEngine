@@ -5,10 +5,7 @@
 Component::Component() : Component(nullptr){ }
 Component::Component(Actor* owner) : owner(owner) { }
 
-void Component::SetOwner(Actor* actor)
-{
-	owner = actor;
-}
+
 
 Actor* Component::GetOwner() const
 {
@@ -20,7 +17,7 @@ std::string Component::GetComponentName()
 	return name;
 }
 
-bool Component::SetName(const std::string& new_name)
+bool Component::SetComponentName(const std::string& new_name)
 {
 	component_name = new_name;
 	return true;

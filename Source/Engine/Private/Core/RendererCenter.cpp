@@ -28,9 +28,9 @@ void RendererCenter::Init()
 		RenderScene(clips);
 	}));
 	event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
-		//std::vector<GCWeakPtr<Widget>> clips = std::move(*e->Get<std::vector<GCWeakPtr<Widget>>>("widget_data"));
+		//std::vector<GCPtr<Widget>> clips = std::move(*e->Get<std::vector<GCPtr<Widget>>>("widget_data"));
 		TStartF("UI渲染");
-		auto viewport = (*e->Get<GCWeakPtr<GameWorld>>("widget_data"))->viewport;
+		auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
 		RenderWidget(viewport);
 		TEndF("UI渲染");
 	}));
@@ -99,7 +99,7 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 	TEnd;
 }
 
-void RendererCenter::RenderWidget(GCWeakPtr<PanelWidget> viewport)
+void RendererCenter::RenderWidget(GCPtr<PanelWidget> viewport)
 {
 	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
 	auto size = std::move(GameEngine::Instance().GetEngineAttribution().ScreenSize);

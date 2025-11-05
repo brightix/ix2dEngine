@@ -13,7 +13,7 @@ WidgetType UserWidget::GetWidgetType()
     return WidgetType::UserWidget;
 }
 
-void UserWidget::AddChild(const std::string& widget_name, GCPtr<Widget> child)
+void UserWidget::AddChild(const std::string& widget_name, Widget* child)
 {
     auto it = child_widget.find(widget_name);
     if (it != child_widget.end())
@@ -22,11 +22,11 @@ void UserWidget::AddChild(const std::string& widget_name, GCPtr<Widget> child)
         return ;
     }
     //添加一个自己的gc关系
-    child.SetOuter(this);
+    child->outer = this;
     child_widget[widget_name] = child;
 }
 
-GCWeakPtr<Widget> UserWidget::GetChild(const std::string &widget_name)
+GCPtr<Widget> UserWidget::GetChild(const std::string &widget_name)
 {
     auto it = child_widget.find(widget_name);
     if (it == child_widget.end())
@@ -36,7 +36,7 @@ GCWeakPtr<Widget> UserWidget::GetChild(const std::string &widget_name)
     return it->second;
 }
 
-std::vector<GCWeakPtr<PanelSlot>> UserWidget::GetChildren()
+std::vector<GCPtr<PanelSlot>> UserWidget::GetChildren()
 {
     return Root->widget->GetChildren();
 }

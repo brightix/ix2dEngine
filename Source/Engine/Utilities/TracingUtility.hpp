@@ -116,7 +116,7 @@ public:
 
         nlohmann::json tracing = end;
         tracing["name"] = tracing_name;
-        tracing["ts"] = timestamp;\
+        tracing["ts"] = timestamp;
     	to_write.append(tracing.dump()+",");
         //file << tracing.dump(4) << "," << std::endl;
     }

@@ -34,24 +34,25 @@ namespace ix
 		return std::format("{:.{}f}", val, reserve_p);
 	}
 
-	/**
-	 *
-	 * @tparam T Base
-	 * @tparam U Derived
-	 * @param other 动态检测对象
-	 * @param func_name
-	 * @return 返回是否继承
-	 */
-	template<typename T, typename U>
-	bool IsChild(U* other = nullptr, const char* func_name = "")
-	{
-		static_assert(std::is_base_of_v<T, U>,"IsChild 检测出 类不继承");
-		if (!std::is_base_of_v<T, U>)
-		{
-			std::cerr << func_name << typeid(U).name() << " 不继承自 " << typeid(T).name() << "\n";
-			return false;
-		}
-		return dynamic_cast<T*>(other) != nullptr;
-	}
-}
 
+
+}
+/**
+ *
+ * @tparam T Base
+ * @tparam U Derived
+ * @param other 动态检测对象
+ * @param func_name
+ * @return 返回是否继承
+ */
+template<typename T, typename U>
+T* IsDerived(U* other = nullptr, const char* func_name = "")
+{
+	static_assert(std::is_base_of_v<T, U>,"IsChild 检测出 类不继承");
+	if (!std::is_base_of_v<T, U>)
+	{
+		std::cerr << func_name << typeid(U).name() << " 不继承自 " << typeid(T).name() << "\n";
+		return nullptr;
+	}
+	return dynamic_cast<T*>(other);
+}

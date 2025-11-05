@@ -33,7 +33,7 @@ void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_
     	{
 			event.event_name = "nameless_" + bounded_name;
     	}
-        bound_dispatcher[bounded_name][GCWeakPtr(obj)].emplace_back(event);
+        bound_dispatcher[bounded_name][obj].emplace_back(event);
     }
     else
     {
@@ -43,7 +43,7 @@ void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_
 
 std::optional<Event> EventDispatcherSystem::GetEvent(Object* obj, const std::string& event_name)
 {
-	// auto it_by_obj = GCWeakPtr(obj);
+	// auto it_by_obj = GCPtr(obj);
 	//
 	// if (bound_dispatcher.contains(event_name) && bound_dispatcher[event_name].contains(it_by_obj))
 	// {

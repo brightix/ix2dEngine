@@ -24,14 +24,19 @@ void Actor::Construct()
 	//event_system.AddEvent("");
 	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
 	//场景默认根组件
-	Root = NewObject<SceneComponent>(new RootComponent(Transform{{0,0}}));
-	Root->SetOwner(this);
+	Root = NewObject<RootComponent>(this);
+	Root->SetOwnerActor(this);
 	// TODO处理事件回调时机，先绑定事件还是先设置位置
 
-	auto tex = Root->MountedComponent(new StaticTexture());
-	tex->SetName("default_texture");
+
+	auto tex = Root->MountedComponent(NewObject<StaticTexture>());
+	tex->SetComponentName("default_texture");
 	tex->SetNewTexture(Create_FilledTexture_S({100,100}));
-	Root->MountedComponent(new SceneTextBlock)->SetText(name);
+
+
+	auto NameBlock = NewObject<SceneTextBlock>();
+	NameBlock->SetText(name);
+	Root->MountedComponent(NameBlock);
 	SetActorTransform(transform);
 }
 
@@ -76,7 +81,7 @@ void Actor::DestroyActor()
 	//三缓冲
 	is_pre_kill = true;
 	is_active = false;
-	GCUnlink();
+	GCUnlink_self();
 }
 
 void Actor::SetHiddenInGame(bool new_hidden_in_game)
@@ -95,10 +100,21 @@ ActorMobility Actor::GetMobility() const
 	return mobility;
 }
 
+void Actor::SetActorName(const std::string &new_name)
+{
+	name = new_name;
+}
 
-GCWeakPtr<SceneComponent> Actor::GetSceneComponent(const std::string& component_name) const
+
+GCPtr<SceneComponent> Actor::GetSceneComponent(const std::string& component_name) const
 {
 	return Root->GetSceneComponentByName(component_name);
+}
+
+void Actor::SetRoot(SceneComponent *new_root)
+{
+
+	Root = new_root;
 }
 
 void Actor::RenderOnScreen()

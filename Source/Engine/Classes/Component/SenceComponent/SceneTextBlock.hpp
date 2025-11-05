@@ -6,7 +6,7 @@
 class SceneTextBlock : public SceneComponent
 {
 	std::string text;
-	GCWeakPtr<StaticTexture> text_tex;
+	GCPtr<StaticTexture> text_tex;
 
 public:
     SceneTextBlock();

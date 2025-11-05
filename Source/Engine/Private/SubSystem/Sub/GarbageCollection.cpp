@@ -1,10 +1,14 @@
 #include "Classes/SubSystem/GarbageCollection.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameInstance.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Core/GCObject.hpp"
 #include "Utilities/GCPtr.hpp"
+#include "Utilities/Ptr.hpp"
 #include "Utilities/TracingUtility.hpp"
+
+//inline Array<Ptr<Object>> GlobalPtr;
 
 GarbageCollection::GarbageCollection()
 {
@@ -17,16 +21,27 @@ void GarbageCollection::GCMark(GCObject *gc_object)
 	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
 	gc_object->bMarked = true;
 	auto& children = gc_object->referencing;
-	for (int i = 0; i<children.size(); i++)
+	for (auto & i : children)
 	{
 		//std::cout << children[i]->name << std::endl;
-		GCMark(children[i]);
+		GCMark(i);
 	}
 	// for (auto& child : children)
 	// {
 	// 	std::cout << child->name << std::endl;
 	// 	GCMark(child);
 	// }
+}
+
+void GarbageCollection::GCPtrMark()
+{
+	for (auto& ptr : GlobalPtr)
+	{
+		if (auto p = ptr->GetPtr())
+		{
+			p->bMarked = true;
+		}
+	}
 }
 
 int GarbageCollection::GCSweep()
@@ -41,6 +56,7 @@ int GarbageCollection::GCSweep()
 		}
 	}
 	GCMark(GetEngine()->GetGCRoot());
+	GCPtrMark();
 	int cnt = 0;
 
 	for (auto& obj : GCAllObjects)

@@ -1,8 +1,8 @@
 #pragma once
-#include "SubSystemBase.hpp"
+#include "SubsystemBase.hpp"
 
 
-class WorldSubSystem : public SubSystemBase
+class WorldSubSystem : public SubsystemBase
 {
 public:
     WorldSubSystem(){}

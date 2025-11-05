@@ -29,15 +29,15 @@ void Controller::Construct()
 
 	SetHiddenInGame(true);
 	input_map = NewObject<InputMap>(new InputMap());
-	auto st = 	Root->MountedComponent(new StaticTexture);
-	SetTextureFromSurface_S(st.Peek(),GetTextSurface("                    "));
+	auto st = 	Root->MountedComponent(NewObject<StaticTexture>());
+	SetTextureFromSurface_S(st,GetTextSurface("                    "));
 
-	pawn_info = CreateWidget(new TextBlockWidget,this);
-	auto p_slot = AddToViewport(pawn_info);
+	pawn_info = CreateWidget<TextBlockWidget>(this);
+	auto p_slot = AddToViewport(pawn_info.Get());
 	p_slot->display_area.x = 400.f;
 
-	pawn_physics_info = CreateWidget(new TextBlockWidget,this);
-	auto p_phys_slot = AddToViewport(pawn_info);
+	pawn_physics_info = CreateWidget<TextBlockWidget>(this);
+	auto p_phys_slot = AddToViewport(pawn_info.Get());
 	p_phys_slot->display_area.x = 400.f;
 	p_phys_slot->display_area.y = 24.f;
 }
@@ -134,12 +134,12 @@ Vec2<float> Controller::GetMousePos() const
 	return mouse_pos;
 }
 
-GCWeakPtr<Pawn> Controller::GetControlledPawn() const
+Pawn *Controller::GetControlledPawn() const
 {
-	return controlled_pawn;
+	return controlled_pawn.Get();
 }
 
-Vec2<float> GetMousePos(GCWeakPtr<Controller> controller)
+Vec2<float> GetMousePos(GCPtr<Controller> controller)
 {
 	return controller->GetMousePos();
 }

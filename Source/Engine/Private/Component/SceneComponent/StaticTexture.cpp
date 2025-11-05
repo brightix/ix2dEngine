@@ -25,8 +25,8 @@ void StaticTexture::Construct()
 {
 	Texture::Construct();
 //具有开关物理属性
-	physics_body = NewObject(new SPhysicsBaseUtility());
-	physics_body->SetOwner(this);
+	physics_body = NewObject<SPhysicsBaseUtility>();
+	physics_body->SetPhysicsBodyOwner(this);
 
 	in_texture = GameEngine::Instance().GetDefaultTexture();
 }
@@ -46,7 +46,7 @@ TextureType StaticTexture::GetTextureType()
 	return TextureType::StaticTexture;
 }
 
-GCWeakPtr<SPhysicsBaseUtility> StaticTexture::GetPhysicsBody()
+GCPtr<SPhysicsBaseUtility> StaticTexture::GetPhysicsBody()
 {
 	return physics_body;
 }

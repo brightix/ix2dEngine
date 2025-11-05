@@ -4,9 +4,9 @@
 #include "Utilities/FuncLib/StaticCast.hpp"
 
 
-std::vector<GCWeakPtr<PanelSlot>> PanelWidget::GetChildren()
+std::vector<GCPtr<PanelSlot>> PanelWidget::GetChildren()
 {
-    std::vector<GCWeakPtr<PanelSlot>> children_slot;
+    std::vector<GCPtr<PanelSlot>> children_slot;
     for (auto& slot : slots)
     {
         children_slot.emplace_back(slot);

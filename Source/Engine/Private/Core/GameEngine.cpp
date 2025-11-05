@@ -1,9 +1,11 @@
 #include "Classes/Core/GameEngine.hpp"
 
+#include "Classes/Controller.hpp"
 #include "System/Font.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
+#include "Public/TestPawn.hpp"
 #include "Types/RenderData.hpp"
 #include "Utilities/TracingUtility.hpp"
 
@@ -39,11 +41,8 @@ GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 
 void GameEngine::Construct()
 {
-	engine_subsystem = NewObject<SubSystemManager>(new SubSystemManager());
-	renderer_center = engine_subsystem->CreateSubSystem<RendererCenter>("RendererCenter");
-	//renderer_center->SetRendererAndWindow(renderer,window);
-
-	//renderer_center->StartRenderThread();
+	engine_subsystem = NewObject<SubSystemManager>(this);
+	renderer_center = engine_subsystem->CreateSubsystem<RendererCenter>();
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
@@ -55,19 +54,19 @@ void GameEngine::Construct()
 	SysConfig = {j["TargetFps"], {j["ScreenWidth"], j["ScreenHeight"]}};
 
 
-	tick_timer = NewObject(new NewTimer());
-	consume_timer = NewObject(new NewTimer());
-
+	tick_timer = NewObject(new NewTimer(),this);
+	consume_timer = NewObject(new NewTimer(),this);
 
 
 
 	//Engine子系统
-	GCSys = engine_subsystem->CreateSubSystem<GarbageCollection>("GarbageCollection");
-	physicsSys = engine_subsystem->CreateSubSystem<SPhysics>("SPhysics");
-	random_utility = engine_subsystem->CreateSubSystem<RandomUtility>("RandomUtility");
+	GCSys = engine_subsystem->CreateSubsystem<GarbageCollection>();
+	physicsSys = engine_subsystem->CreateSubsystem<SPhysics>();
+	random_utility = engine_subsystem->CreateSubsystem<RandomUtility>();
 	//random_utility->SetSeed(123456);
-	texture_store = engine_subsystem->CreateSubSystem<TextureStoreSubSystem>("TextureStoreSubSystem");
+	texture_store = engine_subsystem->CreateSubsystem<TextureStoreSubSystem>();
 
+	engine_subsystem->ForAllSubSystemInit();
 
 	//加载默认关卡
 	OnChangeWorld(new GameWorld());
@@ -76,30 +75,25 @@ void GameEngine::Construct()
 
 void GameEngine::EventBegin()
 {
-	engine_subsystem->ForAllSubSystemInit();
-
 	random_utility->RegisterRandom("SPhysicsBaseUtility_quality",{10,100});
-	GCWeakPtr<GarbageCollection> gc = engine_subsystem->GetSubSystem<GarbageCollection>("GarbageCollection");
-	timer_system.SetTimer(500,[gc]() {
+	timer_system.SetTimer(500,[gc = GCPtr(engine_subsystem->GetSubsystem<GarbageCollection>())]() {
 		int cnt{};
 		if (auto p = gc.Peek())
 		{
 			cnt = p->GCSweep();
 		}
 		std::cout << "{ " << cnt << " } objects Swept!" << std::endl;
-		return 2000;
+		return 5000;
 	});
 	//世界的事件开始
 
 	game_world->StartSimulation();
 
 	//最后绑定事件
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.ptr, "RenderSceneDataReady", *renderer_center->event_system.GetEventByName("OnRenderSceneDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.ptr, "RenderWidgetDataReady", *renderer_center->event_system.GetEventByName("OnRenderWidgetDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.ptr, "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.ptr, "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
-
-
+	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderSceneDataReady", *renderer_center->event_system.GetEventByName("OnRenderSceneDataReady"));
+	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderWidgetDataReady", *renderer_center->event_system.GetEventByName("OnRenderWidgetDataReady"));
+	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
+	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
 }
 
 
@@ -141,10 +135,11 @@ GameEngine::~GameEngine()
 		game_world->Unload();
 	}
 	GCSys->GCSweep();
-	if (engine_subsystem)
+	for (auto& p : GlobalPtr)
 	{
-		engine_subsystem->DeInitAllSubSystem();
+		p->Reset();
 	}
+	GCSys->GCSweep();
 
 	Quit();
 	SDL_GetError();
@@ -152,22 +147,22 @@ GameEngine::~GameEngine()
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 	timeEndPeriod(1);
-	std::cout << "程序退出" << std::endl;
+	std::cout << "程序安全退出" << std::endl;
 }
 
-GCWeakPtr<GameWorld> GameEngine::GetGameWorld()
+GameWorld *GameEngine::GetGameWorld() const
 {
-	return game_world;
+	return game_world.Get();
 }
 
-GCWeakPtr<PanelSlot> GameEngine::AddWidgetToViewport(GCPtr<Widget> widget) const
+PanelSlot* GameEngine::AddWidgetToViewport(Widget* widget) const
 {
 	//auto ret = NewObject(widget);
 	//widgets.emplace(ret);
 	return viewport->AddChild(widget);
 }
 
-EngineState GameEngine::GetEngineAttribution()
+EngineState GameEngine::GetEngineAttribution() const
 {
 	EngineState engine_state;
 	engine_state.DeltaTime = delta_time;
@@ -175,7 +170,7 @@ EngineState GameEngine::GetEngineAttribution()
 	return engine_state;
 }
 
-GCWeakPtr<SubSystemManager> GameEngine::GetEngineSubSystemManager()
+GCPtr<SubSystemManager> GameEngine::GetEngineSubSystemManager() const
 {
 	return engine_subsystem;
 }
@@ -192,12 +187,11 @@ void GameEngine::Stop()
 
 void GameEngine::OnChangeWorld(GameWorld* new_world)
 {
-	game_world = NewObject<GameWorld>(new_world);
+	game_world = NewObject(new_world,this);
 	game_world->ConstructWorld();
 	//tick管理器 绑定到 渲染线程
-
 }
-std::shared_ptr<SDL_Texture> GameEngine::GetDefaultTexture()
+std::shared_ptr<SDL_Texture> GameEngine::GetDefaultTexture() const
 {
 	return renderer_center->DefaultTexture;
 }
@@ -222,17 +216,13 @@ void GameEngine::Quit() const
 
 
 //传给世界来做
-GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> new_widget)
+PanelSlot* AddToViewport(Widget* new_widget)
 {
 	return World()->AddToViewport(new_widget);
 }
-//
-// GCWeakPtr<PanelSlot> AddToViewportSlot(Widget* new_widget)
-// {
-// 	return GameEngine::Instance().AddWidgetToViewport(new_widget);
-// }
 
-GCWeakPtr<GameWorld> World()
+
+GameWorld *World()
 {
 	return GameEngine::Instance().GetGameWorld();
 }

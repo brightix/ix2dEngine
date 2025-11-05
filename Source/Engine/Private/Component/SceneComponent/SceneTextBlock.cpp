@@ -12,7 +12,7 @@ SceneTextBlock::SceneTextBlock()
 void SceneTextBlock::Construct()
 {
 	SceneComponent::Construct();
-	text_tex = MountedComponent(new StaticTexture);
+	text_tex = MountedComponent(NewObject<StaticTexture>(this));
 	text_tex->SetRenderLayer(Foreground);
 }
 

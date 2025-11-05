@@ -10,7 +10,7 @@
 #include "Utilities/Timer.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
-
+#include "Utilities/FuncLib/SystemLib.hpp"
 class ViewportSubSystem;
 class Controller;
 class GameModeBase;
@@ -38,15 +38,15 @@ class GameWorld : public Object
 
 	//子系统
 	TimerSystem timer_system;
-	GCPtr<SubSystemManager> world_subsystem;
-	GCWeakPtr<ViewportSubSystem> viewport_sub;
+	SubSystemManager* world_subsystem;
+	GCPtr<ViewportSubSystem> viewport_sub;
 
 
 
 	std::set<GCPtr<Widget>,GCPtrLess> widgets;
 
 public:
-	GCWeakPtr<TickSubSystem> tick_SubSystem;
+	GCPtr<TickSubSystem> tick_SubSystem;
 
 	bool is_simulation;
 
@@ -67,11 +67,11 @@ public:
 //Get
 	std::vector<GCPtr<Controller>> GetControllers();
 
-	GCWeakPtr<Controller> GetController(int id = 0) const;
+	GCPtr<Controller> GetController(int id = 0) const;
 
 	std::vector<GCPtr<Actor>> *GetActors();
 
-	std::vector<GCWeakPtr<Widget>> GetWidgets();
+	std::vector<GCPtr<Widget>> GetWidgets();
 	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
 
 	//Set
@@ -83,45 +83,61 @@ public:
 	GCPtr<Controller> AddController(Controller *controller);
 
 //Sys
-	void AddToWorld(GCPtr<Actor> actor);
+	void AddToWorld(Actor *actor);
 	//Debug限定
-	void PrintString(std::string, int exist_time, SDL_Color color = {0, 185, 247,255});
 
 	void Tick(double delta_time);
 	//作用在切换关卡
-	void WorldDestroy();
+	void WorldDestroy() const;
 	bool IsServer() const;
 	bool IsClient() const;
 
 
 	//Widget
-	GCWeakPtr<PanelSlot> AddToViewport(GCPtr<Widget> w) const;
+	PanelSlot *AddToViewport(Widget *w) const;
 };
 
-inline GameWorld* GetWorld()
-{
-	return GameEngine::Instance().GetGameWorld().Peek();
-}
-
 template<typename T>
-GCPtr<T> SpawnActor(T* actor)
+T* SpawnActor(T* actor)
 {
 	static_assert(std::is_base_of_v<Actor,T>, "SpawnActor的返回值必须继承自Actor");
-	GCPtr<T> a = GCPtr<T>(actor,GetWorld());
 	actor->Construct();
-	GameWorld* world = GetWorld();
+	GameWorld* world = World();
+	actor->outer = world;
 	if (world->is_simulation)
 	{
-		a->EventBegin();
+		actor->EventBegin();
 	}
 	else
 	{
-		world->dispatcher_system.BindEventTo(a.Get(), "EventBegin",Event("EventBegin",[a](TEventParams) {
-			a->EventBegin();
+		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
+			actor->EventBegin();
 		}));
 	}
-	GetWorld()->AddToWorld(a);
-	return a;
+	World()->AddToWorld(actor);
+	return actor;
+}
+
+template<typename T,typename...Args>
+T* SpawnActor(Args...args)
+{
+	static_assert(std::is_base_of_v<Actor,T>, "SpawnActor的返回值必须继承自Actor");
+	T* actor = new T(std::forward<Args>(args)...);
+	actor->Construct();
+	GameWorld* world = World();
+	actor->outer = world;
+	if (world->is_simulation)
+	{
+		actor->EventBegin();
+	}
+	else
+	{
+		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
+			actor->EventBegin();
+		}));
+	}
+	World()->AddToWorld(actor);
+	return actor;
 }
 
 template<typename T>
