@@ -28,7 +28,7 @@ public:
 	//收到新数据我就渲染上一帧
 	void RenderScene(std::vector<RenderData>& clips);
 
-	void RenderWidget(GCPtr<PanelWidget> viewport);
+	void RenderWidget(std::vector<RenderData> &clips);
 
 	std::shared_ptr<SDL_Texture> CreateOutLineTexture(const Vec2<float>& size, SDL_Color color = RED);
 

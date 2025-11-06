@@ -15,7 +15,6 @@ class Actor : public Object
 {
     //Attribution
 	//GCPtr<StaticTexture> collision_box;
-	Transform transform;
 //质心就是旋转中心
 
 	//Component
@@ -29,6 +28,7 @@ class Actor : public Object
 
 protected:
 
+	Transform transform;
 	//关卡 负责管理生命周期
 	SDL_Window* window;
 	GCPtr<GameWorld> game_world;
@@ -40,8 +40,7 @@ public:
 	bool is_pre_kill = false; // for render thread 防止悬空指正延迟删除
 	bool open_physics;
 public:
-
-    Actor();
+    //Actor();
 	explicit Actor(const Transform &tf);
 
 	void Construct() override;
@@ -58,8 +57,8 @@ public:
 	void DestroyActor();
     //attribution
 	void SetHiddenInGame(bool new_hidden_in_game);
-	void SetMobility(ActorMobility target_mobility);
-	ActorMobility GetMobility() const;
+	// void SetMobility(ActorMobility target_mobility);
+	// ActorMobility GetMobility() const;
 
 	void SetActorName(const std::string& new_name);
 
@@ -97,7 +96,8 @@ public:
 	{
 		return Cast<T>(actor_components[component_name].Get());
 	}
-	GCPtr<SceneComponent> GetSceneComponent(const std::string& component_name) const;
+
+    SceneComponent *GetSceneComponent(const std::string &component_name) const;
 	void SetRoot(SceneComponent* new_root);
 
 //Sys

@@ -5,17 +5,11 @@
 #include "Classes/Pawn.hpp"
 #include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
 #include "../Utilities/ThirdParty/json.hpp"
-#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "../Classes/Core/GameEngine.hpp"
-#include "System/Font.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 
 using namespace std;
 using json = nlohmann::json;
-Controller::Controller() : show_mouse_cursor(false)
-{
-	CNAME;
-}
 
 void Controller::Control(GCPtr<Pawn> pawn)
 {
@@ -25,12 +19,10 @@ void Controller::Control(GCPtr<Pawn> pawn)
 void Controller::Construct()
 {
 	Actor::Construct();
-
+	CNAME;
 	SetHiddenInGame(true);
-	input_map = NewObject<InputMap>();
-
-	auto st = Root->MountedComponent(NewObject<StaticTexture>());
-	SetTextureFromSurface_S(st,GetTextSurface("                    "));
+	input_map = NewObject<InputMap>(this);
+	ReadInputMap(input_map.Get());
 
 	pawn_info = CreateWidget<TextBlockWidget>(this);
 	auto p_slot = AddToViewport(pawn_info.Get());
@@ -40,6 +32,11 @@ void Controller::Construct()
 	auto p_phys_slot = AddToViewport(pawn_physics_info.Get());
 	p_phys_slot->display_area.x = 400.f;
 	p_phys_slot->display_area.y = 24.f;
+}
+
+void Controller::EventBegin()
+{
+	Actor::EventBegin();
 }
 
 void Controller::Tick(double delta)
@@ -135,13 +132,22 @@ void Controller::Tick(double delta)
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
-	pawn_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetComponentWorldLocation().str());
-	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity.str());
+	pawn_info->SetText(controlled_pawn->GetWorldTransform().location.str());
+	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("capsule")->GetPhysicsBody()->velocity.str());
 }
 
 Vec2<float> Controller::GetMousePos() const
 {
 	return mouse_pos;
+}
+
+void Controller::ReadInputMap(InputMap* map)
+{
+
+	for (auto &key: map->Normal | views::values)
+	{
+		dispatcher_system.AddEventDispatcher(key.key_name);
+	}
 }
 
 Pawn* Controller::GetControlledPawn() const

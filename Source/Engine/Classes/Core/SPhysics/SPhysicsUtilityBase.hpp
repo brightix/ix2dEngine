@@ -37,7 +37,7 @@ public:
 
 //物理的位置跟随父场景组件
 	Vec2<float> velocity;		//当前移动向量
-	float quality = 2.f;		//物体质量
+	float quality = 50.f;		//物体质量
 	float force_attenuation = 1.0f;		//力衰减
 	float bounciness = 0.5f;
 
@@ -58,13 +58,13 @@ public:
 
     SPhysicsBaseUtility();
 	void Construct() override;
-
+	void NativeSetOuter(GCObject *new_outer) override;
 
 
     virtual PhysicsType GetPhysicsType(){ return type; }
     [[nodiscard]] FRect GetCollisionBox() const;
 
-	void SetSimulationPhysics(bool is_active, PhysicsType new_type = PhysicsType::Static);
+	void SetSimulationPhysics(bool is_active);
 	void SetPhysicsType(PhysicsType new_type);
     virtual void HandleVelocity(double delta_time);
 
@@ -73,13 +73,16 @@ public:
 //位移需要变换位置
 	void AddBodyWorldLocation(Vec2<float> v);
 
-
-
-
     virtual void Init();
     // void SetIsSimulatedPhysics(bool value);
+	[[deprecated("Linked when it was created So no need to use")]]
 	void SetPhysicsBodyOwner(SceneComponent* new_owner);
 	void SetSubscribeCollision(bool is_subscribe);
+
+
+//物理
+	void AddImpulse(const Vec2<float> &force);
+	//void AddImpulse(Vec2<float> unit_dir, float force);
 //同步
 	void SynchronizationTransform();
 

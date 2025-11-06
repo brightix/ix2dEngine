@@ -8,7 +8,7 @@
 #include "../../Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
 #include "Classes/Widget/Widget.hpp"
-#include "Classes/Component/SenceComponent/Texture.hpp"
+#include "../../Asset/Texture.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 #include "Utilities/TracingUtility.hpp"
@@ -30,8 +30,9 @@ void RendererCenter::Init()
 	event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
 		//std::vector<GCPtr<Widget>> clips = std::move(*e->Get<std::vector<GCPtr<Widget>>>("widget_data"));
 		TStartF("UI渲染");
-		auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
-		RenderWidget(viewport);
+		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
+		//auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
+		RenderScene(clips);
 		TEndF("UI渲染");
 	}));
 	event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
@@ -99,11 +100,28 @@ void RendererCenter::RenderScene(std::vector<RenderData>& clips)
 	TEnd;
 }
 
-void RendererCenter::RenderWidget(GCPtr<PanelWidget> viewport)
+void RendererCenter::RenderWidget(std::vector<RenderData>& clips)
 {
-	//std::unordered_set<GCPtr<Widget>>& widgets = clips;
-	auto size = std::move(GameEngine::Instance().GetEngineAttribution().ScreenSize);
-	viewport->NativeWidgetRender({0,0,size.x,size.y});
+	std::ranges::sort(clips.begin(),clips.end(),[](const RenderData& A,const RenderData& B){ return A.layer > B.layer;});
+
+	for (auto& clip : clips)
+	{
+		auto& [_, texture,trans,src_opt,dst_opt] = clip;
+		auto point = trans.rotation.Point ? SDL_FPoint(trans.rotation.Point->x,trans.rotation.Point->y) : SDL_FPoint();
+		SDL_FRect* src = nullptr;
+		SDL_FRect* dst = nullptr;
+		if (src_opt)
+		{
+			src = &*src_opt;
+		}
+		if (dst_opt)
+		{
+			dst = &*dst_opt;
+		}
+		//auto test = SDL_FRect(0,0,1,1);
+		//SDL_RenderTexture(renderer,texture.get(),src,dst);
+		SDL_RenderTextureRotated(renderer,texture.get(),src,dst,trans.rotation.Angle,&point,SDL_FLIP_NONE);
+	}
 }
 
 std::shared_ptr<SDL_Texture> RendererCenter::CreateOutLineTexture(const Vec2<float>& size, SDL_Color color)
@@ -160,7 +178,7 @@ void RendererCenter::SetTextureFromSurface(Texture* t, std::shared_ptr<SDL_Surfa
 	auto s = new_surface.get();
 	auto new_texture = SDL_CreateTextureFromSurface(renderer, s);
 	auto new_texture_s = std::shared_ptr<SDL_Texture>(new_texture,SDLTextureDeleter());
-	t->SetNewTexture(new_texture_s);
+	t->SetTexture(new_texture_s);
 }
 
 

@@ -1,5 +1,4 @@
 #pragma once
-#include <cmath>
 #include "var_type.hpp"
 #include <format>
 #include "Utilities/FuncLib/GlobalMacros.hpp"
@@ -22,12 +21,26 @@ struct Vec2 : var_type
         x = static_cast<T>(V.x);
         y = static_cast<T>(V.y);
     }
-	template<typename U>
-	Vec2(Vec2&& V) noexcept
+	Vec2(Vec2<T>&& V) noexcept
 	{
     	x = static_cast<T>(V.x);
     	y = static_cast<T>(V.y);
 	}
+	template<typename U>
+	explicit Vec2(Vec2<U>&& V) noexcept
+    {
+    	x = static_cast<T>(V.x);
+    	y = static_cast<T>(V.y);
+    }
+
+	template<typename U>
+	explicit Vec2(const Vec2<U>& V)
+    {
+    	x = static_cast<T>(V.x);
+    	y = static_cast<T>(V.y);
+    }
+	Vec2(const Vec2& other) = default;
+	Vec2& operator=(const Vec2&) = default;
 
 	template<typename U>
 	constexpr auto& operator+=(const Vec2<U>& val) noexcept
@@ -128,20 +141,22 @@ struct Vec2 : var_type
     	return x == other.x && y == other.y;
     }
 	//Attr
-	float Length()
+	double Length()
     {
+    	static_assert(std::is_arithmetic_v<T>);
     	return sqrt(x*x + y*y);
     }
 
 	//algorithm
-	Vec2<float> Normalize()
+	Vec2<double> Normalize(double precision = 0.00001)
     {
-    	float len = Length();
-    	if (len == 0)
+    	static_assert(std::is_arithmetic_v<T>);
+    	double len = Length();
+    	if (len < precision)
     	{
-    		return {0,0};
+    		return {};
     	}
-    	return *this/len;
+    	return Vec2<double>(*this/len);
     }
 	// TODO 使用angle
 	void RotateByAngle(float angle, Vec2<float> point)

@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "../Classes/Component/SenceComponent/Texture.hpp"
+#include "../Asset/Texture.hpp"
 #include "Utilities/Exception.hpp"
 #include "Types/FontStyle.hpp"
 class FontRenderer// : public Object

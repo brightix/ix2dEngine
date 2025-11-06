@@ -12,7 +12,9 @@ TextBlockWidget::TextBlockWidget()
 
 void TextBlockWidget::PreConstructEvent()
 {
-    ContentWidget::PreConstructEvent();
+    Widget::PreConstructEvent();
+    text_tex = NewObject<Texture>(this);
+    layer_id = -1;
 }
 
 
@@ -20,7 +22,7 @@ void TextBlockWidget::SetText(const std::string& new_text)
 {
     text = new_text;
     auto text_surface = GetTextSurface(text,font_style);
-	auto t = widget_texture.Get();
+	auto t = text_tex.Get();
     SetTextureFromSurface_S(t, text_surface);
 }
 
@@ -29,14 +31,18 @@ void TextBlockWidget::SetFontStyle(const FontStyle &new_font_style)
     font_style = new_font_style;
     auto text_surface = GetTextSurface(text,font_style);
 
-    SetTextureFromSurface_S(widget_texture.Get(), text_surface);
+    SetTextureFromSurface_S(text_tex.Get(), text_surface);
 }
 
 void TextBlockWidget::WidgetRender(FRect display_area)
 {
     //ContentWidget::WidgetRender();
-    auto dst = SDL_FRect(display_area.x,display_area.y,widget_texture->w,widget_texture->h);
-    SDL_RenderTexture(GetRenderer(),widget_texture->GetTexture().get(),nullptr,&dst);
+    //SDL_RenderTexture(GetRenderer(),widget_texture->GetRowTexture().get(),nullptr,&dst);
+}
+
+void TextBlockWidget::OfferWidgetRenderData(std::vector<RenderData> &data)
+{
+    data.emplace_back(this,text_tex->GetTexture());
 }
 
 

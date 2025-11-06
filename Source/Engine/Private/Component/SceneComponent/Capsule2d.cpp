@@ -5,9 +5,30 @@ Capsule2d::Capsule2d()
     CNAME;
 }
 
-void Capsule2d::SetActiveCollision(const bool is_active)
+void Capsule2d::Construct()
 {
-    simulation_physics = is_active;
+    SceneComponent::Construct();
+    physics_body = NewObject<SPhysicsBaseUtility>(this);
+
+}
+
+void Capsule2d::ComponentEventBegin()
+{
+    SceneComponent::ComponentEventBegin();
+
+    ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams) {
+        SetComponentWorldLocation(physics_body->after_location);
+    }));
+}
+
+
+void Capsule2d::NativeSetActiveCollision(const bool is_active)
+{
+    SceneComponent::NativeSetActiveCollision(is_active);
+    if (physics_body)
+    {
+        physics_body->SetPhysicsType(PhysicsType::Movable);
+    }
 }
 
 

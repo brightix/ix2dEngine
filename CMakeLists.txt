@@ -24,19 +24,16 @@ set_target_properties(ix2d PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}"
 )
 
-
-
-
-
 if(MSVC)
     # 通用 MSVC 编译选项
     target_compile_options(ix2d PRIVATE
+            /EHsc
             /utf-8
-            /Od
-            /Zi
-            /RTC1
-            /GS-
-            /Oy-
+#            /Od
+#            /Zi
+#            /RTC1
+#            /GS-
+#            /Oy-
     )
 #    target_compile_options(ix2d PRIVATE
 #            /utf-8

@@ -1,13 +1,25 @@
 #pragma once
 #include "Pawn.hpp"
 
-class StaticTexture;
+class Capsule2d;
+class StaticTextureComponent;
+
+enum CharacterMoveStrategy
+{
+    God,
+    Simulation
+};
 
 class Character : public Pawn
 {
-    GCPtr<StaticTexture> sprite;
+    GCPtr<StaticTextureComponent> sprite;
+    using Pawn::Pawn;
+    Capsule2d* capsule;
+    CharacterMoveStrategy strategy;
 public:
-    Character();
     void Construct() override;
-
+    void EventBegin() override;
+    SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
+    CharacterMoveStrategy GetCharacterMoveStrategy() const;
+    void SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy);
 };

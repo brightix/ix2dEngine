@@ -5,6 +5,7 @@ class Actor;
 
 class ActorComponent : public Component
 {
+protected:
 public:
 	using Component::Component;
     void Construct() override;

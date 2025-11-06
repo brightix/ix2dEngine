@@ -11,12 +11,14 @@ protected:
 public:
 	Component();
 
-	explicit Component(Actor* owner);
+	Actor *GetOwnerActor() const;
+
 	virtual void ComponentEventBegin(){}
 	//void SetOwner(Actor* actor);
 	[[nodiscard]] Actor* GetOwner() const;
+	void NativeSetOuter(GCObject* new_owner) override ;
 	std::string GetComponentName();
 	virtual bool SetComponentName(const std::string& new_name);
 
-	virtual void ComponentTick(double delta_time) {}
+	virtual void ComponentTick(const double delta_time) {}
 };

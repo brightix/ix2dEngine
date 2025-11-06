@@ -1,13 +1,12 @@
 #pragma once
 #include "SceneComponent.hpp"
-#include "StaticTexture.hpp"
+#include "StaticTextureComponent.hpp"
 
 
 class SceneTextBlock : public SceneComponent
 {
 	std::string text;
-	GCPtr<StaticTexture> text_tex;
-
+	GCPtr<Texture> text_tex;
 public:
     SceneTextBlock();
 	void Construct() override;

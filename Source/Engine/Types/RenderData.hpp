@@ -6,6 +6,8 @@
 #include "Transform.hpp"
 #include "Classes/Component/SenceComponent/SceneComponent.hpp"
 
+class Widget;
+
 struct RenderData
 {
 	int layer;
@@ -18,4 +20,5 @@ struct RenderData
 	{ }
 
 	RenderData(SceneComponent* c,std::shared_ptr<SDL_Texture> t);
+	RenderData(Widget* w,std::shared_ptr<SDL_Texture> t);
 };

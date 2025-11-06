@@ -84,6 +84,8 @@ TStartF("收集渲染数据");
 				a->ForRenderOrder(render_data);
 			}
 		}
+		//控件
+		world->viewport->NativeOfferRenderData(render_data);
 TEndF("收集渲染数据");
 
 		//清屏
@@ -97,13 +99,13 @@ TEndF("收集渲染数据");
 		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
 		dispatcher_system.CallDispatcher("RenderSceneDataReady",std::move(render_data_ready_p));
 
-		texts[3]->SetText("SceneRenderDelay: " + std::to_string(timer.Click()));
+		texts[3]->SetText("AllPhysicsBody count: " + std::to_string(Engine().physicsSys->units.size()));
 
 
 		//Widget
-		EventParams widget_data;
-		widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
-		dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
+		// EventParams widget_data;
+		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
+		// dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
 		physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
@@ -127,7 +129,7 @@ void TickSubSystem::Init()
 	texts.resize(4);
 	for (int i = 0; i < 4; i++)
 	{
-		const auto text = CreateWidget<TextBlockWidget>(this);
+		const auto text = CreateWidget<TextBlockWidget>();
 		AddToViewport(text)->display_area.y = static_cast<float>(3 + i) * 26;
 
 		texts[i] = text;

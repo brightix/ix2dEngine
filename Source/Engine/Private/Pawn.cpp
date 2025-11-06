@@ -1,23 +1,19 @@
 #include "Classes/Pawn.hpp"
-
-#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
-#include <iostream>
-#include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include <utility>
 
+
+#include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
+#include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Controller.hpp"
 #include "Classes/Component/ActorComponent/MovableComponent.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
-#include "Enum/ActorEnum.hpp"
-
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 Pawn::~Pawn()= default;
 
 void Pawn::Construct()
 {
 	Actor::Construct();
-	enhanced_input_sub_system = NewObject(new EnhancedInputSubSystem(),this);
-	actor_components.emplace("movable",NewObject(new MovableComponent(this),this));
+	enhanced_input_sub_system = NewObject<EnhancedInputSubSystem>(this);
+	actor_components.emplace("movable",NewObject<MovableComponent>(this));
 
 	base_move_speed = 200.f;
 }
@@ -52,5 +48,5 @@ EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem()
 
 Vec2<float> Pawn::GetVelocity_Debug() const
 {
-	return GetSceneComponent("default_texture").Cast<StaticTexture>()->GetPhysicsBody()->velocity;
+	return Cast<StaticTextureComponent>(GetSceneComponent("default_texture"))->GetPhysicsBody()->velocity;
 }

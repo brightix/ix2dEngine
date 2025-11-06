@@ -4,9 +4,6 @@
 #include "Classes/Core/GameWorld.hpp"
 #include "Public/TestPawn.hpp"
 
-GameModeBase::GameModeBase()
-{}
-
 GameModeBase::~GameModeBase() {}
 
 void GameModeBase::Tick(double deltaTime)
@@ -31,15 +28,15 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActor<Character>();
+	auto_generate_pawn = SpawnActor<Character>(Transform({300,300}));
 	//auto_generate_pawn->EventBegin();
 
 	controller->Control(auto_generate_pawn);
 }
 
-GCPtr<Controller> GameModeBase::CreateController()
+Controller *GameModeBase::CreateController() const
 {
-	return game_world->AddController(new Controller());
+	return game_world->AddController();
 }
 
 // TODO AIController

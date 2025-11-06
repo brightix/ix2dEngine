@@ -69,27 +69,62 @@ public:
         tree_slots[3] = std::make_unique<QuadTree>(level + 1, FRect(x + w, y + h, w, h));   // se
     }
 
-    void Insert(SPhysicsBaseUtility* obj)
+	void Insert(SPhysicsBaseUtility* obj)
     {
-        auto rect = obj->GetCollisionBox();
-        if (!boundary.contains(rect) && !boundary.intersects(rect))
-            return;
+    	auto rect = obj->GetCollisionBox();
 
-        if (objects.size() < MAX_OBJECTS || level >= MAX_LEVELS)
-        {
-        	//std::cout << obj->test_name + "   插入  " + std::to_string(level) + " 层" << std::endl;
-            objects.push_back(obj);
-            return;
-        }
+    	// 如果不在当前边界范围内，直接返回
+    	if (!boundary.intersects(rect))
+    		return;
 
-        if (!tree_slots[0]) Subdivide();
+    	// 如果已细分，尝试插入到子节点
+    	if (tree_slots[0])
+    	{
+    		for (auto& child : tree_slots)
+    		{
+    			if (child->boundary.contains(rect))
+    			{
+    				child->Insert(obj);
+    				return; // 放进子节点后，不再留在父节点
+    			}
+    		}
+    	}
 
-        for (auto& child : tree_slots)
-        {
-            if (child)
-                child->Insert(obj);
-        }
+    	// 放在当前节点
+    	objects.push_back(obj);
+
+    	// 如果超出容量并且可以继续分裂
+    	if (objects.size() > MAX_OBJECTS && level < MAX_LEVELS)
+    	{
+    		// 如果还没细分，先细分
+    		if (!tree_slots[0])
+    			Subdivide();
+
+    		// 再分配旧对象
+    		auto it = objects.begin();
+    		while (it != objects.end())
+    		{
+    			auto* o = *it;
+    			auto r = o->GetCollisionBox();
+    			bool moved = false;
+
+    			for (auto& child : tree_slots)
+    			{
+    				if (child->boundary.contains(r))
+    				{
+    					child->Insert(o);
+    					it = objects.erase(it);
+    					moved = true;
+    					break;
+    				}
+    			}
+
+    			if (!moved)
+    				++it; // 没找到合适子节点就留在当前节点
+    		}
+    	}
     }
+
 
     // 检测当前节点的对象对
 

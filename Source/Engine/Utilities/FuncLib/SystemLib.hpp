@@ -4,7 +4,6 @@
 #include <set>
 #include <string>
 #include <vector>
-#define ASSERT_CHILD(Base,Derived) ix::IsChild<(Base),(Derived)>(__func__)
 class GameWorld;
 
 namespace ix

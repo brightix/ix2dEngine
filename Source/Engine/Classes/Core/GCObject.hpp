@@ -17,11 +17,16 @@ struct GCObject
 	std::vector<GCObject*> referenced;
 	std::vector<GCObject*> referencing;
 
-
-	GCObject* outer;
 	GCObject();
 
-    virtual ~GCObject();
+	virtual ~GCObject();
+
+	GCObject* outer;
+	virtual void NativeSetOuter(GCObject* new_outer);
+
+
+
+
 
 
     bool IsActive() const;

@@ -2,6 +2,9 @@
 #include "Widget.hpp"
 
 
+/**
+ * 所有的重写类都必须继承自用户控件
+ */
 class UserWidget : public Widget
 {
 protected:
@@ -13,10 +16,13 @@ public:
     void Tick(double delta_time) override {}
     void NativeWidgetRender(FRect display_area) override;
     WidgetType GetWidgetType() override;
+
     void AddChild(const std::string &widget_name, Widget *child);
     GCPtr<Widget> GetChild(const std::string &widget_name);
-    std::vector<GCPtr<PanelSlot>> GetChildren() override;
+
 	PanelSlot *CreateSlot() final { return Root.Get();}
 	void ReceiveSlot(PanelSlot* slot) final {}
+
+	void FlushDirty() override;
 };
 

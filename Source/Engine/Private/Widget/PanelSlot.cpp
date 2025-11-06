@@ -6,3 +6,8 @@ PanelSlot::PanelSlot()
 {
 	CNAME;
 }
+
+void PanelSlot::Construct()
+{
+	Object::Construct();
+}

@@ -18,5 +18,4 @@ public:
 	//渲染
 	void OfferRenderData(std::vector<RenderData>& data) override;
 
-	void Synchronization() const;
 };

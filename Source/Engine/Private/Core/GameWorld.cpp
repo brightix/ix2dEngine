@@ -46,7 +46,7 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 
 	dispatcher_system.AddEventDispatcher("EventBegin");
-	viewport = CreateWidget<CanvasWidget>(this);
+	viewport = CreateWidget<CanvasWidget>();
 	//viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
 
@@ -94,13 +94,13 @@ std::vector<GCPtr<Controller>> GameWorld::GetControllers()
 	return controllers;
 }
 
-GCPtr<Controller> GameWorld::GetController(int id) const
+Controller *GameWorld::GetController(int id) const
 {
 	if (id >= 0 && id < controllers.size())
 	{
-		return controllers[id];
+		return controllers[id].Get();
 	}
-	return {};
+	return nullptr;
 }
 
 std::vector<GCPtr<Actor>> *GameWorld::GetActors()
@@ -108,7 +108,7 @@ std::vector<GCPtr<Actor>> *GameWorld::GetActors()
 	return &actors;
 }
 
-std::vector<GCPtr<Widget>> GameWorld::GetWidgets()
+std::vector<GCPtr<Widget>> GameWorld::GetWidgets() const
 {
 	std::vector<GCPtr<Widget>> v;
 	for (auto& item : widgets)
@@ -123,11 +123,11 @@ void GameWorld::RemoveActorByGCPtr(const GCPtr<Actor>& actor)
 	std::erase(actors, actor);
 }
 
-GCPtr<Controller> GameWorld::AddController(Controller *controller)
+Controller* GameWorld::AddController()
 {
 	if (is_server)
 	{
-		GCPtr<Controller> t = SpawnActor<Controller>(controller);
+		auto t = SpawnActor<Controller>();
 		controllers.push_back(t);
 		return t;
 	}

@@ -1,6 +1,6 @@
 #include "Classes/Component/SenceComponent/SceneTextBlock.hpp"
 
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 #include "Classes/Core/RendererCenter.hpp"
 #include "System/Font.hpp"
 
@@ -12,8 +12,8 @@ SceneTextBlock::SceneTextBlock()
 void SceneTextBlock::Construct()
 {
 	SceneComponent::Construct();
-	text_tex = MountedComponent(NewObject<StaticTexture>(this));
-	text_tex->SetRenderLayer(Foreground);
+	text_tex = NewObject<Texture>(this);
+	text_tex->NativeSetRenderLayer(Foreground);
 }
 
 void SceneTextBlock::OfferRenderData(std::vector<RenderData>& data)
@@ -25,7 +25,7 @@ void SceneTextBlock::OfferRenderData(std::vector<RenderData>& data)
 
 void SceneTextBlock::SetText(const std::string &new_text)
 {
-	SetTextureFromSurface_S(text_tex.Peek(), GetTextSurface(new_text));
+	SetTextureFromSurface_S(text_tex.Get(), GetTextSurface(new_text));
 	w = text_tex->w;
 	h = text_tex->h;
 }

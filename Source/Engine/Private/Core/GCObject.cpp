@@ -17,6 +17,13 @@ GCObject::~GCObject()
 	Global_GCObject_Registry.erase(id);
 }
 
+void GCObject::NativeSetOuter(GCObject *new_outer)
+{
+	GCUnLink(outer,this);
+	outer =	new_outer;
+	GCLink(outer,this);
+}
+
 bool GCObject::IsActive() const
 {
 	return Global_GCObject_Registry.contains(id) && !Global_GCObject_Registry[id]->is_pending_kill;

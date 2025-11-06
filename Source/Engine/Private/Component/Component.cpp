@@ -2,14 +2,22 @@
 
 #include "Classes/Actor.hpp"
 
-Component::Component() : Component(nullptr){ }
-Component::Component(Actor* owner) : owned_actor(owner) { }
+Component::Component() : owned_actor(nullptr) {}
 
+Actor* Component::GetOwnerActor() const
+{
+	return Cast<Actor>(outer);
+}
 
-
-Actor* Component::GetOwner() const
+Actor * Component::GetOwner() const
 {
 	return owned_actor;
+}
+
+void Component::NativeSetOuter(GCObject *new_owner)
+{
+	Object::NativeSetOuter(new_owner);
+	owned_actor = Cast<Actor>(new_owner);
 }
 
 std::string Component::GetComponentName()

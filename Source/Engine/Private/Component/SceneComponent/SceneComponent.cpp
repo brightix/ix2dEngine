@@ -28,36 +28,93 @@ void SceneComponent::NativeSceneComponentEventBegin()
 	}
 }
 
-void SceneComponent::SetOwnerActor(Actor *actor)
+// void SceneComponent::NativeSetOwnerActor(Actor *actor)
+// {
+// #if DEBUG
+// 	if (!actor)
+// 	{
+// 		Log(name + "被空Actor拥有");
+// 	}
+// 	if (!outer && actor)
+// 	{
+// 		Log(name + "已经重新被" + actor->name + "拥有");
+// 	}
+//
+// #endif
+// 	outer = actor;
+// 	owned_actor = actor;
+// 	for (const auto& component : mounted_components | std::views::values)
+// 	{
+// 		component->NativeSetOwnerActor(actor);
+// 	}
+// }
+
+void SceneComponent::NativeSetOuter(GCObject *new_owner)
 {
 #if DEBUG
-	if (!actor)
+	if (!owned_actor)
 	{
 		Log(name + "被空Actor拥有");
 	}
-	if (!owned_actor && actor)
+	if (!outer && owned_actor)
 	{
-		Log(name + "已经重新被" + actor->name + "拥有");
+		Log(name + "已经重新被" + owned_actor->name + "拥有");
 	}
 
 #endif
-	owned_actor = actor;
-	outer = actor;
+	Component::NativeSetOuter(new_owner);
 	for (const auto& component : mounted_components | std::views::values)
 	{
-		component->SetOwnerActor(actor);
+		component->NativeSetOuter(new_owner);
 	}
 }
 
-void SceneComponent::SetVisibility(ComponentVisibility new_visibility)
+void SceneComponent::NativeSetSceneComponentSize(Vec2<float> new_size)
+{
+	w = new_size.x;
+	h = new_size.y;
+}
+
+void SceneComponent::NativeSetActiveCollision(bool is_active)
+{
+    simulation_physics = is_active;
+	if (physics_body)
+	{
+		physics_body->SetSimulationPhysics(is_active);
+	}
+#if DEBUG
+	else
+	{
+		Log("没有碰撞体还想 {开启} 碰撞!!!");
+	}
+#endif
+}
+
+void SceneComponent::NativeSetPhysicsType(PhysicsType new_type) const
+{
+	if (physics_body)
+	{
+		physics_body->SetPhysicsType(new_type);
+	}
+#if DEBUG
+	else
+	{
+		Log("没有碰撞体还想 {修改} 碰撞类型!!!");
+	}
+#endif
+}
+
+SPhysicsBaseUtility * SceneComponent::GetPhysicsBody()
+{
+	return physics_body.Get();
+}
+
+void SceneComponent::SetVisibility(const ComponentVisibility new_visibility)
 {
 	visibility = new_visibility;
 }
 
-
-
-
-ComponentVisibility SceneComponent::GetVisibility()
+ComponentVisibility SceneComponent::GetVisibility() const
 {
 	return visibility;
 }
@@ -99,7 +156,6 @@ void SceneComponent::SceneComponentTick(double delta_time)
 		it->SceneComponentTick(delta_time);
 	}
 }
-
 void SceneComponent::RemoveSceneComponentFromParent() const
 {
 	parent_component->RemoveSceneComponent(name);
@@ -110,20 +166,20 @@ void SceneComponent::RemoveSceneComponent(const std::string& component_name)
 	mounted_components.erase(component_name);
 }
 
-GCPtr<SceneComponent> SceneComponent::GetSceneComponentByName(const std::string& searched_component_name)
+SceneComponent *SceneComponent::GetSceneComponentByName(const std::string &searched_component_name)
 {
 	for (const auto& component : mounted_components | std::views::values)
 	{
 		if (component->name == searched_component_name)
 		{
-			return component;
+			return component.Get();
 		}
-		if (auto ret = component->GetSceneComponentByName(searched_component_name); ret.IsValid())
+		if (const auto ret = component->GetSceneComponentByName(searched_component_name))
 		{
 			return ret;
 		}
 	}
-	return {};
+	return nullptr;
 }
 //递归调用接口
 void SceneComponent::ForRender()
@@ -138,14 +194,14 @@ void SceneComponent::ForRender()
 
 
 //递归调用接口
-void SceneComponent::ForRenderData(std::vector<RenderData>& data)
+void SceneComponent::NativeForRenderData(std::vector<RenderData>& data)
 {
 	OfferRenderData(data);
 	for (const auto& child : mounted_components | std::views::values)
 	{
 		if (child->IsVisible())
 		{
-			child->ForRenderData(data);
+			child->NativeForRenderData(data);
 		}
 	}
 }
@@ -182,7 +238,13 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 
 bool SceneComponent::SetComponentName(const std::string& new_name)
 {
-	if (!parent_component || !parent_component->OnMountedComponentNameChanged(name,new_name))
+	if (!parent_component)
+	{
+		//根组件改名
+		name = new_name;
+		return true;
+	}
+	if (!parent_component->OnMountedComponentNameChanged(name,new_name))
 	{
 		LogWithLevel("组件名已被占用", FatalError);
 		return false;

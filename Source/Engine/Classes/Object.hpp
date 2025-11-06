@@ -75,12 +75,13 @@ public:
 	{
 		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
 		T* object = new T(std::forward<Args>(args)...);
-		object->Construct();
 		object->outer = outer;
+		object->Construct();
+
 		GCAllObjects.push_back(object);
 		if (outer)
 		{
-			object->outer = outer;
+			object->NativeSetOuter(outer);
 			GCLink(outer,object);
 		}
 #if DEBUG

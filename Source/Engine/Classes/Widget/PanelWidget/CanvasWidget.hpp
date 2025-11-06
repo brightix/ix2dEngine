@@ -13,7 +13,7 @@ enum CanvasWidgetFillRule
     CustomSize
 };
 
-class CanvasWidget : public PanelWidget
+class CanvasWidget final : public Widget
 {
 public:
     CanvasWidgetFillRule fill_rule = FillScreen;
@@ -22,7 +22,9 @@ public:
     void ReceiveSlot(PanelSlot* slot) override;
     //继承
     void flush() override;
-    std::vector<GCPtr<PanelSlot>> GetSlot() override;
+    void OfferWidgetRenderData(std::vector<RenderData>& data) override;
+
+    void FlushDirty() override;
 };
 
 

@@ -52,10 +52,17 @@ struct Name
 
 class Widget;
 
+enum FillMethod
+{
+    Auto,
+    Fill
+};
+
 struct PanelSlot : public Object
 {
     GCPtr<Widget> widget;
     FRect display_area;
-
+    FillMethod fill_method = Auto;
     PanelSlot();
+    void Construct() override;
 };

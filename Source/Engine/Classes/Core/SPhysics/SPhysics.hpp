@@ -19,9 +19,9 @@ class SPhysics : public EngineSubSystem
     WorldPhysics world_physics;
     float GravityForce = 9.8f;
     //std::vector<SPhysicsTypeBase*> actors;
-    std::unordered_set<SPhysicsBaseUtility*> units;
     QuadTree collision_tree;
 public:
+    std::unordered_set<SPhysicsBaseUtility*> units;
     SPhysics();
 
 

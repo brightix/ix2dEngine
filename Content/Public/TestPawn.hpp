@@ -1,12 +1,12 @@
 #pragma once
 #include "Classes/Pawn.hpp"
 #include "Classes/Component/SenceComponent/CollisionBox.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 
 
 class TestPawn final : public Pawn
 {
-	GCPtr<StaticTexture> default_texture;
+	GCPtr<StaticTextureComponent> default_texture;
 public:
 	using Pawn::Pawn;
     TestPawn();

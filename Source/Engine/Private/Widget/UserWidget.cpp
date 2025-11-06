@@ -8,6 +8,8 @@ void UserWidget::NativeWidgetRender(FRect display_area)
     }
 }
 
+
+
 WidgetType UserWidget::GetWidgetType()
 {
     return WidgetType::UserWidget;
@@ -36,7 +38,6 @@ GCPtr<Widget> UserWidget::GetChild(const std::string &widget_name)
     return it->second;
 }
 
-std::vector<GCPtr<PanelSlot>> UserWidget::GetChildren()
+void UserWidget::FlushDirty()
 {
-    return Root->widget->GetChildren();
 }

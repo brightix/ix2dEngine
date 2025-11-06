@@ -16,7 +16,7 @@ Widget::Widget() : widget_visibility(WidgetVisibility::Visible), layer_id(0), di
 void Widget::ForTick(double delta_time)
 {
     Tick(delta_time);
-    auto children = GetChildren();
+    auto children = GetSlots();
     for (auto& child : children)
     {
         child->widget->Tick(delta_time);
@@ -26,10 +26,21 @@ void Widget::ForTick(double delta_time)
 void Widget::NativeWidgetRender(FRect display_area)
 {
     WidgetRender(display_area);
-    auto children = GetChildren();
+    auto children = GetSlots();
     for (auto& child : children)
     {
         child->widget->NativeWidgetRender(child->display_area);
+    }
+}
+
+void Widget::NativeOfferRenderData(std::vector<RenderData>& data)
+{
+    OfferWidgetRenderData(data);
+
+    auto children = GetSlots();
+    for (auto& child : children)
+    {
+        child->widget->NativeOfferRenderData(data);
     }
 }
 
@@ -81,6 +92,22 @@ int Widget::GetLayerId() const
     return layer_id;
 }
 
+PanelSlot * Widget::GetParentSlot() const
+{
+    return parent_slot.Get();
+}
+
+std::vector<PanelSlot *> Widget::GetSlots() const
+{
+    std::vector<PanelSlot*> s;
+    s.reserve(slots.size());
+    for (auto& slot : slots)
+    {
+        s.emplace_back(slot.Get());
+    }
+    return s;
+}
+
 void Widget::MakeDirty()
 {
     dirty = true;
@@ -89,5 +116,19 @@ void Widget::MakeDirty()
     {
         p->dirty = true;
         p = p->parent_widget.Peek();
+    }
+}
+
+void Widget::FlushDirty()
+{
+    int n = slots.size();
+    for (int i = 0; i < n; ++i)
+    {
+
+    }
+
+    for (auto& slot : slots)
+    {
+
     }
 }

@@ -35,16 +35,17 @@ class Controller : public Actor
     //Debug
 	//GCPtr<StaticTexture> pawn_location_tex;
 
+	using Actor::Actor;
 public:
-    Controller();
-    ~Controller() override = default;
 	void Control(GCPtr<Pawn> pawn);
 	void Construct() override;
+	void EventBegin() override;
     void Tick(double delta) override;
 
 
 	Vec2<float> GetMousePos() const;
 
+	void ReadInputMap(InputMap *map);
 
     [[nodiscard]] Pawn* GetControlledPawn() const;
 
@@ -88,11 +89,11 @@ T* CreateWidget(Controller* outer = nullptr,Args...args)
 	{
 		widget->outer = outer;
 	}
-	// else
-	// {
-	// 	//用户控件没有 PlayerController 默认添加进世界上下文
-	// 	widget->outer = World();
-	// }
+	else
+	{
+		//用户控件没有 PlayerController 默认添加进世界上下文
+		widget->outer = World();
+	}
 #if DEBUG
 	if (!outer)
 	{

@@ -40,13 +40,15 @@ void CanvasWidget::flush()
     }
 }
 
-
-std::vector<GCPtr<PanelSlot>> CanvasWidget::GetSlot()
+void CanvasWidget::OfferWidgetRenderData(std::vector<RenderData>& data)
 {
-    std::vector<GCPtr<PanelSlot>> s(slots.size());
-    for (auto& slot : slots)
-    {
-        s.emplace_back(slot);
-    }
-    return s;
+    // for (auto& slot : slots)
+    // {
+    //     slot->widget->OfferWidgetRenderData(data);
+    // }
+}
+
+void CanvasWidget::FlushDirty()
+{
+
 }

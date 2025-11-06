@@ -18,7 +18,7 @@ public:
         }
         return ret;
     }
-    std::vector<GCPtr<PanelSlot>> GetChildren() override;
+    void NativeWidgetRender(FRect) final {}
     WidgetType GetWidgetType() override;
 };
 

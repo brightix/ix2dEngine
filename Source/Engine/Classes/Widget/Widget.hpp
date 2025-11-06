@@ -2,6 +2,7 @@
 #include "Classes/Object.hpp"
 #include "Slot/PanelSlot.hpp"
 #include "Types/FRect.hpp"
+#include "Types/RenderData.hpp"
 enum class WidgetVisibility;
 enum class WidgetType
 {
@@ -16,20 +17,18 @@ class Widget : public Object
     //std::unordered_set<size_t> children_ids;
 protected:
 	WidgetVisibility widget_visibility;
-	int layer_id;
 	//每一个控件都拥有父控件，通过 AddChild() 获得
 	GCPtr<Widget> parent_widget;
 	GCPtr<PanelSlot> parent_slot;
-
+	std::vector<GCPtr<PanelSlot>> slots;
 public:
+	int layer_id;
 	bool dirty;
 	bool is_initialized;
     Widget();
 
 	void Construct() final {}
-	virtual void PreConstructEvent()
-	{
-	}
+	virtual void PreConstructEvent(){}
 	virtual void ConstructEvent(){}
 
 	virtual void ForTick(double delta_time);
@@ -41,7 +40,11 @@ public:
 	//系统调用的render
     virtual void NativeWidgetRender(FRect display_area);
 
-	virtual PanelSlot* AddChild(Widget *child);
+    void NativeOfferRenderData(std::vector<RenderData> &data);
+	virtual void OfferWidgetRenderData(std::vector<RenderData>& data){}
+
+
+    virtual PanelSlot* AddChild(Widget *child);
 	virtual PanelSlot* CreateSlot()= 0;
 	virtual void ReceiveSlot(PanelSlot* slot)= 0;
 	WidgetVisibility GetVisibility() const;
@@ -53,12 +56,16 @@ public:
 
 	void RemoveFromParent();
 	virtual void RemoveChild(Widget* UI){}
-	virtual std::vector<GCPtr<PanelSlot>> GetChildren(){ return {}; }
-
 
 	int GetLayerId() const;
+	PanelSlot* GetParentSlot() const;
+	std::vector<PanelSlot*> GetSlots() const;
 
-    void MakeDirty();
+
+	void MakeDirty();
+	//刷新逻辑位置
+	virtual void FlushDirty()= 0;
+
 
     virtual void Tick(double delta_time){}
 

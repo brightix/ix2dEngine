@@ -64,11 +64,11 @@ public:
 //Get
 	std::vector<GCPtr<Controller>> GetControllers();
 
-	GCPtr<Controller> GetController(int id = 0) const;
+	Controller *GetController(int id = 0) const;
 
 	std::vector<GCPtr<Actor>> *GetActors();
 
-	std::vector<GCPtr<Widget>> GetWidgets();
+	std::vector<GCPtr<Widget>> GetWidgets() const;
 	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
 
 	//Set
@@ -77,7 +77,7 @@ public:
 
 // 服务器方法
 	//添加玩家
-	GCPtr<Controller> AddController(Controller *controller);
+	Controller *AddController();
 
 //Sys
 	void AddToWorld(Actor *actor);
@@ -115,11 +115,11 @@ T* SpawnActor(T* actor)
 	return actor;
 }
 
-template<typename T,typename...Args>
-T* SpawnActor(Args...args)
+template<typename T>
+T* SpawnActor(Transform transform = {})
 {
 	static_assert(std::is_base_of_v<Actor,T>, "SpawnActor的返回值必须继承自Actor");
-	T* actor = new T(std::forward<Args>(args)...);
+	T* actor = new T(transform);
 	actor->Construct();
 	GameWorld* world = World();
 	actor->outer = world;
@@ -154,4 +154,3 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 		TEndF("RandCreateActor");
 	}
 }
-

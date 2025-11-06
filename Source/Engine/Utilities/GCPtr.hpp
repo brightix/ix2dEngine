@@ -98,8 +98,6 @@ public:
 		return reinterpret_cast<GCObject *>(ptr);
 	}
 
-
-
 	template<typename U>
 	GCPtr<U> Cast()
 	{

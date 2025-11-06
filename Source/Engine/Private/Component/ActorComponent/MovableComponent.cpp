@@ -1,9 +1,8 @@
 #include "../../../Classes/Component/ActorComponent/MovableComponent.hpp"
 #include "Classes/Actor.hpp"
+#include "Classes/Character.hpp"
 #include "Classes/Pawn.hpp"
-#include "Utilities/FuncLib/StaticCast.hpp"
-MovableComponent::MovableComponent(): player_input_Vec(), base_move_speed(200) {}
-MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_input_Vec(), base_move_speed(200)
+MovableComponent::MovableComponent() : base_move_speed(200)
 {
 	CNAME;
 }
@@ -12,17 +11,24 @@ MovableComponent::MovableComponent(Actor *owner): ActorComponent(owner), player_
 void MovableComponent::Construct()
 {
     ActorComponent::Construct();
-    if (const auto t = Cast<Pawn>(owned_actor))
+    if ((c = Cast<Character>(outer)))
     {
-        EnhancedInputSubSystem* enhanced_input_sub_system = t->GetEnhancedInputSubSystem();
+        EnhancedInputSubSystem* enhanced_input_sub_system = c->GetEnhancedInputSubSystem();
         enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_W,[this](EnhancedInputParam<bool> eip) {
 	        switch (auto f = eip.status)
             {
                 case Triggered:
-                    player_input_Vec+=UpDir*1.f;
+	                if (c->GetCharacterMoveStrategy() == God)
+	                {
+	                    player_input_Vec+=UpDir*1.f;
+	                }
                     break;
                 case EnhancedInputParamStatus::Start:
                     printf("%s\n",eip.input_action.key_name.c_str());
+	                if (c->GetCharacterMoveStrategy() == Simulation)
+	                {
+	                    Jump();
+	                }
                     break;
                 case Cancel:
                     break;
@@ -50,8 +56,7 @@ void MovableComponent::Construct()
             }
         });
         enhanced_input_sub_system->AddInputEventBool(SDL_SCANCODE_A,[this](EnhancedInputParam<bool> eip) {
-            auto f = eip.status;
-            switch (f)
+            switch (eip.status)
             {
                 case Triggered:
                     player_input_Vec+=LeftDir*1.f;
@@ -87,8 +92,14 @@ void MovableComponent::Construct()
     std::cout<< "增强输入子系统初始化完毕" << std::endl;
 }
 
-void MovableComponent::ActorComponentTick(double deltaTime)
+void MovableComponent::Jump() const
 {
-    owned_actor->AddActorWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
+    c->GetCharacterPhysicsBody()->AddImpulse({0,-100.f});
+}
+
+void MovableComponent::ActorComponentTick(const double deltaTime)
+{
+    const Vec2<float> movement = (player_input_Vec.Normalize() * deltaTime * base_move_speed).Cast<float>();
+    owned_actor->AddActorWorldLocation(movement);
     player_input_Vec = {};
 }

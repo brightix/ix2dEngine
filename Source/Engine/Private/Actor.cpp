@@ -3,13 +3,12 @@
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
 #include "../Classes/Component/SenceComponent/RootComponent.h"
 #include "Classes/Component/SenceComponent/SceneTextBlock.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
 #include "Enum/ActorEnum.hpp"
 
-Actor::Actor() : Actor(Transform()){}
 Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
                                     is_begin_event_handled(false),
                                     window(nullptr), transform(tf),
@@ -25,17 +24,17 @@ void Actor::Construct()
 	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
-	Root->SetOwnerActor(this);
+	Root->NativeSetOuter(this);
 
 	// TODO处理事件回调时机，先绑定事件还是先设置位置
 
 
-	auto tex = Root->MountedComponent(NewObject<StaticTexture>());
+	auto tex = Root->MountedComponent(NewObject<StaticTextureComponent>());
 	tex->SetComponentName("default_texture");
-	tex->SetNewTexture(Create_FilledTexture_S({100,100}));
+	tex->SetStaticTexture(Create_FilledTexture_S({100,100}));
 
 
-	auto NameBlock = NewObject<SceneTextBlock>();
+	auto NameBlock = NewObject<SceneTextBlock>(this);
 	NameBlock->SetText(name);
 	Root->MountedComponent(NameBlock);
 	SetActorTransform(transform);
@@ -107,8 +106,12 @@ void Actor::SetActorName(const std::string &new_name)
 }
 
 
-GCPtr<SceneComponent> Actor::GetSceneComponent(const std::string& component_name) const
+SceneComponent *Actor::GetSceneComponent(const std::string &component_name) const
 {
+	if (Root->name == component_name)
+	{
+		return Root.Get();
+	}
 	return Root->GetSceneComponentByName(component_name);
 }
 
@@ -129,7 +132,7 @@ void Actor::RenderOnScreen()
 
 void Actor::ForRenderOrder(std::vector<RenderData>& data) const
 {
-	Root->ForRenderData(data);
+	Root->NativeForRenderData(data);
 }
 
 // void Actor::RenderCollisionBox() const

@@ -24,9 +24,20 @@ void SPhysicsBaseUtility::Construct()
 	//GameEngine::Instance().physicsSys->Register(this);
 	dispatcher_system.AddEventDispatcher("OnCollision");//碰撞事件
 	dispatcher_system.AddEventDispatcher("OnSynchronization");//同步事件
+	type = PhysicsType::Static;
 
 	//默认不订阅碰撞
 	is_subscribe_collision = false;
+}
+
+void SPhysicsBaseUtility::NativeSetOuter(GCObject *new_outer)
+{
+	Object::NativeSetOuter(new_outer);
+	if ((collision_owner = Cast<SceneComponent>(new_outer)))
+	{
+		name = collision_owner->name + "_physicsBody";
+	}
+
 }
 
 SPhysicsBaseUtility::~SPhysicsBaseUtility()
@@ -44,11 +55,9 @@ FRect SPhysicsBaseUtility::GetCollisionBox() const
     return {loc.x,loc.y,size.x,size.y};
 }
 
-void SPhysicsBaseUtility::SetSimulationPhysics(const bool is_active, const PhysicsType new_type)
+void SPhysicsBaseUtility::SetSimulationPhysics(const bool is_active)
 {
 	//修改物理类型
-	type = new_type;
-
 	//是否需要开关物理特性
 	if (is_active == simulation_physics)
 		return; // 没变化直接走人
@@ -89,6 +98,11 @@ void SPhysicsBaseUtility::SetPhysicsBodyOwner(SceneComponent* new_owner)
 void SPhysicsBaseUtility::SetSubscribeCollision(const bool is_subscribe)
 {
 	is_subscribe_collision = is_subscribe;
+}
+
+void SPhysicsBaseUtility::AddImpulse(const Vec2<float> &force)
+{
+	added_force += force;
 }
 
 void SPhysicsBaseUtility::SynchronizationTransform()

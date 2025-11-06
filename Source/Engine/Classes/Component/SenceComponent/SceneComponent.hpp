@@ -13,7 +13,8 @@ struct RenderData;
 class SceneComponent : public Component
 {
 protected:
-
+	GCPtr<SPhysicsBaseUtility> physics_body;
+	bool simulation_physics;
 	/**
      * 逻辑变换
      */
@@ -41,10 +42,35 @@ public:
 
 	void NativeSceneComponentEventBegin();
 
-	void SetOwnerActor(Actor* actor);
+	//[[deprecated("NativeSetOwnerActor 传入GCObject 作为outer 以替代 actor")]]
+	//void NativeSetOwnerActor(Actor* actor);
+//Native
+
+	/**
+	 * (可被重写) 设置outer
+	 * @param new_owner outer
+	 */
+	void NativeSetOuter(GCObject *new_owner) override;
+
+	/**
+	 * (可被重写) 设置场景组件显示大小
+	 * @param new_size 新大小
+	 */
+	virtual void NativeSetSceneComponentSize(Vec2<float> new_size);
+	/**
+	 * (可被重写) 开关场景组件碰撞
+	 * @param is_active 是否开启
+	 */
+	virtual void NativeSetActiveCollision(bool is_active);
+	/**
+	 * (可被重写) 设置碰撞类型，如果开启了碰撞模拟，否则无效果
+	 * @param new_type PhysicsType 碰撞类型
+	 */
+	virtual void NativeSetPhysicsType(PhysicsType new_type) const;
+	virtual SPhysicsBaseUtility* GetPhysicsBody();
 	//可视性
 	void SetVisibility(ComponentVisibility new_visibility);
-	ComponentVisibility GetVisibility();
+	ComponentVisibility GetVisibility() const;
 	bool IsVisible() const;
 
 
@@ -66,14 +92,12 @@ public:
 			return nullptr;
 		}
 #if DEBUG == 1
-		if (!owned_actor)
+		if (!outer)
 		{
 			Log("构造了野组件，可能是批量构造的子组件树，需要重绑定");
 		}
 #endif
-		component->SetOwnerActor(owned_actor);
-
-		component->SetOuter(owned_actor);
+		NativeSetOuter(outer);
 		component->parent_component = this;
 		//这里的命名是初始类名+id
 		mounted_components.emplace(component->GetComponentName(),component);
@@ -81,17 +105,16 @@ public:
 		component->SetComponentWorldLocation(world_transform.location);
 		return obj;
 	}
-
 	void RemoveSceneComponentFromParent() const;
 	void RemoveSceneComponent(const std::string& component_name);
 
 
 	//Danger performance 递归找节点
-	GCPtr<SceneComponent> GetSceneComponentByName(const std::string& searched_component_name);
+	SceneComponent *GetSceneComponentByName(const std::string &searched_component_name);
 
 
-    void ForRender();
-	void ForRenderData(std::vector<RenderData>& data);
+    virtual void ForRender();
+	void NativeForRenderData(std::vector<RenderData>& data);
     virtual void OfferRenderData(std::vector<RenderData>& data);
 
 	[[nodiscard]] bool IsSceneComponentOpenedPhysics() const;

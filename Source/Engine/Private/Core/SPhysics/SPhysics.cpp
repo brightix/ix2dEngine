@@ -51,25 +51,35 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 	{
 		if (A->type == PhysicsType::Static)
 			continue;
+		auto ARect = A->GetCollisionBox();
 		for (auto& col : col_objs)
 		{
 			Vec2<float> force;
-
 			if (col->type == PhysicsType::Static)
 			{
-				switch (A->GetCollisionBox().CollisionDir(col->GetCollisionBox()))
+				switch (auto col_rect = col->GetCollisionBox(); ARect.CollisionDir(col_rect))
 				{
 					case TOP:
+						A->after_location.y = col_rect.y + col_rect.h;
+						A->added_force.y -= A->velocity.y;
+						//std::cout << "Top碰撞" << std::endl;
 						break;
 					case BOTTOM:
-
-						A->added_force -= A->velocity;
+						A->after_location.y = col_rect.y - ARect.h;
+						A->added_force.y -= A->velocity.y;
+						//std::cout << "Bottom碰撞" << std::endl;
 						break;
 					case LEFT:
+						A->after_location.x = col_rect.x + col_rect.w;
+						A->added_force.x -=A->velocity.x;
+						//std::cout << "Left碰撞" << std::endl;
 						break;
 					case RIGHT:
+						A->after_location.x = col_rect.x - ARect.w;
+						A->added_force.x -=A->velocity.x;
+						//std::cout << "Right碰撞" << std::endl;
 						break;
-				default: ;
+					default: ;
 				}
 			}
 			//auto v = col->velocity * A->bounciness;
@@ -99,7 +109,7 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
 {
-	float acceleration = world_physics.GravityForce / unit->quality;
+	float acceleration = world_physics.GravityForce * unit->quality;
 	unit->velocity.y -= acceleration * delta_time;
 
 	//处理冲量 可能来自 其他物体 或 主观

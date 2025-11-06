@@ -2,7 +2,6 @@
 #include <iostream>
 #include "Classes/Actor.hpp"
 
-struct StaticTexture;
 class GameEngine;
 using namespace std;
 class TestActor : public Actor
@@ -10,11 +9,9 @@ class TestActor : public Actor
 public:
     int r;
 
-	GCPtr<StaticTexture> texture;
+	GCPtr<StaticTextureComponent> texture;
 
 	SDL_FRect rect;
-
-    explicit TestActor(int r) : r(r), rect() {}
 
 	void Construct() override
     {

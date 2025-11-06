@@ -1,7 +1,7 @@
 #include "../../../Classes/Component/SenceComponent/CollisionBox.hpp"
 #include <SDL3/SDL_render.h>
 #include "Classes/Actor.hpp"
-#include "Classes/Component/SenceComponent/StaticTexture.hpp"
+#include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/SPhysics/SPhysics.hpp"
 #include "Enum/ActorEnum.hpp"
@@ -83,7 +83,7 @@ void CollisionBox::SetBoundBox(const Vec2<float>& size)
 	h = size.y;
 	if (auto t = GetSceneComponentByName("CollisionBoxOutline"))
 	{
-		t.Cast<StaticTexture>()->SetNewTexture(Create_OutLineTexture_S({w,h}));;
+		Cast<StaticTextureComponent>(t)->SetStaticTexture(Create_OutLineTexture_S({w,h}));;
 	}
 	//physics_body->SetBodyBox(size);
 }
@@ -93,18 +93,12 @@ void CollisionBox::OfferRenderData(std::vector<RenderData>& data)
 	//SceneComponent::OfferRenderData(data);
 	if (is_outline_visible)
 	{
-		auto texture = GetSceneComponentByName("CollisionBoxOutline").Cast<StaticTexture>()->GetTexture();
+		const auto texture = Cast<StaticTextureComponent>(GetSceneComponentByName("CollisionBoxOutline"))->GetRowTexture();
 		auto rd = RenderData(this,texture);
 		rd.layer = 3;
 		data.emplace_back(std::move(rd));
 	}
 }
 
-void CollisionBox::Synchronization() const
-{
-	//physics_body->collision_rect.x = transform.location.x;
-	//physics_body->collision_rect.y = transform.location.y;
-	std::cout << "CollisionBox::Synchronization()" << std::endl;
-}
 
 
