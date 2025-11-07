@@ -94,7 +94,7 @@ void MovableComponent::Construct()
 
 void MovableComponent::Jump() const
 {
-    c->GetCharacterPhysicsBody()->AddImpulse({0,-100.f});
+    c->GetCharacterPhysicsBody()->AddImpulse({0,-800.f});
 }
 
 void MovableComponent::ActorComponentTick(const double deltaTime)

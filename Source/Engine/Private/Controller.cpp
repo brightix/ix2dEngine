@@ -4,17 +4,31 @@
 
 #include "Classes/Pawn.hpp"
 #include "Classes/SubSystem/EnhancedInputSubSystem.hpp"
-#include "../Utilities/ThirdParty/json.hpp"
-#include "../Classes/Core/GameEngine.hpp"
+#include "Utilities/ThirdParty/json.hpp"
+#include "Classes/Core/GameEngine.hpp"
 #include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
-void Controller::Control(GCPtr<Pawn> pawn)
+void Controller::Possess(Pawn* pawn)
 {
+	if (controlled_pawn)
+	{
+		//解绑
+		CallEvent("OnUnPossess");
+	}
 	controlled_pawn = pawn;
+	CallEvent("OnControlled");
 }
+
+void Controller::UnPossess(Pawn* pawn)
+{
+	if (pawn->)
+	CallEvent("OnDecontrol");
+
+}
+
 
 void Controller::Construct()
 {

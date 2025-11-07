@@ -1,4 +1,5 @@
 #pragma once
+#include "GCBase.hpp"
 #include "Classes/Core/GCObject.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 inline std::vector<GCObject*> GCAllObjects;
@@ -7,14 +8,6 @@ inline std::unordered_map<size_t,GCObject*> Global_GCObject_Registry;
 
 
 
-class GCBase
-{
-public:
-	virtual ~GCBase() {}
-	virtual GCObject* GetPtr() { return nullptr; }
-	virtual void Reset()= 0;
-};
-inline std::vector<GCBase*> GlobalPtr;
 template<typename T>
 class GCPtr : public GCBase
 {
@@ -30,11 +23,11 @@ public:
 			ptr = other_ptr;
 			id = ptr->id;
 		}
-		GlobalPtr.push_back(this);
+		GlobalPtr.insert(this);
 	}
 	~GCPtr()
 	{
-		std::erase(GlobalPtr,this);
+		GlobalPtr.remove(this);
 	}
 	//新对象
 
@@ -55,7 +48,7 @@ public:
 	{
 		ptr = other.ptr;
 		id = other.id;
-		GlobalPtr.push_back(this);
+		GlobalPtr.insert(this);
 	}
 
 	GCPtr& operator=(const GCPtr& other) {
@@ -87,7 +80,7 @@ public:
 	>>
 	GCPtr(const GCPtr<U>& other) : ptr(static_cast<T*>(other.Get())), id(other.id)
 	{
-		GlobalPtr.push_back(this);
+		GlobalPtr.insert(this);
 	}
 
 
@@ -95,7 +88,12 @@ public:
 	T* Get() const { return ptr; }
 	GCObject* GetPtr() override
 	{
-		return reinterpret_cast<GCObject *>(ptr);
+		//验证是否存活
+		if (Global_GCObject_Registry.contains(id))
+		{
+			return reinterpret_cast<GCObject *>(ptr);
+		}
+		return nullptr;
 	}
 
 	template<typename U>
@@ -120,7 +118,7 @@ public:
 	void Reset() override
 	{
 		ptr = nullptr;
-		id = -1;
+		id = 0;
 	}
 	[[nodiscard]] GCObject* GetOuter() const { return ptr->outer; }
 	T* operator->() const

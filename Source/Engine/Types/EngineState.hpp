@@ -2,7 +2,7 @@
 #include "Vec.hpp"
 struct EngineState
 {
-    float FPS = 0.0f;
-    float DeltaTime = 0.0f;
+    float FPS = -1.f;
+    float DeltaTime = -1.f;
 	Vec2<int> ScreenSize;
 };

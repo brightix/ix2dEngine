@@ -25,11 +25,14 @@ public:
     SPhysics();
 
 
-    ~SPhysics();
+    ~SPhysics() override;
 
     void Register(SPhysicsBaseUtility* unit);
 	void DeRegister(SPhysicsBaseUtility* unit);
-	void simulation(double delta_time);
+
+	void SimulationTunneling(double delta_time);
+
+	void Simulation(double delta_time);
 
 	void HandlePhysics(double delta_time, SPhysicsBaseUtility* unit) const;
 	void Synchronization() const;

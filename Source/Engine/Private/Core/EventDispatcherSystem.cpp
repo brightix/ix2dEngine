@@ -3,7 +3,11 @@
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 #include "Classes/Object.hpp"
 using namespace std;
-EventDispatcherSystem::EventDispatcherSystem() {}
+EventDispatcherSystem::EventDispatcherSystem(GCObject *outer_)
+{
+	outer = outer_;
+}
+
 void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
 {
 
@@ -79,5 +83,42 @@ void EventDispatcherSystem::CallDispatcher(const std::string& event_name, std::o
     // {
     //     Log("没有名为  "+ event_name + "  的事件！");
     // }
+}
+
+void EventDispatcherSystem::DelegateEvent(Object *obj, std::string dispatcher_name, std::string event_name)
+{
+	auto it = delegate.find(dispatcher_name);
+	if (it == delegate.end())
+	{
+		LogWithLevel(Warning,"绑定到空事件上:  " + dispatcher_name);
+		return ;
+	}
+#if DEBUG == 1
+	auto event_it = it->second[obj].find(event_name);
+	if (event_it != it->second[obj].end())
+	{
+		Logf("重复绑定事件,{} 试图将 {} 绑定到 {} 的 {} 上",obj->name,event_name,outer->name,dispatcher_name);
+	}
+#else
+	it->second[obj].insert(event_name);
+#endif
+}
+
+void EventDispatcherSystem::CallDelegate(const std::string &dispatcher_name)
+{
+	auto it = delegate.find(dispatcher_name);
+	if (it == delegate.end())
+	{
+		Logf("没有找到事件分发器 {}",dispatcher_name);
+		return ;
+	}
+	for (auto& funcs = it->second; auto& [p,events] : funcs)
+	{
+		GCWeakPtr<Object> obj = p;
+		for (auto& event_name : events)
+		{
+			obj->CallEvent(event_name);
+		}
+	}
 }
 

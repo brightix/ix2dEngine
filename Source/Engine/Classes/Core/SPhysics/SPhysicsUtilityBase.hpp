@@ -37,7 +37,7 @@ public:
 
 //物理的位置跟随父场景组件
 	Vec2<float> velocity;		//当前移动向量
-	float quality = 50.f;		//物体质量
+	float quality = 200.f;		//物体质量
 	float force_attenuation = 1.0f;		//力衰减
 	float bounciness = 0.5f;
 

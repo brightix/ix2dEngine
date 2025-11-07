@@ -19,11 +19,14 @@ public:
 	EventSystem event_system;
     Object();
 
-	virtual void Construct(){}
+	virtual void Construct();
 	//生命周期类
+	virtual void RegisterEvents(){}
+
+
 
     void AddCustomEvent(const std::string& event_name, EventMethod&& event_method);
-    void CallEvent(const std::string& event_name,std::optional<EventParams> params = std::nullopt);
+    void CallEvent(const std::string& event_name, const std::optional<EventParams> &params = std::nullopt);
     //添加事件分发器安全版本需要验证参数包类型
     void AddEventDispatcher(const std::string& event_name, EventMethod&& event_method);
 	void BindEventToDispatcher(Object *target, const std::string &event_name, Event event);
@@ -65,7 +68,7 @@ public:
 #if DEBUG
 		if (!outer)
 		{
-			LogWithLevel("构造了没有outer的对象",Warning);
+			LogWithLevel(Warning,"构造了没有outer的对象");
 		}
 #endif
     	return ptr;
@@ -87,7 +90,7 @@ public:
 #if DEBUG
 		if (!outer)
 		{
-			LogWithLevel("构造了没有outer的对象",Warning);
+			LogWithLevel(Warning,"构造了没有outer的对象");
 		}
 #endif
 		return object;

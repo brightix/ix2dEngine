@@ -52,20 +52,17 @@ TStartF("NormalTick");
 		 }
 TEndF("NormalTick");
 
-		physics->simulation(delta_time);
+
+		physics->SimulationTunneling(delta_time);
 
 TStartF("SetTexts");
 		texts[0]->SetText("TickDelay: " + std::to_string(timer.Click()));
 TEndF("SetTexts");
-
 TStartF("viewportTick");
 		world->viewport->ForTick(delta_time);
 TEndF("viewportTick");
 
-
 		texts[1]->SetText("WidgetTickDelay: " + std::to_string(timer.Click()));
-
-
 
 		physics->Synchronization();
 
@@ -107,12 +104,10 @@ TEndF("收集渲染数据");
 		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
 		// dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
 
-		physics->DebugTree();
+		//physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
 
 		dispatcher_system.CallDispatcher("RenderPresent");
-
-
 
 TStartF("SDL_ControllerTick");
 		for (auto& controller : controllers)

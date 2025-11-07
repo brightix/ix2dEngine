@@ -7,7 +7,8 @@ class Array
 public:
     std::vector<T> data;
     Array()= default;
-    void remove(T& to_remove)
+
+    void remove(const T& to_remove)
     {
         const int n = data.size();
         for (size_t i = 0; i < n; ++i)
@@ -21,5 +22,25 @@ public:
             }
         }
     }
+
+    void insert(T& element)
+    {
+        data.emplace_back(element);
+    }
+
+    template<typename U>
+    void insert(U* value) requires std::is_base_of_v<std::remove_pointer_t<T>, U>
+    {
+        data.push_back(static_cast<T>(value));
+    }
+
+
+
+    auto begin() { return data.begin(); }
+    auto end() { return data.end(); }
+    auto begin() const { return data.begin(); }
+    auto end() const { return data.end(); }
+    auto cbegin() const { return data.cbegin(); }
+    auto cend() const { return data.cend(); }
     ~Array()= default;
 };

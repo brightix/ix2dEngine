@@ -12,6 +12,11 @@ Widget::Widget() : widget_visibility(WidgetVisibility::Visible), layer_id(0), di
 {
 }
 
+void Widget::Construct()
+{
+    Object::Construct();
+}
+
 
 void Widget::ForTick(double delta_time)
 {

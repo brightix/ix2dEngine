@@ -35,6 +35,28 @@ void Pawn::Tick(double deltaTime)
 	//dispatcher_system.CallEvent("TestDispatcher",eip);
 }
 
+void Pawn::Possessed(Controller *possessed_controller)
+{
+	ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
+
+	}));
+}
+
+void Pawn::UnPossessed(Controller *possessed_controller)
+{
+	ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
+
+	}));
+}
+void Pawn::RegisterEvents()
+{
+	Actor::RegisterEvents();
+
+	AddCustomEvent("Possessed",Event([](TEventParams e) {
+
+	}));
+}
+
 void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param)
 {
 	enhanced_input_sub_system->ExecuteBool(std::move(param));

@@ -14,7 +14,7 @@ void TestFps::PreConstructEvent()
 {
     UserWidget::PreConstructEvent();
 	CNAME;
-    auto text = CreateWidget<TextBlockWidget>();
+    text = CreateWidget<TextBlockWidget>();
     FontStyle fontStyle;
     fontStyle.font = FontRenderer::Instance().GetFont("simkai", 24);
     try{
@@ -25,7 +25,7 @@ void TestFps::PreConstructEvent()
 	{
 		SDL_GetError();
 	}
-    AddChild("Fps_Text", text);
+	AddChild(text.Get());
 
     //Root->widget = text;
 }
@@ -37,6 +37,6 @@ void TestFps::Tick(double delta_time)
 	{
 		per_delta = 0.f;
 		auto info = GameEngine::Instance().GetEngineAttribution();
-		GetChild("Fps_Text").Cast<TextBlockWidget>()->SetText(ix::to_string(1.0/info.DeltaTime,0));
+		text->SetText(ix::to_string(1.0/info.DeltaTime,0));
 	}
 }

@@ -27,7 +27,25 @@ void SPhysics::DeRegister(SPhysicsBaseUtility* unit)
 	units.erase(unit);
 }
 
-void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
+
+void SPhysics::SimulationTunneling(const double delta_time)
+{
+	static constexpr double per_tunneling = 1.0 / 30.0;
+	//double elapsed = 0.0;
+	// while (elapsed < delta_time)
+	// {
+	// 	double t = min(per_tunneling, delta_time - elapsed);
+	// 	simulation(t);
+	// 	elapsed += t;
+	// }
+
+	int steps = static_cast<int>(std::ceil(delta_time / per_tunneling));
+	double actual_step = delta_time / steps;
+	for (int i = 0; i < steps; ++i)
+		Simulation(actual_step);
+}
+
+void SPhysics::Simulation(const double delta_time)//注意tunneling，分批tick
 {
 	TStart;
     collision_tree.Clear();
@@ -60,23 +78,34 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 				switch (auto col_rect = col->GetCollisionBox(); ARect.CollisionDir(col_rect))
 				{
 					case TOP:
-						A->after_location.y = col_rect.y + col_rect.h;
-						A->added_force.y -= A->velocity.y;
+						if (A->velocity.y < 0.f)
+						{
+							A->after_location.y = col_rect.y + col_rect.h;
+							A->velocity.y = 0.f;
+						}
+						// A->added_force.y -= A->velocity.y;
 						//std::cout << "Top碰撞" << std::endl;
 						break;
 					case BOTTOM:
-						A->after_location.y = col_rect.y - ARect.h;
-						A->added_force.y -= A->velocity.y;
+						if (A->velocity.y > 0.f)
+						{
+							A->after_location.y = col_rect.y - ARect.h;
+							A->velocity.y = 0.f;
+						}
+
+						// A->added_force.y -= A->velocity.y;
 						//std::cout << "Bottom碰撞" << std::endl;
 						break;
 					case LEFT:
 						A->after_location.x = col_rect.x + col_rect.w;
-						A->added_force.x -=A->velocity.x;
+						A->velocity.x = 0.f;
+						// A->added_force.x -=A->velocity.x;
 						//std::cout << "Left碰撞" << std::endl;
 						break;
 					case RIGHT:
 						A->after_location.x = col_rect.x - ARect.w;
-						A->added_force.x -=A->velocity.x;
+						A->velocity.x = 0.f;
+						// A->added_force.x -=A->velocity.x;
 						//std::cout << "Right碰撞" << std::endl;
 						break;
 					default: ;
@@ -109,6 +138,7 @@ void SPhysics::simulation(const double delta_time)//注意tunneling，分批tick
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
 {
+	unit->after_location = unit->collision_owner->GetComponentWorldLocation();
 	float acceleration = world_physics.GravityForce * unit->quality;
 	unit->velocity.y -= acceleration * delta_time;
 
@@ -116,8 +146,8 @@ void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit)
 	unit->velocity += unit->added_force;	unit->added_force.Reset();	//消费
 	//STOP_IF(unit->velocity.Length() < 1)
 	//作用
-	;
-	unit->after_location = (unit->collision_owner->GetComponentWorldLocation() + unit->velocity * delta_time).Cast<float>();
+
+	unit->after_location += (unit->velocity * delta_time).Cast<float>();
 }
 
 void SPhysics::Synchronization() const

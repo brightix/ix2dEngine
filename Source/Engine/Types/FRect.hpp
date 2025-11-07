@@ -54,7 +54,7 @@ struct FRect
 	}
 
 	// 判断是否与另一个矩形相交
-	bool intersects(const FRect& other) const
+	[[nodiscard]] bool intersects(const FRect& other) const
 	{
 		return !(other.x + other.w < x ||
 				 other.x > x + w ||

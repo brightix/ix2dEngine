@@ -16,10 +16,10 @@ void Character::Construct()
 
     SceneComponent::Replace(Root.Get(),capsule);
     sprite = Cast<StaticTextureComponent>(GetSceneComponent("default_texture"));
-    sprite->SetStaticTexture(Create_FilledTexture_S({100,100}));
+    sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
     capsule->NativeSetActiveCollision(true);
     capsule->SetComponentName("capsule");
-    capsule->GetPhysicsBody()->quality = 100.f;
+    capsule->GetPhysicsBody()->quality = 500.f;
     capsule->NativeSetSceneComponentSize(sprite->GetSize());
     SetActorTransform(transform);
 }
@@ -27,6 +27,7 @@ void Character::Construct()
 void Character::EventBegin()
 {
     Pawn::EventBegin();
+    SetCharacterMoveStrategy(Simulation);
     ListenDispatcher(World()->GetController(),"Key_1",Event([this](TEventParams) {
         std::cout << "切换到上帝模式" << std::endl;
         SetCharacterMoveStrategy(God);

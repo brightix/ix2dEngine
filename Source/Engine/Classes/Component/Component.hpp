@@ -10,7 +10,7 @@ protected:
 	Actor* owned_actor;
 public:
 	Component();
-
+	void Construct() override;
 	Actor *GetOwnerActor() const;
 
 	virtual void ComponentEventBegin(){}

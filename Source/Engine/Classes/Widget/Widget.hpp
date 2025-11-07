@@ -27,7 +27,7 @@ public:
 	bool is_initialized;
     Widget();
 
-	void Construct() final {}
+	void Construct() final ;
 	virtual void PreConstructEvent(){}
 	virtual void ConstructEvent(){}
 
@@ -58,8 +58,10 @@ public:
 	virtual void RemoveChild(Widget* UI){}
 
 	int GetLayerId() const;
+
+	//Slot
 	PanelSlot* GetParentSlot() const;
-	std::vector<PanelSlot*> GetSlots() const;
+	virtual std::vector<PanelSlot*> GetSlots() const;
 
 
 	void MakeDirty();

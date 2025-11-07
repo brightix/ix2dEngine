@@ -19,6 +19,7 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
 
 void Actor::Construct()
 {
+	Object::Construct();
 	//事件
 	//event_system.AddEvent("");
 	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
@@ -81,7 +82,7 @@ void Actor::DestroyActor()
 	//三缓冲
 	is_pre_kill = true;
 	is_active = false;
-	GCUnlink_self();
+	//GCUnlink_self();
 }
 
 void Actor::SetHiddenInGame(bool new_hidden_in_game)

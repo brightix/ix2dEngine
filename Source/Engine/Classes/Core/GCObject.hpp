@@ -2,10 +2,14 @@
 #include <string>
 #include <vector>
 
+#include "Types/Array.hpp"
+#include "Utilities/GCBase.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
 static size_t glo_id = 1;
 template<typename T>
 class GCPtr;
+
+
 struct GCObject
 {
     std::string class_name = "UnknownClass";
@@ -14,8 +18,8 @@ struct GCObject
 	bool bMarked = false;
 	bool is_pending_kill = false;
 	size_t id;
-	std::vector<GCObject*> referenced;
-	std::vector<GCObject*> referencing;
+	Array<GCObject*> referenced;
+	Array<GCObject*> referencing;
 
 	GCObject();
 
@@ -38,37 +42,29 @@ struct GCObject
 		outer = static_cast<GCObject*>(new_outer);
 	}
 
-	void GCUnlink_self()
-	{
-		for (auto parent : referenced)
-		{
-			std::erase(parent->referencing,this);
-		}
-		for (auto child : referencing)
-		{
-			std::erase(child->referenced,this);
-		}
-	}
+	void GCUnlink_self();
 };
+inline void GCLink(GCObject* parent,GCObject* child);
+inline void GCUnLink(GCObject* parent,GCObject* child);
 
-inline void GCLink(GCObject* parent,GCObject* child)
-{
-	if (!child || !parent)
-	{
-		Log("GCLink 绑定到空指针");
-		return ;
-	}
-	parent->referencing.push_back(child);
-	child->referenced.push_back(parent);
-}
-inline void GCUnLink(GCObject* parent,GCObject* child)
-{
-	if (!child || !parent)
-	{
-		Log("GCUnLink 解绑定到空指针");
-		return ;
-	}
-	std::erase(parent->referencing,child);
-	std::erase(child->referenced,parent);
-}
-
+// inline void GCLink(GCObject* parent,GCObject* child)
+// {
+// 	if (!child || !parent)
+// 	{
+// 		Log("GCLink 绑定到空指针");
+// 		return ;
+// 	}
+// 	parent->referencing.push_back(child);
+// 	child->referenced.push_back(parent);
+// }
+// inline void GCUnLink(GCObject* parent,GCObject* child)
+// {
+// 	if (!child || !parent)
+// 	{
+// 		Log("GCUnLink 解绑定到空指针");
+// 		return ;
+// 	}
+// 	std::erase(parent->referencing,child);
+// 	std::erase(child->referenced,parent);
+// }
+//

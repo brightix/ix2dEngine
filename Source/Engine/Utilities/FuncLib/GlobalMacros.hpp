@@ -7,7 +7,7 @@
 #define PI 3.14159265
 
 #define DEBUG 1
-#define TRACINGTEST 1
+#define TRACINGTEST 0
 
 //#define NAME(x) x + std::string("_") + std::to_string(glo_id); glo_id++
 #define CNAME class_name = typeid(*this).name(); \

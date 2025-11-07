@@ -9,7 +9,8 @@
 #include "Types/RenderData.hpp"
 #include "Utilities/TracingUtility.hpp"
 
-GameEngine::GameEngine() : delta_time(0), GCRoot(this)
+GameEngine::GameEngine() : delta_time(-1.0), GCRoot(this), engine_subsystem(nullptr), random_utility(nullptr),
+                           GCSys(nullptr)
 {
 	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
@@ -18,29 +19,30 @@ GameEngine::GameEngine() : delta_time(0), GCRoot(this)
 	}
 	timeBeginPeriod(1);
 	window = SDL_CreateWindow(
-		"Hello SDL3",        // 标题
-		1200, 1000,            // 宽高
+		"Hello SDL3", // 标题
+		1200, 1000, // 宽高
 		SDL_WINDOW_RESIZABLE // 可拉伸
-		);
-		if (!window)
-		{
-			Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
-			SDL_Quit();
-			return;
-		}
-		renderer = SDL_CreateRenderer(window, nullptr);
-		std::cout << SDL_GetRendererName(renderer) << std::endl;
-		if (!renderer)
-		{
-			Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
-			SDL_DestroyWindow(window);
-			SDL_Quit();
-		}
+	);
+	if (!window)
+	{
+		Log("SDL_CreateWindow Error:" + std::string(SDL_GetError()));
+		SDL_Quit();
+		return;
+	}
+	renderer = SDL_CreateRenderer(window, nullptr);
+	std::cout << SDL_GetRendererName(renderer) << std::endl;
+	if (!renderer)
+	{
+		Log("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+	}
 	font_manager = &FontRenderer::Instance();
 }
 
 void GameEngine::Construct()
 {
+	Object::Construct();
 	engine_subsystem = NewObject<SubSystemManager>(this);
 	renderer_center = engine_subsystem->CreateSubsystem<RendererCenter>();
 
@@ -112,6 +114,10 @@ void GameEngine::Tick()
 		// 场景逻辑
 		game_world->Tick(delta_time);
 		timer_system.Run();
+
+		TracingUtility::ReportPerformance(GetEngineAttribution());
+
+
 		//std::cout << "一怒之下tick了一下" << std::endl;
 		//double fps = 1.0 / delta_time;
 		//FontRenderer::Instance().UpdateTextTexture(fpsTex->GetTexture().get(), std::to_string(fps));
@@ -165,8 +171,13 @@ PanelSlot* GameEngine::AddWidgetToViewport(Widget* widget) const
 EngineState GameEngine::GetEngineAttribution() const
 {
 	EngineState engine_state;
-	engine_state.DeltaTime = delta_time;
 	SDL_GetWindowSize(window, &engine_state.ScreenSize.x, &engine_state.ScreenSize.y);
+	if (delta_time == -1)
+	{
+		return engine_state;
+	}
+	engine_state.DeltaTime = delta_time;
+	//engine_state.FPS = 1.0 / delta_time;
 	return engine_state;
 }
 

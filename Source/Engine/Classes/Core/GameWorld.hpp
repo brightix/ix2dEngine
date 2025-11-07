@@ -49,10 +49,10 @@ public:
 
 	GCPtr<CanvasWidget> viewport;
     GameWorld();
-    ~GameWorld();
+    ~GameWorld() override;
 	void Unload();
 
-	void Construct() override{}
+	void Construct() override;
 	void ConstructWorld();
 	void StartSimulation();
 	// 从类构建Actor
@@ -149,8 +149,8 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 		Transform t;
 		t.location.x = Box.x + Box.w * Rand();
 		t.location.y = Box.y + Box.h * Rand();
-		SpawnActor(new T(t));
-		std::cout << i << "  in_delay: " << timer.Click() << std::endl;
+		SpawnActor<T>(t);
+		//std::cout << i << "  in_delay: " << timer.Click() << std::endl;
 		TEndF("RandCreateActor");
 	}
 }

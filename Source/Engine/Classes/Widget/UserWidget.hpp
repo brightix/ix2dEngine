@@ -9,19 +9,22 @@ class UserWidget : public Widget
 {
 protected:
 
-	std::unordered_map<std::string, GCPtr<Widget>> child_widget;
+	//std::unordered_map<std::string, GCPtr<Widget>> child_widget;
 	GCPtr<PanelSlot> Root;
 public:
     UserWidget(){}
     void Tick(double delta_time) override {}
     void NativeWidgetRender(FRect display_area) override;
+	void PreConstructEvent() override;
+	void OfferWidgetRenderData(std::vector<RenderData> &data) override;
+
     WidgetType GetWidgetType() override;
 
-    void AddChild(const std::string &widget_name, Widget *child);
+    //void AddChild(const std::string &widget_name, Widget *child);
     GCPtr<Widget> GetChild(const std::string &widget_name);
 
-	PanelSlot *CreateSlot() final { return Root.Get();}
-	void ReceiveSlot(PanelSlot* slot) final {}
+	PanelSlot *CreateSlot() final;
+	void ReceiveSlot(PanelSlot* slot) final ;
 
 	void FlushDirty() override;
 };

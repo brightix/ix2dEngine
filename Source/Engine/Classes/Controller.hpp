@@ -37,8 +37,12 @@ class Controller : public Actor
 
 	using Actor::Actor;
 public:
-	void Control(GCPtr<Pawn> pawn);
-	void Construct() override;
+	void Possess(Pawn *pawn);
+
+    void UnPossess(Pawn *pawn);
+
+
+    void Construct() override;
 	void EventBegin() override;
     void Tick(double delta) override;
 

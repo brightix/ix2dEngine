@@ -127,42 +127,107 @@ public:
 
 
     // 检测当前节点的对象对
-
-	TCollisionPairs Query(TCollisionPairs& collision_pairs, const int depth = 0)
+	void CollectIntersectingObjects(const FRect& area, std::vector<SPhysicsBaseUtility*>& out)
     {
-    	TStartF("Query" + std::to_string(depth));
-        size_t n = objects.size();
-        for (size_t i = 0; i < n; ++i)
-        {
-            for (size_t j = i + 1; j < n; ++j)
-            {
-            	auto& A = objects[i];
-            	auto& B = objects[j];
-                if (A->GetCollisionBox().intersects(B->GetCollisionBox()))
-                {
-                    // if (collision_callback)
-                    //     collision_callback(objects[i], objects[j]);
-                	if (A->type != PhysicsType::Static)
-                	{
-                		collision_pairs[A].insert(B);
-                	}
-                	else if (B->type != PhysicsType::Static)
-                	{
-                		collision_pairs[B].insert(A);
-                	}
-                }
-            }
-        }
+    	if (!boundary.intersects(area))
+    		return; // 整个子树都与 area 不相交，剪枝
 
-        // 向下递归
-        for (auto& child : tree_slots)
-        {
-            if (child)
-                child->Query(collision_pairs, depth + 1);
-        }
-    	TEndF("Query" + std::to_string(depth));
-    	return collision_pairs;
-    }
+    	// 本节点的对象：只把与 area 实际相交的对象加入
+    	for (auto* o : objects)
+    	{
+    		if (o->GetCollisionBox().intersects(area))
+    			out.push_back(o);
+    	}
+
+    	// 递归到子节点（如果有）
+    	if (tree_slots[0])
+    	{
+    		for (auto& child : tree_slots)
+    		{
+    			if (child) child->CollectIntersectingObjects(area, out);
+    		}
+    	}
+	}
+	TCollisionPairs Query(TCollisionPairs& collision_pairs, const int depth = 0)
+	{
+	    TStartF("Query" + std::to_string(depth));
+
+	    // 1) 检测本节点内对象对（原有逻辑）
+	    size_t n = objects.size();
+	    for (size_t i = 0; i < n; ++i)
+	    {
+	        auto* A = objects[i];
+	        auto ARect = A->GetCollisionBox();
+
+	        for (size_t j = i + 1; j < n; ++j)
+	        {
+	            auto* B = objects[j];
+	            auto BRect = B->GetCollisionBox();
+		        //
+	        	// if (B->type == PhysicsType::Movable)
+	        	// {
+	        	// 	BREAK
+	        	// }
+	            if (ARect.intersects(BRect))
+	            {
+	                if (A->type != PhysicsType::Static)
+	                    collision_pairs[A].insert(B);
+	                else if (B->type != PhysicsType::Static)
+	                    collision_pairs[B].insert(A);
+	            }
+	        }
+	    }
+
+	    // 2) 检测本节点的对象 与 子树（所有子节点及其后代）里面的对象之间的对
+	    //    对每个本节点对象，遍历与它边界相交的子节点，收集候选并检测
+	    if (tree_slots[0])
+	    {
+	        for (size_t i = 0; i < n; ++i)
+	        {
+	            auto* A = objects[i];
+	            auto ARect = A->GetCollisionBox();
+
+	            for (auto& child : tree_slots)
+	            {
+	                if (!child) continue;
+	                if (!child->boundary.intersects(ARect)) continue; // 剪枝：子节点边界不相交则无必要深入
+
+	                // 从 child 子树中收集与 A 的包围盒相交的对象
+	                std::vector<SPhysicsBaseUtility*> candidates;
+	                child->CollectIntersectingObjects(ARect, candidates);
+
+	                for (auto* B : candidates)
+	                {
+	                    // 再次精确判断（虽然 Collect 已筛过，但保险起见）
+	                    if (!A->GetCollisionBox().intersects(B->GetCollisionBox()))
+	                        continue;
+
+	                    // if (A->type == PhysicsType::Movable || B->type == PhysicsType::Movable)
+	                    //     continue;
+
+	                    if (A->type != PhysicsType::Static)
+	                        collision_pairs[A].insert(B);
+	                    else if (B->type != PhysicsType::Static)
+	                        collision_pairs[B].insert(A);
+	                }
+	            }
+	        }
+	    }
+
+	    // 3) 递归子节点自身查询（内部对子节点会自己处理）
+	    for (auto& child : tree_slots)
+	    {
+	        if (child)
+	        {
+		        TStartF("child_query");
+	        	child->Query(collision_pairs, depth + 1);
+	        	TEndF("child_query");
+	        }
+	    }
+
+	    TEndF("Query" + std::to_string(depth));
+	    return collision_pairs;
+	}
 
     // 递归调试输出
     void DebugTree(int depth = 0)

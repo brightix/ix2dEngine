@@ -2,6 +2,7 @@
 #include "Classes/Actor.hpp"
 #include "SubSystem/EnhancedInputSubSystem.hpp"
 
+class Controller;
 class MovableComponent;
 
 class Pawn : public Actor
@@ -17,6 +18,13 @@ public:
 	void Construct() override;
 	void EventBegin() override;
     void Tick(double deltaTime) override;
+	//
+
+	void Possessed(Controller* possessed_controller);
+
+	void UnPossessed(Controller *possessed_controller);
+
+	void RegisterEvents() override;
 
 	//增强输入
 	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param);

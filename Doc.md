@@ -73,5 +73,15 @@ widget提供slot数量和自身尺寸，计算slot的大小，slot将大小传�
 release模式下相比debug模式下性能提升200000%
 
 
+Widget创建流程
 
+CreateWidget（）创建一个控件实例
+
+AddChild（） 将控件的实例绑定进调用者的槽中
+内部：多态CreateSlot生产不同类的专属槽，绑定传入的控件和槽，然后将这个槽ReceiveSlot()返回给多态自身,让多态类自己去处理槽，最后把这个槽函数返回给外部用
+在addchild时会触发或绑定ConstructEvent()
+
+事件委托：
+委托者AddCustomEvent（）创建自定义事件，ListenDispatcher（调用者指针，调用者分发器，委托事件名）绑定到调用者的事件分发器
+调用者CallDispatcher()，遍历所有绑定到分发器的委托者指针，然后通过这个指针和委托事件名去让委托者自己去执行事件
 

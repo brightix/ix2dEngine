@@ -18,6 +18,10 @@ void Capsule2d::ComponentEventBegin()
 
     ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams) {
         SetComponentWorldLocation(physics_body->after_location);
+        if (world_transform.location.y > 800)
+        {
+            //BREAK
+        }
     }));
 }
 

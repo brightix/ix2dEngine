@@ -13,14 +13,18 @@ class TextBlockWidget final : public Widget
 public:
     TextBlockWidget();
     void PreConstructEvent() override;
+
     void SetText(const std::string& new_text);
     void SetFontStyle(const FontStyle& new_font_style);
+
+
+
     void WidgetRender(FRect display_area) override;
     void OfferWidgetRenderData(std::vector<RenderData> &data) override;
 
+
+
     PanelSlot * CreateSlot() override { return nullptr;}
-
     void ReceiveSlot(PanelSlot *slot) override {}
-
     void FlushDirty() override {}
 };

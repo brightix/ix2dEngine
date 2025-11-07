@@ -34,6 +34,42 @@ std::string GCObject::GetClassName()
 	return class_name;
 }
 
+void GCObject::GCUnlink_self()
+{
+	for (auto parent : referenced)
+	{
+		parent->referencing.remove(this);
+	}
+	for (auto child : referencing)
+	{
+		child->referenced.remove(this);
+	}
+}
+
+void GCLink(GCObject *parent, GCObject *child)
+{
+	if (!child || !parent)
+	{
+		Log("GCLink 绑定到空指针");
+		return ;
+	}
+	parent->referencing.insert(child);
+	child->referenced.insert(parent);
+}
+
+void GCUnLink(GCObject *parent, GCObject *child)
+{
+	if (!child || !parent)
+	{
+		Log("GCUnLink 解绑定到空指针");
+		return ;
+	}
+
+	parent->referencing.remove(child);
+	child->referenced.remove(parent);
+}
+
+
 // void GCObject::SetOuter(GCObject* new_outer)
 // {
 // 	outer = new_outer;

@@ -6,16 +6,23 @@
 #include <fstream>
 
 #include "FuncLib/ixStaticFuncLib.hpp"
+#include "FuncLib/SystemLib.hpp"
+#include "Types/EngineState.hpp"
 
-struct TracingInfo
+// struct TracingInfo
+// {
+//     std::string name;
+//     std::string ph;
+//     std::string pid;
+//     std::string tid;
+//     std::string ts;
+// };
+
+
+struct ReportInfo
 {
-    std::string name;
-    std::string ph;
-    std::string pid;
-    std::string tid;
-    std::string ts;
-};
 
+};
 class TracingUtility
 {
     std::ofstream file;
@@ -23,9 +30,17 @@ class TracingUtility
     nlohmann::json end;
 	std::string current_file_path;
 	std::string to_write;
+
+
+	//static std::unordered_map<std::string, float> rep;
+	static nlohmann::json rep;
 public:
     TracingUtility()
     {
+    	rep["CPU"] = GetCPUName();
+    	rep["MaxFps"] = FLT_MIN;
+    	rep["MinFps"] = FLT_MAX;
+    	rep["AverageFps"] = 0.f;
     	//读配置
         const std::string path = "Content/Tracing/Config.json";
         std::ifstream in(path);
@@ -84,6 +99,7 @@ public:
 		file_t << to_write;
     	file_t << R"({}],"displayTimeUnit": "ms"})" << std::endl;
     	file_t.close();
+    	std::cout << rep.dump(4) << std::endl;
     }
     static TracingUtility& Instance()
     {
@@ -120,4 +136,6 @@ public:
     	to_write.append(tracing.dump()+",");
         //file << tracing.dump(4) << "," << std::endl;
     }
+
+    static void ReportPerformance(const EngineState &info);
 };

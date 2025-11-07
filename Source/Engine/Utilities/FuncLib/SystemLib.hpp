@@ -1,6 +1,8 @@
 #pragma once
+#include <array>
 #include <iostream>
 #include <format>
+#include <intrin.h>
 #include <set>
 #include <string>
 #include <vector>
@@ -54,4 +56,29 @@ T* IsDerived(U* other = nullptr, const char* func_name = "")
 		return nullptr;
 	}
 	return dynamic_cast<T*>(other);
+}
+
+inline std::string GetCPUName()
+{
+	std::array<int, 4> cpui;
+	std::vector<std::array<int, 4>> data;
+	__cpuid(cpui.data(), 0);
+	int nIds = cpui[0];
+	for (int i = 0; i <= nIds; ++i)
+	{
+		__cpuidex(cpui.data(), i, 0);
+		data.push_back(cpui);
+	}
+
+	char name[0x40] = {0};
+	if (nIds >= 0x16)
+	{
+		__cpuid((int*)cpui.data(), 0x80000002);
+		memcpy(name, cpui.data(), sizeof(cpui));
+		__cpuid((int*)cpui.data(), 0x80000003);
+		memcpy(name + 16, cpui.data(), sizeof(cpui));
+		__cpuid((int*)cpui.data(), 0x80000004);
+		memcpy(name + 32, cpui.data(), sizeof(cpui));
+	}
+	return std::string(name);
 }

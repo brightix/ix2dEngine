@@ -4,6 +4,11 @@
 
 Component::Component() : owned_actor(nullptr) {}
 
+void Component::Construct()
+{
+	Object::Construct();
+}
+
 Actor* Component::GetOwnerActor() const
 {
 	return Cast<Actor>(outer);
