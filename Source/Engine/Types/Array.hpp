@@ -8,7 +8,7 @@ public:
     std::vector<T> data;
     Array()= default;
 
-    void remove(const T& to_remove)
+    bool remove(const T& to_remove)
     {
         const int n = data.size();
         for (size_t i = 0; i < n; ++i)
@@ -16,12 +16,19 @@ public:
             if (data[i] == to_remove)
             {
                 // 用最后一个元素覆盖当前
-                data[i] = data.back();
+                data[i] = std::move(data.back());
                 data.pop_back(); // 删除最后一个
-                break;
+                return true;
             }
         }
+    	return false;
     }
+
+	std::vector<T>::iterator Find(const T& target)
+    {
+		return std::find(data.begin(), data.end(), target);
+    }
+
 
     void insert(T& element)
     {
@@ -36,6 +43,10 @@ public:
 
 
 
+	T& operator[](const int index) {
+		return data[index];
+    }
+//迭代器
     auto begin() { return data.begin(); }
     auto end() { return data.end(); }
     auto begin() const { return data.begin(); }

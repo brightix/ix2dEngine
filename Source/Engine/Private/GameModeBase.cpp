@@ -29,10 +29,8 @@ void GameModeBase::EventBegin()
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
 	auto_generate_pawn = SpawnActor<Character>(Transform({300,300}));
-	auto_generate_pawn->SetPawnColor_Debug(RED);
-	//auto_generate_pawn->EventBegin();
 
-	controller->Control(auto_generate_pawn);
+	controller->Possess(auto_generate_pawn.Get());
 }
 
 Controller *GameModeBase::CreateController() const

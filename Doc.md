@@ -85,3 +85,30 @@ AddChild（） 将控件的实例绑定进调用者的槽中
 委托者AddCustomEvent（）创建自定义事件，ListenDispatcher（调用者指针，调用者分发器，委托事件名）绑定到调用者的事件分发器
 调用者CallDispatcher()，遍历所有绑定到分发器的委托者指针，然后通过这个指针和委托事件名去让委托者自己去执行事件
 
+事件规范:
+建议所有分发器以 "On + 主语 + 行为" 命名
+
+
+事件系统重构
+有参 事件事例：
+创建自定义事件
+AddCustomEvent(Event("RenderSceneDataReady",[&](std::vector<RenderData> clips) {
+RenderScene(clips);
+}));
+创建分发器
+AddDispatcher("OnRenderSceneDataReady", {typeid(std::vector<RenderData>)});
+监听事件（绑定事件）
+renderer_center->ListenDispatcher(tick_sys, "OnRenderSceneDataReady", "RenderSceneDataReady");
+调用事件
+CallDispatcher("OnRenderSceneDataReady",std::move(render_data));
+
+无参 事件事例：
+创建分发器
+AddDispatcher("OnRenderClear");
+调用事件
+CallDispatcher("OnRenderClear");
+创建自定义事件
+AddCustomEvent(Event("RenderClear",[this]() {
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
+    SDL_RenderClear(renderer);
+}));

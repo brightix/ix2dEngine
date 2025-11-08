@@ -23,7 +23,7 @@ protected:
 	Rotation relative_rotation;
 
 	/**
-     * 渲染枢轴
+     * 组件变换枢轴
      */
     Vec2<float> pivot;
 	std::unordered_map<std::string, GCPtr<SceneComponent>> mounted_components;
@@ -32,7 +32,9 @@ protected:
 	ComponentVisibility visibility = ComponentVisibility::Visible;
 	bool open_physics = false;
 public:
+	//组件的最大宽度
 	float w;
+	//组件的最大高度
 	float h;
 	LayerHierarchy layer;
     SceneComponent();
@@ -154,7 +156,7 @@ public:
 //Location
 	void AddComponentWorldLocation(const Vec2<float>& added_loc);
 	void SetComponentWorldLocation(const Vec2<float>& new_loc);
-	Vec2<float> GetComponentWorldLocation();
+	Vec2<float> GetComponentWorldLocation() const;
 	Vec2<float> GetComponentRelativeLocation();
 //Rotation
 	void SetComponentWorldRotation(const Rotation& rotation);

@@ -62,14 +62,50 @@ struct FRect
 				 other.y > y + h);
 	}
 
+	float OverlapX(const FRect& other) const
+	{
+		return std::max(0.f, std::min(x + w, other.x + other.w) - std::max(x, other.x));
+	}
+
+	float OverlapY(const FRect& other) const
+	{
+		return std::max(0.f, std::min(y + h, other.y + other.h) - std::max(y, other.y));
+	}
+
+	float MaxOverlap(const FRect& other) const
+	{
+		return std::max(
+			std::min(x + w, other.x + other.w) - std::max(x, other.x),
+			std::min(y + h, other.y + other.h) - std::max(y, other.y)
+			); // 最大重叠长度
+	}
+	float MinOverlap(const FRect& other) const
+	{
+		return std::min(
+			std::min(x + w, other.x + other.w) - std::max(x, other.x),
+			std::min(y + h, other.y + other.h) - std::max(y, other.y)
+			); // 最大重叠长度
+	}
+
+
 	// 获取右边缘
 	float right() const { return x + w; }
 
 	// 获取下边缘
 	float bottom() const { return y + h; }
 
+	Vec2<float> Center() const
+	{
+		return Vec2(x + w / 2.f, y + h / 2.f);
+	}
+
 	SDL_FRect CastToSDL_FRect() const
 	{
 		return SDL_FRect(x,y,w,h);
+	}
+
+	std::string Str()
+	{
+		return std::format("x: {}, y: {}, w: {}, h: {}",x,y,w,h);
 	}
 };

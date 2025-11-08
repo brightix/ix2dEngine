@@ -1,9 +1,15 @@
 #pragma once
 #include <string>
 
-struct var_type
+template<typename T>
+concept HasStr = requires(T t)
 {
-    var_type(){}
-    virtual ~var_type(){}
-    virtual std::string str()= 0;
+	{ t.Str() } ->std::same_as<std::string>;
+};
+
+template<typename Derived>
+struct VarTypeCheck {
+	VarTypeCheck() {
+		static_assert(HasStr<Derived>, "Derived must implement Str()");
+	}
 };

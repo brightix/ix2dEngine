@@ -95,13 +95,11 @@ struct GCWeakPtr
 	}
 };
 
-namespace std {
-	template<typename T>
-	struct hash<GCWeakPtr<T>>
+template<typename T>
+struct std::hash<GCWeakPtr<T>>
+{
+	size_t operator()(const GCWeakPtr<T>& w) const noexcept
 	{
-		size_t operator()(const GCWeakPtr<T>& w) const noexcept
-		{
-			return std::hash<T*>{}(w.ptr); // 使用 ptr 地址作为 hash
-		}
-	};
-}
+		return std::hash<T*>{}(w.ptr); // 使用 ptr 地址作为 hash
+	}
+};

@@ -45,7 +45,7 @@ public:
         const std::string path = "Content/Tracing/Config.json";
         std::ifstream in(path);
         if (!in.is_open()) {
-            LogWithLevel("无法打开配置文件！", FatalError);
+            LogWithLevel(FatalError,"无法打开配置文件！");
             return;
         }
 

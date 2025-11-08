@@ -29,6 +29,7 @@ public:
 	TickSubSystem() : buffer_type(0) { }
 
     void Construct() override;
+	void RegisterDispatchers() override;
     void Tick(double delta_time);
 
 

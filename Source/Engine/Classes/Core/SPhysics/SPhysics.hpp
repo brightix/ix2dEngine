@@ -10,14 +10,14 @@ class MovableUtility;
 
 struct WorldPhysics
 {
-    float GravityForce = -1.f;
+    Vec2<float> GravityDir = {0,1};
 };
 
 class SPhysics : public EngineSubSystem
 {
 	//task
     WorldPhysics world_physics;
-    float GravityForce = 9.8f;
+    float WorldGravityForce = 9.8f;
     //std::vector<SPhysicsTypeBase*> actors;
     QuadTree collision_tree;
 public:
@@ -40,6 +40,10 @@ public:
 
 	//void HandleVelocity(float delta_time);
     static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);
+
+	void OnStaticBodyCollision(SPhysicsBaseUtility* A, SPhysicsBaseUtility* B);
+
+	void OnMovableBodyCollision(SPhysicsBaseUtility* A, SPhysicsBaseUtility* B);
 
 	void DebugTree()
 	{

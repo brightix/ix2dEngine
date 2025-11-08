@@ -3,7 +3,7 @@
 #include "FPoint.hpp"
 #include "var_type.hpp"
 
-struct Rotation  : var_type
+struct Rotation
 {
     float Angle;
     std::optional<FPoint> Point;
@@ -16,9 +16,8 @@ struct Rotation  : var_type
     	return angle;
     }
 
-
-    std::string str()
+	std::string Str() const
     {
-        return "Rotation(" + std::to_string(Angle) + "),Point(" + (*Point).str();
+    	return "Rotation " + std::to_string(Angle) + ", Point " + (Point ? Point->Str() : "null");
     }
 };

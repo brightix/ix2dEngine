@@ -4,12 +4,13 @@
 
 GCObject::GCObject()
 {
-	//printf("s\n");
-	id = glo_id++;
+	id = ++glo_id;
+#if DEBUG
 	if (id == 18)
 	{
 		BREAK;
 	}
+#endif
 	Global_GCObject_Registry[id] = this;
 }
 GCObject::~GCObject()
@@ -44,29 +45,6 @@ void GCObject::GCUnlink_self()
 	{
 		child->referenced.remove(this);
 	}
-}
-
-void GCLink(GCObject *parent, GCObject *child)
-{
-	if (!child || !parent)
-	{
-		Log("GCLink 绑定到空指针");
-		return ;
-	}
-	parent->referencing.insert(child);
-	child->referenced.insert(parent);
-}
-
-void GCUnLink(GCObject *parent, GCObject *child)
-{
-	if (!child || !parent)
-	{
-		Log("GCUnLink 解绑定到空指针");
-		return ;
-	}
-
-	parent->referencing.remove(child);
-	child->referenced.remove(parent);
 }
 
 

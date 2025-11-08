@@ -27,12 +27,11 @@ class Actor : public Object
 
 
 protected:
-
 	Transform transform;
-	//关卡 负责管理生命周期
-	SDL_Window* window;
-	GCPtr<GameWorld> game_world;
 
+	FRect actor_boundary;
+	//关卡 负责管理生命周期
+	GameWorld* game_world;
 	GCPtr<SceneComponent> Root;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
 	//可移动性
@@ -44,7 +43,9 @@ public:
 	explicit Actor(const Transform &tf);
 
 	void Construct() override;
-    virtual void EventBegin();
+	void RegisterEvents() override;
+	virtual void EventBegin();
+
 	virtual void PrePhysicsTick(double delta_time){}
 
 	virtual void Tick(double delta_time);
@@ -75,7 +76,8 @@ public:
 
 	void AddActorWorldLocation(Vec2<float> dis) const;
 
-
+//修正
+	Vec2<float> ConvertLocationFromPivot(Vec2<float> display_corner);
 
 
 

@@ -2,10 +2,10 @@
 #include "var_type.hpp"
 #include "Vec.hpp"
 
-class Scale : var_type
-{
-    Vec2d<float> Scaling;
-    Scale() : Scaling({}){}
-    Scale(float x, float y) : Scaling({x,y}){}
-    Scale(Vec2d<float> Scaling_) : Scaling(Scaling_){}
-};
+// class Scale : var_type
+// {
+//     Vec2d<float> Scaling;
+//     Scale() : Scaling({}){}
+//     Scale(float x, float y) : Scaling({x,y}){}
+//     Scale(Vec2d<float> Scaling_) : Scaling(Scaling_){}
+// };

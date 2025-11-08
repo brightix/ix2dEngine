@@ -1,12 +1,29 @@
 #pragma once
-#include <unordered_set>
+#include "Types/Dispatcher.hpp"
 #include "Utilities/Event.hpp"
 #include "Utilities/GCPtr.hpp"
 #include "Utilities/GCWeakPtr.hpp"
-
-
+#include "Utilities/FuncLib/SystemLib.hpp"
 class Object;
-using EventMethod = std::function<void(std::optional<EventParams>)>;
+using EventMethod = std::function<void(TEventParams)>;
+
+// struct DispatcherKey {
+// 	std::string dispatcher;
+// 	GCWeakPtr<Object> target;
+// 	bool operator==(const DispatcherKey& o) const noexcept {
+// 		return dispatcher == o.dispatcher && target == o.target;
+// 	}
+// };
+//
+// struct DispatcherKeyHash {
+// 	size_t operator()(const DispatcherKey& k) const noexcept {
+// 		return std::hash<std::string>{}(k.dispatcher)
+// 			 ^ (std::hash<void*>{}(k.target.Get()) << 1);
+// 	}
+// };
+
+
+
 //多播委托
 class EventDispatcherSystem
 {
@@ -14,27 +31,28 @@ class EventDispatcherSystem
 	//分发器-> 事件对象-> 事件
 	std::unordered_map<std::string,std::unordered_map<GCPtr<Object>,std::vector<Event>>> bound_dispatcher;
 
-	//分发器
-	std::unordered_map<std::string,std::unordered_map<GCWeakPtr<Object>,std::unordered_set<std::string>>> delegate;
-
-	//	std::unordered_map<> ;
+//					   分发器									委托者				   委托事件
+	std::unordered_map<Dispatcher,      std::unordered_map<     GCWeakPtr<Object>,     Array<std::string>>> delegate;
+//	std::unordered_map<std::string,     std::unordered_map<     GCWeakPtr<Object>,     std::unordered_set<std::string>>> delegate_set;
 public:
-    EventDispatcherSystem(GCObject* outer_);
+    explicit EventDispatcherSystem(GCObject* outer_);
     ~EventDispatcherSystem()= default;
 
+	const Dispatcher* GetDispatcherType(const std::string& dispatcher_name) const;
 
-    //添加分发器
-    void AddEventDispatcher(const std::string& event_name);
+	//添加分发器
+	void AddDispatcher(const std::string& event_name, const std::vector<std::type_index>& dispatcher_type = {});
 
-	//在这个事件系统里绑定其他对象的事件
-    void BindEventTo(Object *obj, const std::string& bounded_name,  Event event);
-	std::optional<Event> GetEvent(Object *obj, const std::string& event_name);
-	void CallDispatcher(const std::string& event_name,std::optional<EventParams> event_params = std::nullopt);
+	// 接收目标的委托事件名
+	void AcceptDelegate(Object* target, std::string dispatcher_name, std::string event_name);
+	//解绑该对象的所有同名委托
+	void RemoveDelegate(Object* target, const std::string& dispatcher_name, const std::string& event_name);
 
+	//调用分发器
+	void CallDispatcher(const std::string& dispatcher_name, std::optional<EventParams>&& event_params = std::nullopt);
 
+	void RemoveAllEventByDispatcher(Object* sender, const std::string& dispatcher_name);
 
-
-	void DelegateEvent(Object* obj, std::string dispatcher_name, std::string event_name);
-	void CallDelegate(const std::string& dispatcher_name);
+	void RemoveAllEventByEventName(Object* sender, const std::string& dispatcher_name, const std::string& event_name);
 };
 

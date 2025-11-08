@@ -1,4 +1,5 @@
 #include <iostream>
+#define NOMINMAX
 #include <windows.h>
 
 #include "Classes/Core/GameEngine.hpp"

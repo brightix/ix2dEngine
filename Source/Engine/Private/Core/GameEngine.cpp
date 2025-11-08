@@ -14,7 +14,7 @@ GameEngine::GameEngine() : delta_time(-1.0), GCRoot(this), engine_subsystem(null
 {
 	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
-		LogWithLevel("SDL_Init Error", LogLevel::FatalError);
+		LogWithLevel(LogLevel::FatalError,"SDL_Init Error");
 		return;
 	}
 	timeBeginPeriod(1);
@@ -92,10 +92,11 @@ void GameEngine::EventBegin()
 	game_world->StartSimulation();
 
 	//最后绑定事件
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderSceneDataReady", *renderer_center->event_system.GetEventByName("OnRenderSceneDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderWidgetDataReady", *renderer_center->event_system.GetEventByName("OnRenderWidgetDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
+	auto tick_sys = game_world->tick_SubSystem.Get();
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderSceneDataReady", renderer_center->ValidEvent("RenderSceneDataReady"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderWidgetDataReady", renderer_center->ValidEvent("RenderWidgetDataReady"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderClear", renderer_center->ValidEvent("RenderClear"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderPresent", renderer_center->ValidEvent("RenderPresent"));
 }
 
 

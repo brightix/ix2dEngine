@@ -23,6 +23,6 @@ RenderData::RenderData(Widget *w, std::shared_ptr<SDL_Texture> t)
 	}
 	else
 	{
-		dst_rect = {area.x, area.y,min(t->w, area.w),min(t->h, area.h)};
+		dst_rect = {area.x, area.y,std::min(static_cast<float>(t->w), area.w),std::min(static_cast<float>(t->h), area.h)};
 	}
 }

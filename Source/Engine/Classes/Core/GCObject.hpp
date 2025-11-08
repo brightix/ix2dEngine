@@ -5,7 +5,7 @@
 #include "Types/Array.hpp"
 #include "Utilities/GCBase.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-static size_t glo_id = 1;
+static size_t glo_id = 0;
 template<typename T>
 class GCPtr;
 
@@ -44,8 +44,27 @@ struct GCObject
 
 	void GCUnlink_self();
 };
-inline void GCLink(GCObject* parent,GCObject* child);
-inline void GCUnLink(GCObject* parent,GCObject* child);
+inline void GCLink(GCObject *parent, GCObject *child)
+{
+	if (!child || !parent)
+	{
+		Log("GCLink 绑定到空指针");
+		return ;
+	}
+	parent->referencing.insert(child);
+	child->referenced.insert(parent);
+}
+inline void GCUnLink(GCObject *parent, GCObject *child)
+{
+	if (!child || !parent)
+	{
+		Log("GCUnLink 解绑定到空指针");
+		return ;
+	}
+
+	parent->referencing.remove(child);
+	child->referenced.remove(parent);
+}
 
 // inline void GCLink(GCObject* parent,GCObject* child)
 // {

@@ -16,18 +16,12 @@ void CollisionBox::Construct()
 {
 	SceneComponent::Construct();
 
-	dispatcher_system.AddEventDispatcher("OnCollision");
+	dispatcher_system.AddDispatcher("OnCollision");
 
 	//物理组件
-	physics_body = NewObject(new SPhysicsBaseUtility());
-	physics_body->SetPhysicsBodyOwner(this);
-	dispatcher_system.AddEventDispatcher("OnEffectTransform");
+	physics_body = NewObject<SPhysicsBaseUtility>(this);
+	AddDispatcher("OnEffectTransform",{typeid(Transform)});
 
-	physics_body->SetPhysicsCallback([this]() {
-		EventParams e;
-		e.Add<Vec2<float>>("location",physics_body->after_location);
-		dispatcher_system.CallDispatcher("OnEffectTransform", e);
-	});
 
 	//physics_body->SetBodyBox({w,h});
 
@@ -43,26 +37,8 @@ void CollisionBox::Construct()
 void CollisionBox::ComponentEventBegin()
 {
 	SceneComponent::ComponentEventBegin();
-	physics_body->BindEventToDispatcher(this,"OnCollision",Event([this](TEventParams e) {
-		dispatcher_system.CallDispatcher("OnCollision", e);
-	}));
-	ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams e) {
-		//Location after_location = physics_body->after_location;
-		SetComponentWorldLocation(physics_body->after_location);
-	}));
-	// ListenDispatcher(owner, "OnMobilityChanged", Event([this](TEventParams e) {
-	// 	if (owner->GetMobility() == ActorMobility::Static)
-	// 	{
-	// 		physics_body->type = PhysicsType::Static;
-	// 	}
-	// 	else
-	// 	{
-	// 		physics_body->type = PhysicsType::Movable;
-	// 	}
-	// }));
-	// BindEvent(this, "OnSceneComponentTeleport",Event([&](TEventParams e) {
-	// 	Synchronization();
-	// }));
+	ListenDispatcher(physics_body.Get(),"OnCollision", "Collision");
+	ListenDispatcher(physics_body.Get(),"OnSynchronization", "CollisionSynchronization");
 }
 
 

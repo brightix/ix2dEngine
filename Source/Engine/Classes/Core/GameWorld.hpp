@@ -53,16 +53,13 @@ public:
 	void Unload();
 
 	void Construct() override;
+	void RegisterDispatchers() override;
+
 	void ConstructWorld();
 	void StartSimulation();
-	// 从类构建Actor
-	// void SpawnActorFromClass(std::shared_ptr<T> actor){
-	// 	Actors.push_back(actor);
-	// }
-
 
 //Get
-	std::vector<GCPtr<Controller>> GetControllers();
+	std::vector<Controller*> GetControllers() const;
 
 	Controller *GetController(int id = 0) const;
 
@@ -107,9 +104,7 @@ T* SpawnActor(T* actor)
 	}
 	else
 	{
-		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
-			actor->EventBegin();
-		}));
+		actor->ListenDispatcher(world,"OnWorldEventBegin","EventBegin");
 	}
 	World()->AddToWorld(actor);
 	return actor;
@@ -129,9 +124,7 @@ T* SpawnActor(Transform transform = {})
 	}
 	else
 	{
-		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
-			actor->EventBegin();
-		}));
+		actor->ListenDispatcher(world,"OnWorldEventBegin","EventBegin");
 	}
 	//后面可以推进使用 level 分级
 	world->AddToWorld(actor);

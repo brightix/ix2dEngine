@@ -14,8 +14,8 @@ struct SymmetricPairHash
 {
 	std::size_t operator()(const std::pair<SPhysicsBaseUtility*, SPhysicsBaseUtility*>& p) const noexcept
 	{
-		auto a = min(p.first, p.second);
-		auto b = max(p.first, p.second);
+		auto a = std::min(p.first, p.second);
+		auto b = std::max(p.first, p.second);
 		return reinterpret_cast<std::uintptr_t>(a) * 1315423911u
 			 ^ reinterpret_cast<std::uintptr_t>(b);
 	}

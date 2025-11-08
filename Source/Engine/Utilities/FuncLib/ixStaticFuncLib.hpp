@@ -8,9 +8,10 @@
 #include "Enum/LogLevel.h"
 #include "../ThirdParty/json.hpp"
 #include "Utilities/FuncLib/GlobalMacros.hpp"
-#define Logf(msg,...) LogToFile(__FILE__, __LINE__, __func__,LogLevel::Tip, std::format(msg,##__VA_ARGS__))
+#define Log_f(msg,...) LogToFile(__FILE__, __LINE__, __func__,LogLevel::Tip, std::format(msg,##__VA_ARGS__))
 #define Log(msg) LogToFile(__FILE__, __LINE__, __func__,LogLevel::Tip, msg)
-#define LogWithLevel(level,msg,...) LogToFile(__FILE__, __LINE__, __func__, level,std::format(msg,##__VA_ARGS__))
+#define LogWithLevel(level,msg,...) LogToFile(__FILE__, __LINE__, __func__, level,msg)
+#define LogWithLevel_f(level,msg,...) LogToFile(__FILE__, __LINE__, __func__, level,std::format(msg,##__VA_ARGS__))
 #define CAST(x) Cast(x,__func__)
 inline void LogToFile(const char* file_name = "", const int line = 0, const char* func_name = "", const LogLevel level = Tip,const std::string& msg = "")
 {

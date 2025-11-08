@@ -34,6 +34,12 @@ void GameWorld::Construct()
 	Object::Construct();
 }
 
+void GameWorld::RegisterDispatchers()
+{
+	Object::RegisterDispatchers();
+	AddDispatcher("OnWorldEventBegin");
+}
+
 void GameWorld::ConstructWorld()
 {
 	is_server = true;
@@ -44,14 +50,12 @@ void GameWorld::ConstructWorld()
 	//tick管理器
 	tick_SubSystem = world_subsystem->CreateSubsystem<TickSubSystem>();
 	tick_SubSystem->SetBufferType(1);
-	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");//可以加在该子系统的构造函数内
+	tick_SubSystem->dispatcher_system.AddDispatcher("synchronization");//可以加在该子系统的构造函数内
 }
 
 void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
-
-	dispatcher_system.AddEventDispatcher("EventBegin");
 	viewport = CreateWidget<CanvasWidget>();
 	//viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
@@ -158,7 +162,7 @@ void GameWorld::StartSimulation()
 	//RandCreateActorInBox<Actor>({0,0,10,10},100);
 
 	is_simulation = true;
-	dispatcher_system.CallDispatcher("EventBegin");
+	CallDispatcher("OnWorldEventBegin");
 
 //在真正Begin后才建议设置对象属性
 	//ground->SetMobility(ActorMobility::Static);
@@ -169,9 +173,14 @@ void GameWorld::StartSimulation()
 	// });
 }
 
-std::vector<GCPtr<Controller>> GameWorld::GetControllers()
+std::vector<Controller*> GameWorld::GetControllers() const
 {
-	return controllers;
+	std::vector<Controller*> ret;
+	for (auto& c : controllers)
+	{
+		ret.emplace_back(c.Get());
+	}
+	return ret;
 }
 
 Controller *GameWorld::GetController(int id) const

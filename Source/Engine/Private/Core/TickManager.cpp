@@ -14,11 +14,15 @@ TickSubSystem::TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(bu
 void TickSubSystem::Construct()
 {
 	EngineSubSystem::Construct();
+}
 
-	dispatcher_system.AddEventDispatcher("RenderClear");
-	dispatcher_system.AddEventDispatcher("RenderPresent");
-	dispatcher_system.AddEventDispatcher("RenderSceneDataReady");
-	dispatcher_system.AddEventDispatcher("RenderWidgetDataReady");
+void TickSubSystem::RegisterDispatchers()
+{
+	EngineSubSystem::RegisterDispatchers();
+	AddDispatcher("OnRenderClear");
+	AddDispatcher("OnRenderPresent");
+	AddDispatcher("OnRenderSceneDataReady", {typeid(std::vector<RenderData>)});
+	AddDispatcher("OnRenderWidgetDataReady",{typeid(std::vector<RenderData>)});
 }
 
 void TickSubSystem::Tick(double delta_time)
@@ -27,7 +31,7 @@ TStart;
 
 TStartF("TickSubInit");
     auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
-    std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
+    std::vector<Controller*> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
     auto world = GameEngine::Instance().GetGameWorld();
 	auto& physics = Engine().physicsSys;
 	std::vector<RenderData> render_data;
@@ -87,27 +91,29 @@ TEndF("收集渲染数据");
 
 		//清屏
 
-		dispatcher_system.CallDispatcher("RenderClear");
+		CallDispatcher("OnRenderClear");
 
 
 		texts[2]->SetText("SceneRenderOfferDelay: " + std::to_string(timer.Click()));
 		//场景组件
-		EventParams render_data_ready_p;
-		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
-		dispatcher_system.CallDispatcher("RenderSceneDataReady",std::move(render_data_ready_p));
+		// EventParams render_data_ready_p;
+		// render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
+		CallDispatcher("OnRenderSceneDataReady",std::move(render_data));
 
 		texts[3]->SetText("AllPhysicsBody count: " + std::to_string(Engine().physicsSys->units.size()));
+
+
 
 
 		//Widget
 		// EventParams widget_data;
 		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
-		// dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
+		// dispatcher_system.CallDelegate("RenderWidgetDataReady", widget_data);
 
 		//physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
 
-		dispatcher_system.CallDispatcher("RenderPresent");
+		dispatcher_system.CallDispatcher("OnRenderPresent");
 
 TStartF("SDL_ControllerTick");
 		for (auto& controller : controllers)
@@ -168,7 +174,7 @@ void TickSubSystem::SetBufferType(int type) { buffer_type = type; }
 // 	}
 //
 //
-// 	dispatcher_system.CallDispatcher("synchronization");
+// 	dispatcher_system.CallDelegate("synchronization");
 //
 //
 // }

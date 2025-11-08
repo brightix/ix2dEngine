@@ -37,10 +37,11 @@ public:
 
 //物理的位置跟随父场景组件
 	Vec2<float> velocity;		//当前移动向量
-	float quality = 200.f;		//物体质量
-	float force_attenuation = 1.0f;		//力衰减
-	float bounciness = 0.5f;
+	float mass = 50.f;		//物体质量
+	float force_attenuation = 0.85f;		//力衰减
+	float bounciness = 0.2f;
 
+	float mass_inv;
 	PhysicsType type;
 	SceneComponent* collision_owner;
 
@@ -48,13 +49,14 @@ public:
 	Vec2<float> added_force;	//冲量
 
 	//结果
+
+	//返回的是碰撞体的左上角，需要自行便宜pivot
 	Vec2<float> after_location;
 	Rotation after_rotation;
 
 
 	// Hook
 	std::function<void()> physics_callback;
-	void SetPhysicsCallback(const std::function<void()>& physics_callback_);
 
     SPhysicsBaseUtility();
 	void Construct() override;

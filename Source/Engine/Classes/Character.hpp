@@ -19,7 +19,16 @@ class Character : public Pawn
 public:
     void Construct() override;
     void EventBegin() override;
+
+	void RegisterDispatchers() override;
+	void RegisterEvents() override;
+	void Possessed(Controller* possessed_controller) override;
+	void UnPossessed(Controller* possessed_controller) override;
+
     SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
     CharacterMoveStrategy GetCharacterMoveStrategy() const;
     void SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy);
+
+
+	int Test(bool b);
 };

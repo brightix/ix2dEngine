@@ -67,51 +67,21 @@ void SPhysics::Simulation(const double delta_time)//注意tunneling，分批tick
 	TStartF("DoExtrusion");
 	for (auto& [A,col_objs] : pairs)
 	{
+		//静态物体不参与物理修正
 		if (A->type == PhysicsType::Static)
 			continue;
-		auto ARect = A->GetCollisionBox();
 		for (auto& col : col_objs)
 		{
-			Vec2<float> force;
-			if (col->type == PhysicsType::Static)
+			switch (col->type)
 			{
-				switch (auto col_rect = col->GetCollisionBox(); ARect.CollisionDir(col_rect))
-				{
-					case TOP:
-						if (A->velocity.y < 0.f)
-						{
-							A->after_location.y = col_rect.y + col_rect.h;
-							A->velocity.y = 0.f;
-						}
-						// A->added_force.y -= A->velocity.y;
-						//std::cout << "Top碰撞" << std::endl;
-						break;
-					case BOTTOM:
-						if (A->velocity.y > 0.f)
-						{
-							A->after_location.y = col_rect.y - ARect.h;
-							A->velocity.y = 0.f;
-						}
-
-						// A->added_force.y -= A->velocity.y;
-						//std::cout << "Bottom碰撞" << std::endl;
-						break;
-					case LEFT:
-						A->after_location.x = col_rect.x + col_rect.w;
-						A->velocity.x = 0.f;
-						// A->added_force.x -=A->velocity.x;
-						//std::cout << "Left碰撞" << std::endl;
-						break;
-					case RIGHT:
-						A->after_location.x = col_rect.x - ARect.w;
-						A->velocity.x = 0.f;
-						// A->added_force.x -=A->velocity.x;
-						//std::cout << "Right碰撞" << std::endl;
-						break;
-					default: ;
-				}
+				case PhysicsType::Static:	//和静态物体碰撞
+					OnStaticBodyCollision(A,col);
+					break;
+				case PhysicsType::Movable:	//和可移动物体碰撞
+					OnMovableBodyCollision(A,col);
+					break;
+				default: ;
 			}
-			//auto v = col->velocity * A->bounciness;
 		}
 	}
 	TEndF("DoExtrusion");
@@ -138,9 +108,15 @@ void SPhysics::Simulation(const double delta_time)//注意tunneling，分批tick
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
 {
+	//先记录模拟前的位置
 	unit->after_location = unit->collision_owner->GetComponentWorldLocation();
-	float acceleration = world_physics.GravityForce * unit->quality;
-	unit->velocity.y -= acceleration * delta_time;
+	//重力势能
+	Vec2<float> gravity_force = world_physics.GravityDir * WorldGravityForce * unit->mass;
+
+
+	auto acceleration = gravity_force;
+
+	unit->velocity += acceleration * delta_time;
 
 	//处理冲量 可能来自 其他物体 或 主观
 	unit->velocity += unit->added_force;	unit->added_force.Reset();	//消费
@@ -148,6 +124,8 @@ void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit)
 	//作用
 
 	unit->after_location += (unit->velocity * delta_time).Cast<float>();
+
+	//unit->velocity *= unit->force_attenuation;
 }
 
 void SPhysics::Synchronization() const
@@ -158,8 +136,6 @@ void SPhysics::Synchronization() const
 		if (unit->type == PhysicsType::Static)
 			continue;
 		unit->dispatcher_system.CallDispatcher("OnSynchronization");
-		// unit->collision_owner->SetComponentWorldLocation(unit->after_location);
-		// unit->physics_callback();
 	}
 	TEnd;
 }
@@ -169,4 +145,91 @@ void SPhysics::OnRigidCollision(SPhysicsBaseUtility *A, SPhysicsBaseUtility *B)
 {
 //两个物体互相施加反作用力，
 	//std::cout << "碰撞了" << std::endl;
+}
+
+
+void SPhysics::OnStaticBodyCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B)
+{
+	auto ARect = A->GetCollisionBox();
+	auto col_rect = B->GetCollisionBox();
+	switch ( ARect.CollisionDir(col_rect))
+	{
+		case TOP:
+			if (A->velocity.y < 0.f)
+			{
+				A->after_location.y = col_rect.y + col_rect.h;
+				A->velocity.y = 0.f;
+			}
+			// A->added_force.y -= A->velocity.y;
+			//std::cout << "Top碰撞" << std::endl;
+			break;
+		case BOTTOM:
+			if (A->velocity.y > 0.f)
+			{
+				A->after_location.y = col_rect.y - ARect.h;
+				A->velocity.y = 0.f;
+			}
+			// A->added_force.y -= A->velocity.y;
+			//std::cout << "Bottom碰撞" << std::endl;
+			break;
+		case LEFT:
+			A->after_location.x = col_rect.x + col_rect.w;
+			A->velocity.x = 0.f;
+			// A->added_force.x -=A->velocity.x;
+			//std::cout << "Left碰撞" << std::endl;
+			break;
+		case RIGHT:
+			A->after_location.x = col_rect.x - ARect.w;
+			A->velocity.x = 0.f;
+		default: ;
+	}
+}
+
+void SPhysics::OnMovableBodyCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B)
+{
+	//先修正位置
+	//OnStaticBodyCollision(A,B);
+
+
+	const auto ARect = A->GetCollisionBox();
+	const auto BRect = B->GetCollisionBox();
+
+	const auto APoint = ARect.Center();
+	const auto BPoint = BRect.Center();
+
+	const auto overlapX = ARect.OverlapX(BRect);
+	const auto overlapY = ARect.OverlapY(BRect);
+
+	Vec2<float> n;
+	float d;
+	if (overlapX < overlapY)
+	{
+		n = Vec2{sign(APoint.x - BPoint.x), 0.f};
+		d = overlapX;
+	}
+	else
+	{
+		n = Vec2{0.f, sign(APoint.y - BPoint.y)};
+		d = overlapY;
+	}
+	// const Vec2<float> n = (APoint - BPoint).Normalized();
+	Vec2<float> penetration_vec = n * d;
+	A->after_location += penetration_vec * (B->mass / (A->mass + B->mass));
+	B->after_location -= penetration_vec * (A->mass / (A->mass + B->mass));
+	//添加冲量
+	Vec2<float> relative_vel = A->velocity - B->velocity;
+	auto vel_along_normal = Math::Dot2(relative_vel, n);
+	if (vel_along_normal > 0)
+	{
+		return;
+	}
+
+
+	float e = std::min(A->bounciness, B->bounciness);
+	float j = -(1 + e) * vel_along_normal;
+	j /= A->mass_inv + B->mass_inv;
+
+	auto f = n * j;
+	A->velocity += f * A->mass_inv;
+	B->velocity -= f * B->mass_inv;
 }

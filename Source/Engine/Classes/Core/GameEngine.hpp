@@ -13,7 +13,6 @@
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "System/Font.hpp"
 #include "Types/EngineState.hpp"
-#include "Utilities/Ptr.hpp"
 #include "Utilities/RandomUtility.hpp"
 
 class TestPawn;

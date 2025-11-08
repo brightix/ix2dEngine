@@ -37,14 +37,19 @@ class Controller : public Actor
 
 	using Actor::Actor;
 public:
-	void Possess(Pawn *pawn);
 
-    void UnPossess(Pawn *pawn);
 
 
     void Construct() override;
+	void RegisterDispatchers() override;
 	void EventBegin() override;
     void Tick(double delta) override;
+
+
+
+	void Possess(Pawn *pawn);
+	void Unpossess();
+
 
 
 	Vec2<float> GetMousePos() const;
@@ -55,9 +60,9 @@ public:
 
 };
 
-static void BindNormalKeyEvent(Object* obj, const std::string& event_name, const Event &event)
+static void BindNormalKeyEvent(Object* obj, const std::string& dispatcher_name, const std::string& event_name)
 {
-	World()->GetController(0)->dispatcher_system.BindEventTo(obj, event_name, event);
+	World()->GetController(0)->AcceptDelegate(obj, dispatcher_name, event_name);
 }
 
 Vec2<float> GetMousePos();

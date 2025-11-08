@@ -3,20 +3,26 @@
 #include <format>
 #include "Utilities/FuncLib/GlobalMacros.hpp"
 template<typename T>
-struct Vec2 : var_type
+struct Vec2
 {
     T x;
     T y;
-    Vec2() :x(0), y(0) {}
+ //    Vec2() :x(0), y(0) {}
+ //
+	// Vec2(T x,T y)
+ //    {
+ //    	this->x = x;
+ //    	this->y = y;
+ //    }
+	constexpr Vec2() noexcept : x(T{}), y(T{}) {}
 
-    Vec2(T x,T y)
-    {
-        this->x = x;
-        this->y = y;
-    }
+	// constexpr 构造
+	constexpr Vec2(T _x, T _y) noexcept : x(_x), y(_y) {}
+
+	//constexpr Vec2(T&& _x, T&& _y) noexcept : x(std::forward<T>(_x)), y(std::forward<T>(_y)) {}
     
     template<typename U>
-    explicit Vec2(Vec2<U>& V)
+    Vec2(Vec2<U>& V)
     {
         x = static_cast<T>(V.x);
         y = static_cast<T>(V.y);
@@ -27,14 +33,14 @@ struct Vec2 : var_type
     	y = static_cast<T>(V.y);
 	}
 	template<typename U>
-	explicit Vec2(Vec2<U>&& V) noexcept
+	Vec2(Vec2<U>&& V) noexcept
     {
     	x = static_cast<T>(V.x);
     	y = static_cast<T>(V.y);
     }
 
 	template<typename U>
-	explicit Vec2(const Vec2<U>& V)
+	Vec2(const Vec2<U>& V)
     {
     	x = static_cast<T>(V.x);
     	y = static_cast<T>(V.y);
@@ -148,7 +154,7 @@ struct Vec2 : var_type
     }
 
 	//algorithm
-	Vec2<double> Normalize(double precision = 0.00001)
+	Vec2<double> Normalized(double precision = 0.00001)
     {
     	static_assert(std::is_arithmetic_v<T>);
     	double len = Length();
@@ -158,6 +164,7 @@ struct Vec2 : var_type
     	}
     	return Vec2<double>(*this/len);
     }
+
 	// TODO 使用angle
 	void RotateByAngle(float angle, Vec2<float> point)
     {
@@ -173,7 +180,7 @@ struct Vec2 : var_type
 	    x = T{};
     	y = T{};
     }
-	std::string str() override
+	std::string Str()
     {
     	return std::format("Vec.x: {}，Vec.y: {}", x, y);
     }
@@ -184,6 +191,16 @@ struct Vec2 : var_type
     }
 };
 
+
+template<typename T>
+struct std::formatter<Vec2<T>> {
+	constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+
+	template <typename FormatContext>
+	auto format(const Vec2<T>& p, FormatContext& ctx) {
+		return format_to(ctx.out(), "(x: {}, y: {})", p.x, p.y);
+	}
+};
 
 
 template<typename T>
@@ -204,5 +221,8 @@ struct Vec
 
 namespace Math
 {
-
+	inline float Dot2(Vec2<float> a,Vec2<float> b)
+	{
+		return a.x * b.x+a.y * b.y;
+	}
 }

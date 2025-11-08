@@ -102,7 +102,7 @@ public:
 		U* p = dynamic_cast<U*>(ptr);
 		if (!p)
 		{
-			LogWithLevel("GC Cast失败",FatalError);
+			LogWithLevel(FatalError, "GC Cast失败");
 			return nullptr;
 		}
 		return GCPtr<U>(p);

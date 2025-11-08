@@ -16,17 +16,20 @@ void Controller::Possess(Pawn* pawn)
 	if (controlled_pawn)
 	{
 		//解绑
-		CallEvent("OnUnPossess");
+		controlled_pawn->UnPossessed(this);
 	}
 	controlled_pawn = pawn;
-	CallEvent("OnControlled");
+	controlled_pawn->Possessed(this);
+	CallDispatcher("OnPossess", this);
 }
 
-void Controller::UnPossess(Pawn* pawn)
+void Controller::Unpossess()
 {
-	if (pawn->)
-	CallEvent("OnDecontrol");
-
+	if (controlled_pawn)
+	{
+		controlled_pawn->UnPossessed(this);
+	}
+	CallDispatcher("OnUnpossess", this);
 }
 
 
@@ -48,6 +51,14 @@ void Controller::Construct()
 	p_phys_slot->display_area.y = 24.f;
 }
 
+void Controller::RegisterDispatchers()
+{
+	//Actor::RegisterDispatchers();
+	AddDispatcher("OnPossess",{typeid(Controller*)});
+	AddDispatcher("OnUnpossess",{typeid(Controller*)});
+
+}
+
 void Controller::EventBegin()
 {
 	Actor::EventBegin();
@@ -63,7 +74,9 @@ void Controller::Tick(double delta)
     	auto t = event.type;
 
     	SDL_Scancode scancode = event.key.scancode;
-    	EventParams e;
+    	auto n_key_name = input_map->Normal[scancode].key_name;
+    	//auto enhanced_key_name = input_map->Enhanced[scancode].key_name;
+    	EventParams_auto e;
 
     	Uint8 button_id;
 	    switch (t)
@@ -87,7 +100,7 @@ void Controller::Tick(double delta)
         				controlled_pawn->CallEnhancedInputEventBool(eip);
         			}
         		}
-	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name);
+	    		CallDispatcher(n_key_name,true);
         		break;
         	case SDL_EVENT_KEY_UP:   // 键盘松开
 	    		if (controlled_pawn)
@@ -101,30 +114,31 @@ void Controller::Tick(double delta)
 	    			controlled_pawn->CallEnhancedInputEventBool(eip);
 	    			key = Idle;
 	    		}
+	    		CallDispatcher(n_key_name,false);
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_DOWN: // 鼠标按下
         		// event.button.button 获取按钮
 	    		button_id = event.button.button;
-	    		e.Add("pressed",true);
-	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
+	    		//e.Add("pressed",true);
+	    		CallDispatcher(input_map->Mouse[button_id].button_name, true);
         		break;
 
         	case SDL_EVENT_MOUSE_BUTTON_UP:   // 鼠标松开
 	    		button_id = event.button.button;
-	    		e.Add("pressed",false);
-	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
+	    		//e.Add("pressed",false);
+	    		CallDispatcher(input_map->Mouse[button_id].button_name,false);
         		break;
         	case SDL_EVENT_MOUSE_MOTION:     // 鼠标移动
         		// event.motion.x / y / xrel / yrel
 	    		mouse_pos = {event.motion.x,event.motion.y};
-	    		e.Add("mouse_pos",Vec2<float>(mouse_pos.x,mouse_pos.y));
-	    		//dispatcher_system.CallDispatcher(input_map->Mouse[scancode].key_name,e);
+	    		//e.Add("mouse_pos",Vec2<float>(mouse_pos.x,mouse_pos.y));
+	    		//dispatcher_system.CallDelegate(input_map->Mouse[scancode].key_name,e);
         		break;
 
         	case SDL_EVENT_MOUSE_WHEEL:      // 鼠标滚轮
         		// event.wheel.x / y
-	    		e.Add("mouse_wheel",event.wheel.y);
-	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name,e);
+	    		//e.Add("mouse_wheel",event.wheel.y);
+	    		CallDispatcher(n_key_name,event.wheel.y);
         		break;
         	default:
         		break;
@@ -146,8 +160,8 @@ void Controller::Tick(double delta)
 			controlled_pawn->CallEnhancedInputEventBool(eip);
 		}
 	}
-	pawn_info->SetText(controlled_pawn->GetWorldTransform().location.str());
-	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("capsule")->GetPhysicsBody()->velocity.str());
+	pawn_info->SetText(controlled_pawn->GetWorldTransform().location.Str());
+	pawn_physics_info->SetText(controlled_pawn->GetSceneComponent("capsule")->GetPhysicsBody()->velocity.Str());
 }
 
 Vec2<float> Controller::GetMousePos() const
@@ -157,10 +171,17 @@ Vec2<float> Controller::GetMousePos() const
 
 void Controller::ReadInputMap(InputMap* map)
 {
-
 	for (auto &key: map->Normal | views::values)
 	{
-		dispatcher_system.AddEventDispatcher(key.key_name);
+		std::vector<std::type_index> event_type;
+		switch (key.type)
+		{
+			case EnhancedInputParamType::Bool:
+				event_type.push_back(std::type_index(typeid(bool)));
+				break;
+			default: ;
+		}
+		AddDispatcher(key.key_name,event_type);
 	}
 }
 

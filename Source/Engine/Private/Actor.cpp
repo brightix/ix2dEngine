@@ -11,7 +11,7 @@
 
 Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
                                     is_begin_event_handled(false),
-                                    window(nullptr), transform(tf),
+                                    transform(tf),
                                     open_physics(false)
 {
 	CNAME;
@@ -22,7 +22,7 @@ void Actor::Construct()
 	Object::Construct();
 	//事件
 	//event_system.AddEvent("");
-	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
+	dispatcher_system.AddDispatcher("OnMobilityChanged");
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
 	Root->NativeSetOuter(this);
@@ -39,6 +39,14 @@ void Actor::Construct()
 	NameBlock->SetText(name);
 	Root->MountedComponent(NameBlock);
 	SetActorTransform(transform);
+}
+
+void Actor::RegisterEvents()
+{
+	Object::RegisterEvents();
+	AddCustomEvent("EventBegin",Event{"EventBegin", [this]() {
+		EventBegin();
+	}});
 }
 
 void Actor::EventBegin()
@@ -93,7 +101,7 @@ void Actor::SetHiddenInGame(bool new_hidden_in_game)
 // void Actor::SetMobility(const ActorMobility target_mobility)
 // {
 // 	mobility = target_mobility;
-// 	dispatcher_system.CallDispatcher("OnMobilityChanged");
+// 	dispatcher_system.CallDelegate("OnMobilityChanged");
 // }
 //
 // ActorMobility Actor::GetMobility() const
@@ -149,6 +157,21 @@ bool Actor::IsVisible() const
 //=====================================================
 // 🧠 Transform 控制
 //=====================================================
+
+
+
+//=====================================================
+// Get 属性
+//=====================================================
+
+
+
+
+Transform Actor::GetWorldTransform() const
+{
+	return Root->GetComponentTransform();
+}
+
 void Actor::SetActorTransform(Transform trans)
 {
 	Root->SetComponentWorldLocation(trans.location);
@@ -161,13 +184,6 @@ void Actor::AddActorTransform(Transform trans)
 	Root->AddComponentWorldRotation(trans.rotation);
 }
 
-void Actor::AddActorWorldLocation(Vec2<float> dis) const
-{
-	Root->AddComponentWorldLocation(dis);
-}
-//=====================================================
-// Get 属性
-//=====================================================
 Vec2<float> Actor::GetWorldLocation() const
 {
 	return Root->GetComponentTransform().location;
@@ -178,7 +194,12 @@ Vec2<float> Actor::GetRelativeLocation()
 	return {};
 }
 
-Transform Actor::GetWorldTransform() const
+void Actor::AddActorWorldLocation(Vec2<float> dis) const
 {
-	return Root->GetComponentTransform();
+	Root->AddComponentWorldLocation(dis);
 }
+
+// Vec2<float> Actor::ConvertLocationFromPivot(Vec2<float> display_corner)
+// {
+// 	return display_corner.x + transform.location.w * pivot;
+// }

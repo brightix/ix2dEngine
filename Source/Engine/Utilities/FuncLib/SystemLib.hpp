@@ -5,6 +5,7 @@
 #include <intrin.h>
 #include <set>
 #include <string>
+#include <typeindex>
 #include <vector>
 class GameWorld;
 
@@ -81,4 +82,20 @@ inline std::string GetCPUName()
 		memcpy(name + 32, cpui.data(), sizeof(cpui));
 	}
 	return std::string(name);
+}
+
+template<typename T>
+auto sign(const T& x)
+{
+	//static_assert(std::is_arithmetic_v<T>, "T必须是可运算");
+	using R = decltype(x);
+	return R(x > 0) - (x < 0); // 1, -1 或 0
+}
+
+inline bool IsBasicType(const std::type_index& ti) {
+	return ti == typeid(int) || ti == typeid(float) || ti == typeid(double)
+		|| ti == typeid(char) || ti == typeid(bool)
+		|| ti == typeid(short) || ti == typeid(long)
+		|| ti == typeid(long long) || ti == typeid(unsigned int)
+		|| ti == typeid(unsigned long);
 }

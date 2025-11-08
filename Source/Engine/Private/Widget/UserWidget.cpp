@@ -55,7 +55,7 @@ PanelSlot * UserWidget::CreateSlot()
     if (Root)
     {
         //一个UserWidget只能有一个根
-        LogWithLevel("重复添加用户控件槽",FatalError);
+        LogWithLevel(FatalError,"重复添加用户控件");
         return nullptr;
     }
     Root = NewObject<UserWidgetSlot>();

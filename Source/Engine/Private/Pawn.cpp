@@ -37,22 +37,22 @@ void Pawn::Tick(double deltaTime)
 
 void Pawn::Possessed(Controller *possessed_controller)
 {
-	ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
-
-	}));
+	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
+	//
+	// }));
 }
 
 void Pawn::UnPossessed(Controller *possessed_controller)
 {
-	ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
-
-	}));
+	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
+	//
+	// }));
 }
 void Pawn::RegisterEvents()
 {
 	Actor::RegisterEvents();
 
-	AddCustomEvent("Possessed",Event([](TEventParams e) {
+	AddCustomEvent(Event("Possessed",[](TEventParams e) {
 
 	}));
 }

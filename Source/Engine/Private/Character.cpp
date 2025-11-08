@@ -19,7 +19,7 @@ void Character::Construct()
     sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
     capsule->NativeSetActiveCollision(true);
     capsule->SetComponentName("capsule");
-    capsule->GetPhysicsBody()->quality = 500.f;
+    capsule->GetPhysicsBody()->mass = 200.f;
     capsule->NativeSetSceneComponentSize(sprite->GetSize());
     SetActorTransform(transform);
 }
@@ -28,14 +28,59 @@ void Character::EventBegin()
 {
     Pawn::EventBegin();
     SetCharacterMoveStrategy(Simulation);
-    ListenDispatcher(World()->GetController(),"Key_1",Event([this](TEventParams) {
-        std::cout << "切换到上帝模式" << std::endl;
-        SetCharacterMoveStrategy(God);
-    }));
-    ListenDispatcher(World()->GetController(),"Key_2",Event([this](TEventParams) {
-        std::cout << "切换到模拟模式" << std::endl;
-        SetCharacterMoveStrategy(Simulation);
-    }));
+	ListenDispatcher_Lambda(World()->GetController(),"Key_1", [this](const bool pressed) {
+		if (pressed)
+		{
+			std::cout << "切换到上帝模式" << std::endl;
+			SetCharacterMoveStrategy(God);
+		}
+	});
+    ListenDispatcher(World()->GetController(),"Key_2","ToGodMode");
+	//ListenDispatcher(World()->GetController(),"Key_3","Test");
+	ListenDispatcher(World()->GetController(),"Key_3",&Character::Test);
+	//dispatcher_system.DelegateEvent(this, "OnTest", "Test");
+}
+
+void Character::RegisterDispatchers()
+{
+	Pawn::RegisterDispatchers();
+	AddDispatcher("OnMoveStrategyChanged");
+	AddDispatcher("OnTest");
+}
+
+void Character::RegisterEvents()
+{
+	Pawn::RegisterEvents();
+	AddCustomEvent(Event("Test",[](TEventParams e) {
+		std::cout << "Do Test" << std::endl;
+	}));
+	AddCustomEvent("ToGodMode",Event("GodMode", [this](const bool pressed) {
+		if (pressed)
+		{
+			std::cout << "切换到上帝模式" << std::endl;
+			SetCharacterMoveStrategy(God);
+		}
+	}));
+	AddCustomEvent(Event("ToSimMode",[this](TEventParams e) {
+		std::cout << "切换到模拟模式" << std::endl;
+		SetCharacterMoveStrategy(Simulation);
+	}));
+
+
+
+}
+
+
+void Character::Possessed(Controller* possessed_controller)
+{
+	Pawn::Possessed(possessed_controller);
+	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},RED));
+}
+
+void Character::UnPossessed(Controller* possessed_controller)
+{
+	Pawn::UnPossessed(possessed_controller);
+	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
 }
 
 SPhysicsBaseUtility * Character::GetCharacterPhysicsBody() const
@@ -55,6 +100,13 @@ CharacterMoveStrategy Character::GetCharacterMoveStrategy() const
 void Character::SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy)
 {
     strategy = new_strategy;
+	CallDispatcher("OnMoveStrategyChanged");
+}
+
+int Character::Test(bool b)
+{
+	std::cout << "Test" << std::endl;
+	return b;
 }
 
 

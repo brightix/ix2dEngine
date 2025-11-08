@@ -25,22 +25,22 @@ set_target_properties(ix2d PROPERTIES
 )
 
 if(MSVC)
-    # 通用 MSVC 编译选项
-    target_compile_options(ix2d PRIVATE
-            /EHsc
-            /utf-8
-#            /Od
-#            /Zi
-#            /RTC1
-#            /GS-
-#            /Oy-
-    )
 #    target_compile_options(ix2d PRIVATE
+#            /EHsc
 #            /utf-8
-#            /permissive-
-#            $<$<CONFIG:Debug>:/Zi /Od /Zo /Zf /Oy- /fp:fast /GS- /MDd>
-#            #$<$<CONFIG:Release>:/Oi /Ob2 /arch:AVX2 /Gy /DNDEBUG /Gw /MD>
+##            /Od
+##            /Zi
+##            /RTC1
+##            /GS-
+##            /Oy-
 #    )
+    target_compile_options(ix2d PRIVATE
+            /utf-8
+            /EHsc
+            /permissive-
+            $<$<CONFIG:Debug>:/Zi /Od /Oy /fp:fast /GS- /MDd>
+            $<$<CONFIG:Release>:/Oi /Ob2 /arch:AVX2 /Gy /DNDEBUG /Gw /MD>
+    )
     # Debug 模式下启用内存泄漏检测
     if(DebugMode)
         #add_definitions(-D_CRTDBG_MAP_ALLOC)

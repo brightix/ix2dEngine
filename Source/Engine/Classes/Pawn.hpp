@@ -20,9 +20,8 @@ public:
     void Tick(double deltaTime) override;
 	//
 
-	void Possessed(Controller* possessed_controller);
-
-	void UnPossessed(Controller *possessed_controller);
+	virtual void Possessed(Controller* possessed_controller);
+	virtual void UnPossessed(Controller *possessed_controller);
 
 	void RegisterEvents() override;
 

@@ -99,7 +99,7 @@ void MovableComponent::Jump() const
 
 void MovableComponent::ActorComponentTick(const double deltaTime)
 {
-    const Vec2<float> movement = (player_input_Vec.Normalize() * deltaTime * base_move_speed).Cast<float>();
+    const Vec2<float> movement = (player_input_Vec.Normalized() * deltaTime * base_move_speed).Cast<float>();
     owned_actor->AddActorWorldLocation(movement);
     player_input_Vec = {};
 }

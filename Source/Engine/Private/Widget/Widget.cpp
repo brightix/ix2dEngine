@@ -63,9 +63,7 @@ PanelSlot* Widget::AddChild(Widget* child)
     }
     else
     {
-        child->ListenDispatcher(World(), "EventBegin", Event([child](TEventParams e) {
-            child->WidgetEventBegin();
-        }));
+        child->ListenDispatcher(World(), "OnEventBegin", "EventBegin");
     }
     //加入新元素需要刷新
     dirty = true;

@@ -13,16 +13,14 @@ EventSystem::EventSystem()
 // 	events[event_name] = Event(event_name,forward<function<void(std::optional<EventParams>)>>(event_method));
 // }
 
+
 void EventSystem::CallEvent(const std::string& event_name, std::optional<EventParams> params)
 {
-	if (events.contains(event_name))
-	{
-		events[event_name].Execute(std::move(params));
-	}
-	else
+	if (!events.contains(event_name))
 	{
 		Log("执行了不存在的事件，事件名：" + event_name);
 	}
+	events[event_name](std::move(params));
 }
 
 std::optional<Event> EventSystem::GetEventByName(const std::string& event_name)

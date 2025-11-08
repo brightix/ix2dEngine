@@ -13,9 +13,9 @@ SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0), parent_comp
 void SceneComponent::Construct()
 {
 	Component::Construct();
-	dispatcher_system.AddEventDispatcher("OnComponentLocationChanged");
-	dispatcher_system.AddEventDispatcher("OnComponentRotationChanged");
-	dispatcher_system.AddEventDispatcher("OnComponentScalingChanged");
+	dispatcher_system.AddDispatcher("OnComponentLocationChanged");
+	dispatcher_system.AddDispatcher("OnComponentRotationChanged");
+	dispatcher_system.AddDispatcher("OnComponentScalingChanged");
 	//dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
 }
 
@@ -191,8 +191,6 @@ void SceneComponent::ForRender()
 	}
 }
 
-
-
 //递归调用接口
 void SceneComponent::NativeForRenderData(std::vector<RenderData>& data)
 {
@@ -246,7 +244,7 @@ bool SceneComponent::SetComponentName(const std::string& new_name)
 	}
 	if (!parent_component->OnMountedComponentNameChanged(name,new_name))
 	{
-		LogWithLevel("组件名已被占用", FatalError);
+		LogWithLevel(FatalError, "组件名已被占用");
 		return false;
 	}
 	name = new_name;
@@ -328,9 +326,10 @@ void SceneComponent::SetComponentWorldLocation(const Vec2<float>& new_loc)
 	dispatcher_system.CallDispatcher("OnComponentLocationChanged");
 }
 
-Vec2<float> SceneComponent::GetComponentWorldLocation()
+Vec2<float> SceneComponent::GetComponentWorldLocation() const
 {
 	return world_transform.location;
+	//return {world_transform.location.x - w * pivot.x, world_transform.location.y - h * pivot.y};
 }
 
 Vec2<float> SceneComponent::GetComponentRelativeLocation()
@@ -375,7 +374,6 @@ Rotation SceneComponent::GetComponentRelativeRotation()
 {
 	return relative_rotation;
 }
-
 
 bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 {

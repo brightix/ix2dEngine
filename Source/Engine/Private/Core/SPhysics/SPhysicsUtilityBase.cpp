@@ -3,15 +3,6 @@
 #include "Classes/Core/GameWorld.hpp"
 
 static int global_physics_id = 0;
-void SPhysicsBaseUtility::SetPhysicsCallback(const std::function<void()>& physics_callback_)
-{
-	physics_callback = physics_callback_;
-	quality = 0.046f * *GameEngine::Instance().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->GetRandom("SPhysicsBaseUtility_quality");
-	if (quality == 0)
-	{
-		std::cout << "有问题 " << quality << std::endl;
-	}
-}
 
 SPhysicsBaseUtility::SPhysicsBaseUtility()
 {
@@ -22,10 +13,10 @@ void SPhysicsBaseUtility::Construct()
 {
 	Object::Construct();
 	//GameEngine::Instance().physicsSys->Register(this);
-	dispatcher_system.AddEventDispatcher("OnCollision");//碰撞事件
-	dispatcher_system.AddEventDispatcher("OnSynchronization");//同步事件
+	dispatcher_system.AddDispatcher("OnCollision");//碰撞事件
+	dispatcher_system.AddDispatcher("OnSynchronization");//同步事件
 	type = PhysicsType::Static;
-
+	mass_inv = 1.f / mass;
 	//默认不订阅碰撞
 	is_subscribe_collision = false;
 }

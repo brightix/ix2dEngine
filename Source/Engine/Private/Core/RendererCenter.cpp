@@ -23,24 +23,22 @@ void RendererCenter::Init()
 	InitSDL();
 
 	CNAME;
-	event_system.AddEvent(Event("OnRenderSceneDataReady",[&](TEventParams e) {
-		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
+	AddCustomEvent(Event("RenderSceneDataReady",[&](std::vector<RenderData> clips) {
 		RenderScene(clips);
 	}));
-	event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
+	AddCustomEvent(Event("RenderWidgetDataReady",[&](std::vector<RenderData> clips) {
 		//std::vector<GCPtr<Widget>> clips = std::move(*e->Get<std::vector<GCPtr<Widget>>>("widget_data"));
 		TStartF("UI渲染");
-		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
 		//auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
 		RenderScene(clips);
 		TEndF("UI渲染");
 	}));
-	event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
+	AddCustomEvent(Event("RenderPresent",[&]() {
 		TStartF("SDL_RenderPresent");
 		SDL_RenderPresent(renderer);
 		TEndF("SDL_RenderPresent");
 	}));
-	event_system.AddEvent(Event("OnRenderClear",[&](TEventParams e) {
+	AddCustomEvent(Event("RenderClear",[this]() {
 		TStartF("SDL_RenderClear");
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
 		SDL_RenderClear(renderer);
