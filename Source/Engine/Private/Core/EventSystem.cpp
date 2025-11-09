@@ -14,13 +14,13 @@ EventSystem::EventSystem()
 // }
 
 
-void EventSystem::CallEvent(const std::string& event_name, std::optional<EventParams> params)
+void EventSystem::CallEvent(const std::string& event_name,TEventParams params)
 {
 	if (!events.contains(event_name))
 	{
 		Log("执行了不存在的事件，事件名：" + event_name);
 	}
-	events[event_name](std::move(params));
+	events[event_name](params);
 }
 
 std::optional<Event> EventSystem::GetEventByName(const std::string& event_name)

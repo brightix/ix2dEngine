@@ -7,14 +7,12 @@
 #include "Types/RenderData.hpp"
 #include "../../Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
-#include "Classes/Widget/Widget.hpp"
 #include "../../Asset/Texture.hpp"
 #include "Classes/Core/GameWorld.hpp"
-#include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 #include "Utilities/TracingUtility.hpp"
 
 
-RendererCenter::RendererCenter() : window(nullptr)
+RendererCenter::RendererCenter() : renderer(nullptr), window(nullptr)
 {
 }
 
@@ -27,9 +25,7 @@ void RendererCenter::Init()
 		RenderScene(clips);
 	}));
 	AddCustomEvent(Event("RenderWidgetDataReady",[&](std::vector<RenderData> clips) {
-		//std::vector<GCPtr<Widget>> clips = std::move(*e->Get<std::vector<GCPtr<Widget>>>("widget_data"));
 		TStartF("UI渲染");
-		//auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
 		RenderScene(clips);
 		TEndF("UI渲染");
 	}));

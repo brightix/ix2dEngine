@@ -1,6 +1,4 @@
 #pragma once
-#include <SDL3/SDL.h>
-
 #include "Object.hpp"
 #include "Types/Transform.hpp"
 #include "Classes/Component/ActorComponent/ActorComponent.hpp"
@@ -43,12 +41,13 @@ public:
 	explicit Actor(const Transform &tf);
 
 	void Construct() override;
+	void RegisterDispatchers() override;
 	void RegisterEvents() override;
 	virtual void EventBegin();
 
 	virtual void PrePhysicsTick(double delta_time){}
 
-	virtual void Tick(double delta_time);
+	virtual void Tick(const double delta_time);
 	virtual void PostPhysicsTick(double delta_time){}
 	virtual void RootComponentTick(double delta_time);
     virtual void EventEnd(){}
@@ -69,9 +68,10 @@ public:
     void SetActorTransform(Transform trans);
     void AddActorTransform(Transform trans);
 //位置
-
-	Vec2<float> GetWorldLocation() const;
-    Vec2<float> GetRelativeLocation();
+	void AddActorLocation(const Vec2<float>& added_location) const;
+	void SetActorLocation(const Vec2<float>& new_location) const;
+	Vec2<float> GetActorWorldLocation() const;
+    Vec2<float> GetActorRelativeLocation();
 //旋转
 
 	void AddActorWorldLocation(Vec2<float> dis) const;

@@ -46,14 +46,38 @@ struct function_traits : function_traits<decltype(&Callable::operator())> {};
 template<typename Callable, typename Tuple, size_t... I>
 static void InvokeCallableWithEventParamsImpl(Callable& callable, TEventParams e, std::index_sequence<I...>)
 {
-	// 将每个参数类型从 e 中取出（取不到则用默认构造值）
 	callable(
 		e->template Get_index<std::decay_t<std::tuple_element_t<I, Tuple>>>(I).value_or(std::tuple_element_t<I, Tuple>{})...
 	);
 }
+template<typename Callable, typename Tuple, size_t... I>
+static void InvokeCallableWithEventParamsImpl_Debug(Callable& callable, TEventParams e, std::index_sequence<I...>)
+{
+	// 使用 fold expression 展开参数
+	// 先定义一个lambda，专门处理每个参数
+
+	auto extractArg = [&](auto index_const) {
+		constexpr size_t index = decltype(index_const)::value;
+		using ArgType = std::decay_t<std::tuple_element_t<index, Tuple>>;
+
+		auto valOpt = e->template Get_index<ArgType>(index);
+
+		if (valOpt.has_value()) {
+			LogWithLevel(Tip, std::format("[Invoke] 参数索引 {} 类型 {} 有值", index, typeid(ArgType).name()));
+			return valOpt.value();
+		}
+		else {
+			LogWithLevel(Warning, std::format("[Invoke] 参数索引 {} 类型 {} 无值，使用默认构造", index, typeid(ArgType).name()));
+			return ArgType{};
+		}
+	};
+
+	// 用 fold expression 展开参数提取过程
+	callable(extractArg(std::integral_constant<size_t, I>{})...);
+}
 
 template<typename Callable, typename Tuple>
-static void InvokeCallableWithEventParams(Callable& callable, TEventParams e)
+static void InvokeCallableWithEventParams(Callable& callable,TEventParams e)
 {
 	constexpr size_t N = std::tuple_size_v<Tuple>;
 	InvokeCallableWithEventParamsImpl<Callable, Tuple>(callable, e, std::make_index_sequence<N>{});

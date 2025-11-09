@@ -1,5 +1,5 @@
 {
-  "TargetFps" : 999999,
+  "TargetFps" : 200,
   "ScreenWidth" : 640,
   "ScreenHeight" : 480
 }

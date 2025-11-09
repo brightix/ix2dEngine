@@ -256,6 +256,16 @@ void SceneComponent::SetRenderLayer(LayerHierarchy layer_id)
 	layer = layer_id;
 }
 
+void SceneComponent::SetComponentPivot(const Vec2<float>& new_pivot)
+{
+	pivot = new_pivot;
+	SetComponentWorldLocation(GetComponentWorldLocation());
+	for (auto& component : mounted_components | std::views::values)
+	{
+		component->SetComponentPivot(pivot);
+	}
+}
+
 bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name)
 {
 
@@ -328,8 +338,8 @@ void SceneComponent::SetComponentWorldLocation(const Vec2<float>& new_loc)
 
 Vec2<float> SceneComponent::GetComponentWorldLocation() const
 {
-	return world_transform.location;
-	//return {world_transform.location.x - w * pivot.x, world_transform.location.y - h * pivot.y};
+	//return world_transform.location;
+	return {world_transform.location.x - w * pivot.x, world_transform.location.y - h * pivot.y};
 }
 
 Vec2<float> SceneComponent::GetComponentRelativeLocation()
@@ -395,6 +405,7 @@ bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 		}
 		//替换 Actor根
 		parent_actor->SetRoot(new_com);
+
 		return true;
 	}
 

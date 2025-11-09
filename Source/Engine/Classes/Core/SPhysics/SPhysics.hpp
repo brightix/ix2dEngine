@@ -41,7 +41,7 @@ public:
 	//void HandleVelocity(float delta_time);
     static void OnRigidCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B);
 
-	void OnStaticBodyCollision(SPhysicsBaseUtility* A, SPhysicsBaseUtility* B);
+	void OnStaticBodyCollision(SPhysicsBaseUtility* A, const SPhysicsBaseUtility* B);
 
 	void OnMovableBodyCollision(SPhysicsBaseUtility* A, SPhysicsBaseUtility* B);
 

@@ -7,8 +7,10 @@ class TestGround : public Actor
 {
     GCPtr<StaticTextureComponent> st;
 public:
+	Vec2<float> size;
     using Actor::Actor;
     void Construct() override;
 
-    void SetGroundSize(const Vec2<float> &new_size) const;
+    StaticTextureComponent* GetGroundTexture();
+    void SetGroundSize(const Vec2<float>& new_size);
 };

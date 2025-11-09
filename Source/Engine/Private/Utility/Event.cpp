@@ -4,7 +4,7 @@
 #include "Utilities/FuncLib/SystemLib.hpp"
 
 
-bool Event::check(EventParams e) const
+bool Event::check(const EventParams& e) const
 {
 	if (event_type.size() != e.types.size()) return false;
 	for (int i = 0; i < event_type.size(); i++)
@@ -18,57 +18,33 @@ bool Event::check(EventParams e) const
 	return true;
 }
 
-Event::Event() : Event("", [](TEventParams e){}) {}
-
-// Event::Event(const std::string& event_name, const std::function<void(TEventParams)>& event_func)
-// 	: event_name(event_name), event_func(std::function(event_func)), is_loop(false),
-// 	  interval(0),
-// 	  elapsed(0) {}
-//
-// Event::Event(const std::function<void(TEventParams)> &event_func) : Event("", event_func){}
-
-// void Event::Execute() const
-// {
-// 	if (!event_func)  // move 给 lambda
-// 		Log("调用了空事件，event_func为nullptr");
-// 	if (!check({}))
-// 	{
-// 		std::cout << "参数无法对齐" << std::endl;
-// 		return ;
-// 	}
-// 	event_func(std::nullopt);
-// }
-//
-// void Event::Execute(const TEventParams& params) const
-// {
-// 	if (!event_func)  // move 给 lambda
-// 		Log("调用了空事件，event_func为nullptr");
-// 	if (!check(*params))
-// 	{
-// 		std::cout << "参数无法对齐" << std::endl;
-// 		return ;
-// 	}
-// 	event_func(params);
-// }
-//
-// void Event::Execute(std::optional<EventParams>&& params) const
-// {
-// 	if (!event_func)  // move 给 lambda
-// 		Log("调用了空事件，event_func为nullptr");
-// 	if (params && !check(*params))
-// 	{
-// 		std::cout << "参数无法对齐" << std::endl;
-// 		return ;
-// 	}
-// 	event_func(std::move(params));
-// }
+Event::Event() : Event("", [](TEventParams){}) {}
 
 void Event::Traits(const std::vector<std::type_index>& traits_type)
 {
 	event_type = std::vector<std::type_index>(traits_type);
 }
 
-void Event::operator()(TEventParams&& event_params) const
+void Event::operator()(TEventParams& event_params) const
 {
-	event_func(std::forward<TEventParams>(event_params));
+	if (event_params)
+	{
+		std::vector<std::type_index>& types = event_params->types;
+		for (int i = 0; i < event_type.size(); i++)
+		{
+			auto ti1 = event_type[i];
+			auto ti2 = types[i];
+			if (ti1 == types[i])
+			{
+				continue;
+			}
+			if (!IsBasicType(event_type[i]) && !IsBasicType(types[i]))
+			{
+
+				continue;
+			}
+			LogWithLevel(Error, "类型不匹配");
+		}
+	}
+	event_func(event_params);
 }

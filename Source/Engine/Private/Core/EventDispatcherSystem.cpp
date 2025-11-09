@@ -64,14 +64,15 @@ void EventDispatcherSystem::AcceptDelegate(Object *target, std::string dispatche
 	}
 	// 2.找到这个对象绑定在这个分发器的所有函数
 	auto& events = it->second[target];
-#if DEBUG == 1
+// #if DEBUG == 1
 	auto event_it = events.Find(event_name);
 	if (event_it != events.end())
 	{
 		LogWithLevel_f(Warning, "重复绑定事件,{} 试图将 {} 重复绑定到 {} 的 {} 上",target->name, event_name, outer->name, dispatcher_name);
+		return;
 	}
-#endif
-	//可以重复添加相同事件
+// #endif
+	//不可以重复添加相同事件
 	events.insert(event_name);
 }
 
@@ -96,7 +97,7 @@ void EventDispatcherSystem::RemoveDelegate(Object* target, const std::string& di
 	}
 }
 
-void EventDispatcherSystem::CallDispatcher(const std::string &dispatcher_name, TEventParams&& event_params)
+void EventDispatcherSystem::CallDispatcher(const std::string &dispatcher_name, TEventParams event_params)
 {
 	auto it = delegate.find(dispatcher_name);
 	if (it == delegate.end())
@@ -110,7 +111,7 @@ void EventDispatcherSystem::CallDispatcher(const std::string &dispatcher_name, T
 		GCWeakPtr<Object> obj = p;
 		for (auto& event_name : events)
 		{
-			obj->CallEvent(event_name, std::move(event_params));
+			obj->CallEvent(event_name, event_params);
 		}
 	}
 }

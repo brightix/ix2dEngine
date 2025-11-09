@@ -72,17 +72,38 @@ public:
 	EventParams(const std::vector<std::any>& e) : values(e) {
 		types.reserve(e.size());
 		for (const auto& v : e) {
+
 			types.emplace_back(v.type()); // 自动记录每个值的类型
 		}
 	}
 
 	template<typename T>
-	std::optional<T> Get_index(const size_t index) const
+	std::optional<std::decay_t<T>> Get_index(const size_t index) const
 	{
-		if (index >= values.size()) return std::nullopt;
-		if (auto ret = std::any_cast<T>(&values[index])) {
+		using DecayedT = std::decay_t<T>;
+
+		if (index >= values.size())
+		{
+			return std::nullopt;
+		}
+		std::type_index t1 = typeid(T);
+		std::type_index t3 = typeid(TEventParams);
+		std::type_index t2 = values[index].type();
+
+		if (t3 == t1)
+		{
+			std::cout << std::endl;
+		}
+		if (t1 != t2)
+		{
+			std::cout << std::endl;
+		}
+		// 尝试 any_cast 为 DecayedT
+		if (auto ret = std::any_cast<T>(&values[index]))
+		{
 			return *ret;
 		}
+
 		return std::nullopt;
 	}
 

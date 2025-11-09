@@ -141,8 +141,20 @@ public:
 	{
 		return ptr == other.ptr;
 	}
+	bool operator==(const T*& other) const noexcept
+	{
+		return ptr == other;
+	}
 };
+template<typename T>
+bool operator==(const GCPtr<T>& a, const T* b) noexcept {
+	return a.Get() == b;
+}
 
+template<typename T>
+bool operator==(const T* a, const GCPtr<T>& b) noexcept {
+	return a == b.Get();
+}
 template<typename T>
 struct std::hash<GCPtr<T>> {
 	size_t operator()(const GCPtr<T>& Ptr) const noexcept {

@@ -20,31 +20,32 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
 void Actor::Construct()
 {
 	Object::Construct();
-	//事件
-	//event_system.AddEvent("");
-	dispatcher_system.AddDispatcher("OnMobilityChanged");
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
 	Root->NativeSetOuter(this);
-
-	// TODO处理事件回调时机，先绑定事件还是先设置位置
+	SetActorTransform(transform);
 
 
 	auto tex = Root->MountedComponent(NewObject<StaticTextureComponent>());
 	tex->SetComponentName("default_texture");
-	tex->SetStaticTexture(Create_FilledTexture_S({100,100}));
-
-
+	//tex->SetStaticTexture(Create_OutLineTexture_S({100,100}));
+	auto dt = Engine().GetDefaultTexture();
+	tex->SetStaticTexture(dt);
 	auto NameBlock = NewObject<SceneTextBlock>(this);
 	NameBlock->SetText(name);
 	Root->MountedComponent(NameBlock);
-	SetActorTransform(transform);
+}
+
+void Actor::RegisterDispatchers()
+{
+	Object::RegisterDispatchers();
+	AddDispatcher("OnMobilityChanged");
 }
 
 void Actor::RegisterEvents()
 {
 	Object::RegisterEvents();
-	AddCustomEvent("EventBegin",Event{"EventBegin", [this]() {
+	AddCustomEvent(Event{"EventBegin", [this]() {
 		EventBegin();
 	}});
 }
@@ -64,7 +65,7 @@ void Actor::EventBegin()
 }
 
 //所有重写tick都在PreTick内
-void Actor::Tick(double delta_time) {}
+void Actor::Tick(const double delta_time) {}
 
 void Actor::RootComponentTick(const double delta_time)
 {
@@ -126,6 +127,7 @@ SceneComponent *Actor::GetSceneComponent(const std::string &component_name) cons
 
 void Actor::SetRoot(SceneComponent *new_root)
 {
+	new_root->SetComponentWorldLocation(Root->GetComponentWorldLocation());
 
 	Root = new_root;
 }
@@ -184,12 +186,22 @@ void Actor::AddActorTransform(Transform trans)
 	Root->AddComponentWorldRotation(trans.rotation);
 }
 
-Vec2<float> Actor::GetWorldLocation() const
+void Actor::AddActorLocation(const Vec2<float>& added_location) const
+{
+	Root->AddComponentWorldLocation(added_location);
+}
+
+void Actor::SetActorLocation(const Vec2<float>& new_location) const
+{
+	Root->SetComponentWorldLocation(new_location);
+}
+
+Vec2<float> Actor::GetActorWorldLocation() const
 {
 	return Root->GetComponentTransform().location;
 }
 
-Vec2<float> Actor::GetRelativeLocation()
+Vec2<float> Actor::GetActorRelativeLocation()
 {
 	return {};
 }

@@ -7,13 +7,6 @@ struct Vec2
 {
     T x;
     T y;
- //    Vec2() :x(0), y(0) {}
- //
-	// Vec2(T x,T y)
- //    {
- //    	this->x = x;
- //    	this->y = y;
- //    }
 	constexpr Vec2() noexcept : x(T{}), y(T{}) {}
 
 	// constexpr 构造
@@ -46,7 +39,12 @@ struct Vec2
     	y = static_cast<T>(V.y);
     }
 	Vec2(const Vec2& other) = default;
-	Vec2& operator=(const Vec2&) = default;
+	Vec2& operator=(const Vec2& other)
+	{
+		x = other.x;
+		y = other.y;
+		return *this;
+	}
 
 	template<typename U>
 	constexpr auto& operator+=(const Vec2<U>& val) noexcept

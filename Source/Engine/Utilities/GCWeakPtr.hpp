@@ -49,10 +49,7 @@ struct GCWeakPtr
 	{
 		return *ptr;
 	}
-	T* operator->()
-	{
-		return ptr;
-	}
+	T* operator->() { return ptr; }
 	bool operator==(const GCWeakPtr& other) const
 	{
 		return ptr == other.ptr;

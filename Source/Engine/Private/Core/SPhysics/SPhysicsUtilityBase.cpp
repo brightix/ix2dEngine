@@ -13,12 +13,17 @@ void SPhysicsBaseUtility::Construct()
 {
 	Object::Construct();
 	//GameEngine::Instance().physicsSys->Register(this);
-	dispatcher_system.AddDispatcher("OnCollision");//碰撞事件
-	dispatcher_system.AddDispatcher("OnSynchronization");//同步事件
 	type = PhysicsType::Static;
 	mass_inv = 1.f / mass;
 	//默认不订阅碰撞
 	is_subscribe_collision = false;
+}
+
+void SPhysicsBaseUtility::RegisterDispatchers()
+{
+	Object::RegisterDispatchers();
+	AddDispatcher("OnCollision",{TypeID(std::unordered_set<SPhysicsBaseUtility*>)});//碰撞事件
+	AddDispatcher("OnSynchronization");//同步事件
 }
 
 void SPhysicsBaseUtility::NativeSetOuter(GCObject *new_outer)

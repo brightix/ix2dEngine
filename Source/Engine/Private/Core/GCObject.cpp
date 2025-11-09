@@ -8,7 +8,7 @@ GCObject::GCObject()
 #if DEBUG
 	if (id == 18)
 	{
-		BREAK;
+		//BREAK;
 	}
 #endif
 	Global_GCObject_Registry[id] = this;

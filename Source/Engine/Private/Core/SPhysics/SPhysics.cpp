@@ -94,16 +94,12 @@ void SPhysics::Simulation(const double delta_time)//注意tunneling，分批tick
 		{
 			continue;
 		}
-		EventParams e;
-		e.Add<std::unordered_set<SPhysicsBaseUtility*>>("collision_objects",col_objs);
-		A->dispatcher_system.CallDispatcher("OnCollision",e);
+		A->CallDispatcher("OnCollision",col_objs);
 	}
 	TEndF("DispatcherOnCollision");
 	TEnd;
 
 	//鼠标点击事件
-
-    // TODO 四叉树碰撞
 }
 
 void SPhysics::HandlePhysics(const double delta_time, SPhysicsBaseUtility* unit) const
@@ -148,7 +144,7 @@ void SPhysics::OnRigidCollision(SPhysicsBaseUtility *A, SPhysicsBaseUtility *B)
 }
 
 
-void SPhysics::OnStaticBodyCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility* B)
+void SPhysics::OnStaticBodyCollision(SPhysicsBaseUtility* A, const SPhysicsBaseUtility* B)
 {
 	auto ARect = A->GetCollisionBox();
 	auto col_rect = B->GetCollisionBox();

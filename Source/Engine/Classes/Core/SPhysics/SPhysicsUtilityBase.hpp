@@ -60,6 +60,8 @@ public:
 
     SPhysicsBaseUtility();
 	void Construct() override;
+void RegisterDispatchers() override;
+
 	void NativeSetOuter(GCObject *new_outer) override;
 
 

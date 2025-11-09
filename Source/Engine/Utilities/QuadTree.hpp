@@ -237,9 +237,8 @@ public:
     	SDL_RenderTexture(GetRenderer(), texture.get(), nullptr, &rect);
     	for (auto& obj : objects)
     	{
-    		auto loc = obj->collision_owner->GetComponentTransform().location;
     		auto size = obj->collision_owner->GetComponentSize();
-    		SDL_FRect dst(loc.x,loc.y,size.x,size.y);
+    		auto dst = obj->GetCollisionBox().CastToSDL_FRect();
     		SDL_RenderTexture(GetRenderer(),Create_OutLineTexture_S({size.x,size.y}).get(),nullptr,&dst);
     	}
     	if (tree_slots[0])

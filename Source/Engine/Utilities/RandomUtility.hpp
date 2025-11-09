@@ -18,29 +18,30 @@ class RandomUtility final : public EngineSubSystem
 {
     uint32_t seed;
     std::mt19937 main_seed;
-    std::unordered_map<size_t, std::pair<std::mt19937,std::uniform_int_distribution<int>>> map;
-    std::uniform_int_distribution<int> reg_seed{0, INT32_MAX};
+    std::unordered_map<size_t, std::pair<std::mt19937,std::uniform_int_distribution<int>>> map_;
+	std::unordered_map<size_t, std::pair<std::mt19937, std::uniform_real_distribution<float>>> map;
+    std::uniform_real_distribution<float> reg_seed{0.f, 100000.f};
 public:
     explicit RandomUtility() : seed(std::random_device{}())
     {
 	    CNAME;
     }
 
-    std::optional<int> GetRandom(const std::string& reg_name)
+    std::optional<float> GetRandom(const std::string& reg_name)
     {
         const size_t key = ix::Hash(reg_name.c_str());
-        auto it = map.find(key);
+        const auto it = map.find(key);
         if (it == map.end())
         {
             Log("未能找到 \"" + reg_name + "\"，请先注册");
             return std::nullopt;
         }
         auto& [engine, dist] = it->second;
-    	int ret = dist(engine);
+    	float ret = dist(engine);
         return ret;
     }
 
-    bool RegisterRandom(const std::string &reg_name, std::pair<int,int> min_max)
+    bool RegisterRandom(const std::string &reg_name, std::pair<float,float> min_max = {0.f,1.f})
     {
         size_t hash = ix::Hash(reg_name.c_str());
         auto it = map.find(hash);
@@ -49,8 +50,8 @@ public:
             Log("随机数重名，拒绝生成");
             return false;
         }
-        auto& [min,max] = min_max;
-        map.emplace(hash,std::make_pair(std::mt19937(reg_seed(main_seed)),std::uniform_int_distribution<int>(min,max)));
+        //auto& [min,max] = min_max;
+        map.emplace(hash,std::make_pair(std::mt19937(reg_seed(main_seed)),std::uniform_real_distribution<float>(0.f,1.f)));
         return true;
     }
     void Init() override

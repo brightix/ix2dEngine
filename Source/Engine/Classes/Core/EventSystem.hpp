@@ -37,7 +37,7 @@ public:
     //void ModifyEvent(std::function<void(std::optional<EventParams>)>&& event_method);
 //调用事件
 	//约定参数正确
-    void CallEvent(const std::string& event_name, TEventParams params = std::nullopt);
+    void CallEvent(const std::string& event_name, std::optional<EventParams> params = std::nullopt);
 	// template<typename ... Args>
 	// void CallEvent(const std::string& event_name, Args... args)
 	// {

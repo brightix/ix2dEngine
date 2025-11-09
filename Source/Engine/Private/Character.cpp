@@ -10,10 +10,9 @@
 void Character::Construct()
 {
     Pawn::Construct();
-
     CNAME;
-    capsule = NewObject<Capsule2d>(this);
 
+    capsule = NewObject<Capsule2d>(this);
     SceneComponent::Replace(Root.Get(),capsule);
     sprite = Cast<StaticTextureComponent>(GetSceneComponent("default_texture"));
     sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
@@ -21,53 +20,33 @@ void Character::Construct()
     capsule->SetComponentName("capsule");
     capsule->GetPhysicsBody()->mass = 200.f;
     capsule->NativeSetSceneComponentSize(sprite->GetSize());
-    SetActorTransform(transform);
+	move_strategy = God;
 }
 
 void Character::EventBegin()
 {
     Pawn::EventBegin();
     SetCharacterMoveStrategy(Simulation);
-	ListenDispatcher_Lambda(World()->GetController(),"Key_1", [this](const bool pressed) {
-		if (pressed)
-		{
-			std::cout << "切换到上帝模式" << std::endl;
-			SetCharacterMoveStrategy(God);
-		}
-	});
-    ListenDispatcher(World()->GetController(),"Key_2","ToGodMode");
-	//ListenDispatcher(World()->GetController(),"Key_3","Test");
-	ListenDispatcher(World()->GetController(),"Key_3",&Character::Test);
-	//dispatcher_system.DelegateEvent(this, "OnTest", "Test");
+	//ListenDispatcher(World()->GetController(),"Key_3",&Character::Test);
 }
 
 void Character::RegisterDispatchers()
 {
 	Pawn::RegisterDispatchers();
-	AddDispatcher("OnMoveStrategyChanged");
-	AddDispatcher("OnTest");
+	AddDispatcher("OnMoveStrategyChanged",{TypeID(bool)});
 }
 
 void Character::RegisterEvents()
 {
 	Pawn::RegisterEvents();
-	AddCustomEvent(Event("Test",[](TEventParams e) {
-		std::cout << "Do Test" << std::endl;
-	}));
-	AddCustomEvent("ToGodMode",Event("GodMode", [this](const bool pressed) {
+	AddCustomEvent(Event("MoveStrategyChanged",[this](const bool pressed) {
 		if (pressed)
 		{
-			std::cout << "切换到上帝模式" << std::endl;
-			SetCharacterMoveStrategy(God);
+			auto current_id = static_cast<CharacterMoveStrategy>(++move_strategy % MoveStrategySize);
+			std::cout << magic_enum::enum_name<CharacterMoveStrategy>(current_id) << std::endl;
+			SetCharacterMoveStrategy(current_id);
 		}
 	}));
-	AddCustomEvent(Event("ToSimMode",[this](TEventParams e) {
-		std::cout << "切换到模拟模式" << std::endl;
-		SetCharacterMoveStrategy(Simulation);
-	}));
-
-
-
 }
 
 
@@ -75,12 +54,14 @@ void Character::Possessed(Controller* possessed_controller)
 {
 	Pawn::Possessed(possessed_controller);
 	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},RED));
+	ListenDispatcher(World()->GetController(),"Key_1", "MoveStrategyChanged");
 }
 
 void Character::UnPossessed(Controller* possessed_controller)
 {
 	Pawn::UnPossessed(possessed_controller);
 	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
+	IgnoreDispatcher(possessed_controller,"Key_1");
 }
 
 SPhysicsBaseUtility * Character::GetCharacterPhysicsBody() const
@@ -94,13 +75,26 @@ SPhysicsBaseUtility * Character::GetCharacterPhysicsBody() const
 
 CharacterMoveStrategy Character::GetCharacterMoveStrategy() const
 {
-    return strategy;
+    return static_cast<CharacterMoveStrategy>(move_strategy % MoveStrategySize);
 }
 
 void Character::SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy)
 {
-    strategy = new_strategy;
+    move_strategy = new_strategy;
+	if (new_strategy == God)
+	{
+		Root->IgnoreDispatcher(capsule->GetPhysicsBody(),"OnSynchronization");
+	}
+	else if (new_strategy == Simulation)
+	{
+		Root->ListenDispatcher(capsule->GetPhysicsBody(),"OnSynchronization","Synchronization");
+	}
 	CallDispatcher("OnMoveStrategyChanged");
+}
+
+void Character::SetCharacterOpenPhysics(PhysicsType new_physics) const
+{
+	capsule->NativeSetPhysicsType(new_physics);
 }
 
 int Character::Test(bool b)

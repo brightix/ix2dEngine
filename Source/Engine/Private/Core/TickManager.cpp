@@ -25,14 +25,14 @@ void TickSubSystem::RegisterDispatchers()
 	AddDispatcher("OnRenderWidgetDataReady",{typeid(std::vector<RenderData>)});
 }
 
-void TickSubSystem::Tick(double delta_time)
+void TickSubSystem::Tick(const double delta_time)
 {
 TStart;
 
 TStartF("TickSubInit");
-    auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
-    std::vector<Controller*> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
-    auto world = GameEngine::Instance().GetGameWorld();
+	GameWorld* world = World();
+    const auto actors = world->GetActors();
+    const std::vector<Controller*> controllers = world->GetControllers();
 	auto& physics = Engine().physicsSys;
 	std::vector<RenderData> render_data;
 	render_data.reserve(actors.size());
@@ -77,7 +77,7 @@ TStartF("收集渲染数据");
 			if (a->is_pre_kill)
 			{
 				a->is_pending_kill = true;
-				world->RemoveActorByGCPtr(a);
+				world->RemoveActor(a);
 			}
 			else if (a->IsActive() && a->IsVisible())
 			{
@@ -110,7 +110,7 @@ TEndF("收集渲染数据");
 		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
 		// dispatcher_system.CallDelegate("RenderWidgetDataReady", widget_data);
 
-		//physics->DebugTree();
+		physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
 
 		dispatcher_system.CallDispatcher("OnRenderPresent");

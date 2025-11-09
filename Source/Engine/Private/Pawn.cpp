@@ -23,16 +23,9 @@ void Pawn::EventBegin()
 	Actor::EventBegin();
 }
 
-void Pawn::Tick(double deltaTime)
+void Pawn::Tick(const double deltaTime)
 {
     Actor::Tick(deltaTime);
-	//std::cout << transform.location.str() << std::endl;
-	//this->AddWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
-	//player_input_Vec = {};
-	//event_system.CallEvent("test");
-	// EventParams eip;
-	// eip.Add<std::string>("name","Fuck");
-	//dispatcher_system.CallEvent("TestDispatcher",eip);
 }
 
 void Pawn::Possessed(Controller *possessed_controller)
@@ -40,13 +33,12 @@ void Pawn::Possessed(Controller *possessed_controller)
 	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
 	//
 	// }));
+	Log("控制到 " + name);
 }
 
 void Pawn::UnPossessed(Controller *possessed_controller)
 {
-	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
-	//
-	// }));
+
 }
 void Pawn::RegisterEvents()
 {
@@ -57,13 +49,13 @@ void Pawn::RegisterEvents()
 	}));
 }
 
-void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param)
+void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const
 {
 	enhanced_input_sub_system->ExecuteBool(std::move(param));
 }
 void Pawn::CallEnhancedInputEventDouble(EnhancedInputParam<double> param) {}
 
-EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem()
+EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem() const
 {
 	return enhanced_input_sub_system.Get();
 }

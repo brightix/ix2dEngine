@@ -70,7 +70,7 @@ int GarbageCollection::GCSweep()
 			{
 				std::cout << "有未命名类" << std::endl;
 			}
-			std::cout << "移除了 " + obj->name << std::endl;
+			//std::cout << "移除了 " + obj->name << std::endl;
 			delete obj;
 			obj = nullptr;
 			cnt++;

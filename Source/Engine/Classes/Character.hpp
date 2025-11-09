@@ -4,18 +4,20 @@
 class Capsule2d;
 class StaticTextureComponent;
 
-enum CharacterMoveStrategy
+enum CharacterMoveStrategy : int
 {
     God,
-    Simulation
+    Simulation,
+	MoveStrategySize
 };
 
 class Character : public Pawn
 {
-    GCPtr<StaticTextureComponent> sprite;
     using Pawn::Pawn;
+protected:
+    GCPtr<StaticTextureComponent> sprite;
     Capsule2d* capsule;
-    CharacterMoveStrategy strategy;
+    int move_strategy;
 public:
     void Construct() override;
     void EventBegin() override;
@@ -25,10 +27,11 @@ public:
 	void Possessed(Controller* possessed_controller) override;
 	void UnPossessed(Controller* possessed_controller) override;
 
-    SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
-    CharacterMoveStrategy GetCharacterMoveStrategy() const;
+    [[nodiscard]] SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
+    [[nodiscard]] CharacterMoveStrategy GetCharacterMoveStrategy() const;
     void SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy);
 
+	void SetCharacterOpenPhysics(PhysicsType new_physics) const;
 
 	int Test(bool b);
 };

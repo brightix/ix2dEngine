@@ -6,6 +6,7 @@
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
 #include "Public/TestPawn.hpp"
+#include "Public/Map/PixelBirdWorld.hpp"
 #include "Types/RenderData.hpp"
 #include "Utilities/TracingUtility.hpp"
 
@@ -52,7 +53,6 @@ void GameEngine::Construct()
 	std::ifstream in("Source/Engine/Config/EngineConfig.json");
 	in >> j;
 	in.close();
-
 	SysConfig = {j["TargetFps"], {j["ScreenWidth"], j["ScreenHeight"]}};
 
 
@@ -71,13 +71,13 @@ void GameEngine::Construct()
 	engine_subsystem->ForAllSubSystemInit();
 
 	//加载默认关卡
-	OnChangeWorld(new GameWorld());
+	OnChangeWorld(new PixelBirdWorld());
 }
 
 
 void GameEngine::EventBegin()
 {
-	random_utility->RegisterRandom("SPhysicsBaseUtility_quality",{10,100});
+	random_utility->RegisterRandom("SPhysicsBaseUtility_quality");
 	timer_system.SetTimer(500,[gc = GCPtr(engine_subsystem->GetSubsystem<GarbageCollection>())]() {
 		int cnt{};
 		if (auto p = gc.Peek())
@@ -113,7 +113,7 @@ void GameEngine::Tick()
 
 
 		// 场景逻辑
-		game_world->Tick(delta_time);
+		game_world->NativeWorldTick(delta_time);
 		timer_system.Run();
 
 		TracingUtility::ReportPerformance(GetEngineAttribution());

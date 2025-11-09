@@ -8,10 +8,14 @@
 #include "Enum/LogLevel.h"
 #include "../ThirdParty/json.hpp"
 #include "Utilities/FuncLib/GlobalMacros.hpp"
-#define Log_f(msg,...) LogToFile(__FILE__, __LINE__, __func__,LogLevel::Tip, std::format(msg,##__VA_ARGS__))
-#define Log(msg) LogToFile(__FILE__, __LINE__, __func__,LogLevel::Tip, msg)
-#define LogWithLevel(level,msg,...) LogToFile(__FILE__, __LINE__, __func__, level,msg)
-#define LogWithLevel_f(level,msg,...) LogToFile(__FILE__, __LINE__, __func__, level,std::format(msg,##__VA_ARGS__))
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : \
+strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+
+#define Log_f(msg,...) LogToFile(__FILENAME__, __LINE__, __func__,LogLevel::Tip, std::format(msg,##__VA_ARGS__))
+#define Log(msg) LogToFile(__FILENAME__, __LINE__, __func__,LogLevel::Tip, msg)
+#define LogWithLevel(level,msg,...) LogToFile(__FILENAME__, __LINE__, __func__, level,msg)
+#define LogWithLevel_f(level,msg,...) LogToFile(__FILENAME__, __LINE__, __func__, level,std::format(msg,##__VA_ARGS__))
 #define CAST(x) Cast(x,__func__)
 inline void LogToFile(const char* file_name = "", const int line = 0, const char* func_name = "", const LogLevel level = Tip,const std::string& msg = "")
 {
@@ -29,7 +33,10 @@ inline void LogToFile(const char* file_name = "", const int line = 0, const char
 	std::string logText = oss.str();
 
 #if DEBUG == 1
-	std::cout << logText << std::endl;
+	if (level > Warning)
+	{
+		std::cout << logText << std::endl;
+	}
 #endif
 
 	file << logText << std::endl;

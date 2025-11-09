@@ -11,10 +11,17 @@ void TestGround::Construct()
     st->NativeSetActiveCollision(true);
     //s_t->SetPhysicsType(PhysicsType::Static);
     //SetActorName("Unknown_");
-    SetGroundSize({1000,1000});
+	size = {1000,1000};
+    SetGroundSize(size);
 }
 
-void TestGround::SetGroundSize(const Vec2<float> &new_size) const
+StaticTextureComponent* TestGround::GetGroundTexture()
 {
+	return st.Get();
+}
+
+void TestGround::SetGroundSize(const Vec2<float> &new_size)
+{
+	size = new_size;
     Cast<StaticTextureComponent>(GetSceneComponent("default_texture"))->SetStaticTexture(Create_FilledTexture_S(new_size));
 }

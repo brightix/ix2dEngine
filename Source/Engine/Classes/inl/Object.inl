@@ -39,23 +39,23 @@ void Object::ListenDispatcher_Lambda(Object* target, const std::string& dispatch
 	}
 
 	// 将 func decay-copy（可复制捕获），便于后续在事件中安全保存
-	auto func_copy = std::decay_t<Func>(std::forward<Func>(func));
+	// auto func_copy = std::decay_t<Func>(std::forward<Func>(func));
+	//
+	// // Event 期望的回调签名在你的代码里通常是 void(TEventParams)
+	// //using EventFuncType = std::function<void(TEventParams)>;
+	//
+	// auto invoker = [func_copy = std::move(func_copy)](TEventParams e) mutable {
+	// 	 // 如果 lambda/func 无参（ArgsTuple size == 0），直接调用
+	// 	 if constexpr (std::tuple_size_v<ArgsTuple> == 0) {
+	// 		func_copy();
+	// 	 } else {
+	// 		// 否则从 TEventParams 中解包并调用
+ // 			InvokeCallableWithEventParams<decltype(func_copy), ArgsTuple>(func_copy, e);
+	// 	}
+	// };
 
-	// Event 期望的回调签名在你的代码里通常是 void(TEventParams)
-	//using EventFuncType = std::function<void(TEventParams)>;
-
-	auto invoker = [func_copy = std::move(func_copy)](TEventParams e) mutable {
-		 // 如果 lambda/func 无参（ArgsTuple size == 0），直接调用
-		 if constexpr (std::tuple_size_v<ArgsTuple> == 0) {
-			func_copy();
-		 } else {
-			// 否则从 TEventParams 中解包并调用
-			InvokeCallableWithEventParams<decltype(func_copy), ArgsTuple>(func_copy, e);
-		}
-	};
-
-	Event event(lambda_name, std::function<void(TEventParams)>(std::move(invoker)));
-	event.Traits(argTypes);
+	Event event(lambda_name, std::move(func));
+	//event.Traits(argTypes);
 	AddCustomEvent(std::move(event));
 
 	// 让 target 知道这个 delegate（事件名）
@@ -68,15 +68,23 @@ void Object::ListenDispatcher(Object* target, const std::string& dispatcher_name
 {
 	static_assert(std::is_base_of_v<Object, Listener>, "Listener must inherit from Object");
 
+
 	const std::string lambda_name = name + "lambda" + std::to_string(++lambda_id);
 	using EventFuncType = std::function<void(TEventParams)>;
-	auto event = Event(lambda_name, EventFuncType(
-				[listener = this, func](TEventParams e) {
-					listener->template CallWithEventParams<Listener, Ret, Args...>(func, e, std::index_sequence_for<Args...>{});
-				}));
-	event.Traits({ std::type_index(typeid(Args))... });
-	AddCustomEvent(std::move(event));
 
+	std::vector<std::type_index> type = { std::type_index(typeid(Args))... };
+
+	if (!target->dispatcher_system.GetDispatcherType(dispatcher_name)->CheckType(type))
+	{
+		LogWithLevel(Error,"无法将{" + name + "}的成员函数绑定到  " + dispatcher_name);
+	}
+	auto event = Event(lambda_name,[listener = this, func](TEventParams e) {
+					listener->template CallWithEventParams<Listener, Ret, Args...>(func, e, std::index_sequence_for<Args...>{});
+				});
+	// auto event = Event(lambda_name, [listener = this, func](auto&&... args){
+	// 	(listener->*func)(std::forward<decltype(args)>(args)...);
+	// });
+	AddCustomEvent(std::move(event));
 	// 这里模拟 target 注册 lambda（直接调用 AddCustomEvent）
 	target->AcceptDelegate(this, dispatcher_name, lambda_name);
 }

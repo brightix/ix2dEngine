@@ -18,6 +18,15 @@ void Controller::Possess(Pawn* pawn)
 		//解绑
 		controlled_pawn->UnPossessed(this);
 	}
+	else
+	{
+		Log("由空到控制 pawn");
+	}
+	if (!pawn)
+	{
+		Log("控制到空 pawn");
+		return ;
+	}
 	controlled_pawn = pawn;
 	controlled_pawn->Possessed(this);
 	CallDispatcher("OnPossess", this);
@@ -62,6 +71,13 @@ void Controller::RegisterDispatchers()
 void Controller::EventBegin()
 {
 	Actor::EventBegin();
+	ListenDispatcher_Lambda(this,"Key_R",[this](const bool pressed) {
+		if (pressed)
+		{
+			const auto pawns = GetAllActorFromClass<Pawn>();
+			Possess(pawns[SDL_rand(pawns.size())]);
+		}
+	});
 }
 
 void Controller::Tick(double delta)

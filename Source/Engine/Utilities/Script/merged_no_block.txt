@@ -1799,9 +1799,11 @@ public:
     //Actor();
 	explicit Actor(const Transform &tf);
 	void Construct() override;
-    virtual void EventBegin();
+	void RegisterDispatchers() override;
+	void RegisterEvents() override;
+	virtual void EventBegin();
 	virtual void PrePhysicsTick(double delta_time){}
-	virtual void Tick(double delta_time);
+	virtual void Tick(const double delta_time);
 	virtual void PostPhysicsTick(double delta_time){}
 	virtual void RootComponentTick(double delta_time);
     virtual void EventEnd(){}
@@ -1853,17 +1855,18 @@ std::ostream& operator<<(std::ostream & os, Vec2<T> v)
 #include "Pawn.hpp"
 class Capsule2d;
 class StaticTextureComponent;
-enum CharacterMoveStrategy
+enum CharacterMoveStrategy : int
 {
     God,
-    Simulation
+    Simulation,
+	MoveStrategySize
 };
 class Character : public Pawn
 {
     GCPtr<StaticTextureComponent> sprite;
     using Pawn::Pawn;
     Capsule2d* capsule;
-    CharacterMoveStrategy strategy;
+    int move_strategy;
 public:
     void Construct() override;
     void EventBegin() override;
@@ -1871,9 +1874,10 @@ public:
 	void RegisterEvents() override;
 	void Possessed(Controller* possessed_controller) override;
 	void UnPossessed(Controller* possessed_controller) override;
-    SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
-    CharacterMoveStrategy GetCharacterMoveStrategy() const;
+    [[nodiscard]] SPhysicsBaseUtility* GetCharacterPhysicsBody() const;
+    [[nodiscard]] CharacterMoveStrategy GetCharacterMoveStrategy() const;
     void SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy);
+	int Test(bool b);
 };
 #pragma once
 #include <variant>
@@ -1914,9 +1918,9 @@ public:
 	void ReadInputMap(InputMap *map);
     [[nodiscard]] Pawn* GetControlledPawn() const;
 };
-static void BindNormalKeyEvent(Object* obj, const std::string& event_name, const Event &event)
+static void BindNormalKeyEvent(Object* obj, const std::string& dispatcher_name, const std::string& event_name)
 {
-	World()->GetController(0)->dispatcher_system.BindEventTo(obj, event_name, event);
+	World()->GetController(0)->AcceptDelegate(obj, dispatcher_name, event_name);
 }
 Vec2<float> GetMousePos();
 /**
@@ -2011,60 +2015,77 @@ struct InputMap : public Object
 #pragma once
 #include <string>
 #include "Core/EventDispatcherSystem.hpp"
-#include "Core/EventSystem.hpp"
-#include "Core/GCObject.hpp"
-#include "Utilities/FuncLib/SystemLib.hpp"
+ #include "Core/EventSystem.hpp"
+ #include "Core/GCObject.hpp"
+ #include "Utilities/FuncLib/SystemLib.hpp"
+inline size_t lambda_id = 0;
 class Object : public GCObject
 {
 protected:
-    //事件分发器
-    //EventDelegateSystem delegate_system;
+	//事件分发器
+	//EventDelegateSystem delegate_system;
 public:
 	//委托
 	EventDispatcherSystem dispatcher_system;
 	//事件系统
 	EventSystem event_system;
-    Object();
+	Object();
 	virtual void Construct();
 	//生命周期类
+	//注册自定义事件
 	virtual void RegisterEvents(){}
+	//注册事件分发器
 	virtual void RegisterDispatchers(){}
-    void AddCustomEvent(const std::string& event_name, EventMethod&& event_method);
-    void CallEvent(const std::string& event_name, const std::optional<EventParams> &params = std::nullopt);
-    //添加事件分发器安全版本需要验证参数包类型
-    void AddEventDispatcher(const std::string& event_name);
-	void BindEventToDispatcher(Object *target, const std::string &event_name, Event event);
-    /**
-     * 监听目标对象事件
-     * @param target 监听对象
-     * @param event_name 事件名
-     * @param event 事件
-     */
-    void ListenDispatcher(Object* target, const std::string& event_name, Event event);
-	void IgnoreDispatcher(Object* target, const std::string& dispatcher_name, const std::string& event_name);
-	void CallDispatcher(const std::string& event_name);
- //    template<typename T>
-	// GCPtr<T> NewObject(T* object)
-	// {
-	// 	static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
-	// 	auto it = GCPtr<T>(object,this);
-	// 	it->Construct();
-	// 	return it;
-	// }
+	//template<typename Func>
+	//void AddCustomEvent(const std::string& event_name, Func&& event_method);
+	//void AddCustomEvent(const std::string& event_name, EventMethod&& event_method);
+//事件处理函数
+	void AddCustomEvent(Event&& event_method);
+	void AddCustomEvent(const std::string& event_name, Event&& event);
+	void CallEvent(const std::string& event_name, const TEventParams& params = std::nullopt);
+	//添加事件分发器安全版本需要验证参数包类型
+	//void DelegateEventDispatcher(Object *target, const std::string &event_name, Event event);
+	//添加分发器
+	void AddDispatcher(const std::string& event_name, const std::vector<std::type_index>& event_type = {});
+	// 接收目标的委托事件名
+	void AcceptDelegate(Object* delegate_obj, const std::string& dispatcher_name, const std::string& event_name);
+	//解绑该对象的所有同名委托
+	void RemoveDelegate(Object* dispatcher_owner, const std::string& dispatcher_name, const std::string& event_name);
+	//调用分发器
+	void CallDispatcher(const std::string& dispatcher_name, TEventParams event_params = std::nullopt);
+	/**
+	 * 监听目标对象事件
+	 * @param target 监听对象
+	 * @param dispatcher_name
+	 * @param event_name 事件名
+	 */
+	void ListenDispatcher(Object* target, const std::string& dispatcher_name, const std::string& event_name);
+	void IgnoreDispatcher(Object* target, const std::string& dispatcher_name);
+	void IgnoreDispatcherEvent(Object* target, const std::string& dispatcher_name, const std::string& event_name);
+	template<typename...Args>
+	void CallDispatcher(const std::string& event_name, Args...args);
+	template<class Func>
+	void ListenDispatcher_Lambda(Object* target, const std::string& dispatcher_name, Func&& func);
+	template<typename Listener, typename Ret, typename... Args>
+	void ListenDispatcher(Object* target, const std::string& dispatcher_name, Ret(Listener::*func)(Args...));
+	template<typename T, typename Ret, typename... Args, size_t... I>
+	void CallWithEventParams(Ret(T::*func)(Args...), TEventParams e, std::index_sequence<I...>);
+		//事件工具
+		const std::string&& ValidEvent(const std::string&& event_name) const;
 	template<typename T>
 	T* NewObject(T* ptr, Object *outer = nullptr)
-    {
-    	static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
+	{
+		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
 		auto object = IsDerived<Object>(ptr);
-    	if (!object)
-    	{
-    		return nullptr;
-    	}
-    	object->Construct();
+		if (!object)
+		{
+			return nullptr;
+		}
+		object->Construct();
 		GCAllObjects.push_back(object);
 		if (outer)
 		{
-    		object->outer = outer;
+			object->outer = outer;
 			GCLink(outer,object);
 		}
 #if DEBUG
@@ -2073,8 +2094,8 @@ public:
 			LogWithLevel(Warning,"构造了没有outer的对象");
 		}
 #endif
-    	return ptr;
-    }
+		return ptr;
+	}
 	template<typename T,typename ...Args>
 	T* NewObject(Object *outer = nullptr, Args... args)
 	{
@@ -2104,9 +2125,9 @@ public:
 		it->Construct();
 		return it;
 	}
-    ~Object() override = default;
+	~Object() override = default;
 };
-#pragma once
+#include "Classes/inl/Object.inl"#pragma once
 #include "Classes/Actor.hpp"
 #include "SubSystem/EnhancedInputSubSystem.hpp"
 class Controller;
@@ -2129,9 +2150,9 @@ public:
 	virtual void UnPossessed(Controller *possessed_controller);
 	void RegisterEvents() override;
 	//增强输入
-	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param);
+	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const;
 	void CallEnhancedInputEventDouble(EnhancedInputParam<double> param);
-	EnhancedInputSubSystem* GetEnhancedInputSubSystem();
+	EnhancedInputSubSystem* GetEnhancedInputSubSystem() const;
 	Vec2<float> GetVelocity_Debug() const;
 };
 #pragma once
@@ -2189,6 +2210,7 @@ class Capsule2d final : public SceneComponent
 public:
     Capsule2d();
     void Construct() override;
+	void RegisterEvents() override;
     void ComponentEventBegin() override;
     void NativeSetActiveCollision(bool is_active) override;
 };
@@ -2483,12 +2505,13 @@ public:
     void OfferRenderData(std::vector<RenderData>& data) override ;
 };
 #pragma once
-#include <unordered_set>
+#include "Types/Dispatcher.hpp"
 #include "Utilities/Event.hpp"
 #include "Utilities/GCPtr.hpp"
 #include "Utilities/GCWeakPtr.hpp"
+#include "Utilities/FuncLib/SystemLib.hpp"
 class Object;
-using EventMethod = std::function<void(std::optional<EventParams>)>;
+using EventMethod = std::function<void(TEventParams)>;
 // struct DispatcherKey {
 // 	std::string dispatcher;
 // 	GCWeakPtr<Object> target;
@@ -2510,33 +2533,37 @@ class EventDispatcherSystem
 	//分发器-> 事件对象-> 事件
 	std::unordered_map<std::string,std::unordered_map<GCPtr<Object>,std::vector<Event>>> bound_dispatcher;
 //					   分发器									委托者				   委托事件
-	std::unordered_map<std::string,     std::unordered_map<     GCWeakPtr<Object>,     Array<std::string>>> delegate;
+	std::unordered_map<Dispatcher,      std::unordered_map<     GCWeakPtr<Object>,     Array<std::string>>> delegate;
 //	std::unordered_map<std::string,     std::unordered_map<     GCWeakPtr<Object>,     std::unordered_set<std::string>>> delegate_set;
 public:
-    EventDispatcherSystem(GCObject* outer_);
+    explicit EventDispatcherSystem(GCObject* outer_);
     ~EventDispatcherSystem()= default;
-    //添加分发器
-    void AddEventDispatcher(const std::string& event_name);
-	//在这个事件系统里绑定其他对象的事件
-    void BindEventTo(Object *obj, const std::string& bounded_name,  Event event);
-	std::optional<Event> GetEvent(Object *obj, const std::string& event_name);
-	void CallDispatcher(const std::string& event_name,std::optional<EventParams> event_params = std::nullopt);
-	void DelegateEvent(Object* obj, std::string dispatcher_name, std::string event_name);
-	void IgnoreDispatcher(Object* target, const std::string& dispatcher_name, const std::string& event_name);
-	void CallDelegate(const std::string& dispatcher_name);
+	const Dispatcher* GetDispatcherType(const std::string& dispatcher_name) const;
+	//添加分发器
+	void AddDispatcher(const std::string& event_name, const std::vector<std::type_index>& dispatcher_type = {});
+	// 接收目标的委托事件名
+	void AcceptDelegate(Object* target, std::string dispatcher_name, std::string event_name);
+	//解绑该对象的所有同名委托
+	void RemoveDelegate(Object* target, const std::string& dispatcher_name, const std::string& event_name);
+	//调用分发器
+	void CallDispatcher(const std::string& dispatcher_name, std::optional<EventParams> event_params = std::nullopt);
+	void RemoveAllEventByDispatcher(Object* sender, const std::string& dispatcher_name);
+	void RemoveAllEventByEventName(Object* sender, const std::string& dispatcher_name, const std::string& event_name);
 };
 #pragma once
 #include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
-#include "../../Utilities/Event.hpp"
+#include "Utilities/Event.hpp"
 class Object;
-using EventMethod = std::function<void(std::optional<EventParams>)>;
+using EventMethod = std::function<void(TEventParams)>;
 class EventSystem
 {
+	friend class Object;
 	Object* owner;
     std::unordered_map<std::string,Event> events;
+	//std::unordered_map<std::string,Event_auto> events_auto;
 public:
     EventSystem();
 //尝试添加事件
@@ -2556,7 +2583,20 @@ public:
 //改写事件
     //void ModifyEvent(std::function<void(std::optional<EventParams>)>&& event_method);
 //调用事件
-    void CallEvent(const std::string& event_name,std::optional<EventParams> params = std::nullopt);
+	//约定参数正确
+    void CallEvent(const std::string& event_name, std::optional<EventParams> params = std::nullopt);
+	// template<typename ... Args>
+	// void CallEvent(const std::string& event_name, Args... args)
+	// {
+	// 	if (!events.contains(event_name))
+	// 	{
+	// 		Log("执行了不存在的事件，事件名：" + event_name);
+	// 	}
+	// 	EventParams e;
+	// 	// 把参数打包到 any vector
+	// 	e.Load({ std::forward<Args>(args)... });
+	// 	events[event_name](std::move(e));
+	// }
 	//void SetTimerEvent();
 	std::optional<Event> GetEventByName(const std::string& event_name);
 //带时间的轮训事件
@@ -2724,20 +2764,17 @@ public:
 	GCPtr<CanvasWidget> viewport;
     GameWorld();
     ~GameWorld() override;
-	void Unload();
+	void Unload() const;
 	void Construct() override;
+	void RegisterDispatchers() override;
 	void ConstructWorld();
 	void StartSimulation();
-	// 从类构建Actor
-	// void SpawnActorFromClass(std::shared_ptr<T> actor){
-	// 	Actors.push_back(actor);
-	// }
 //Get
-	std::vector<GCPtr<Controller>> GetControllers();
+	std::vector<Controller*> GetControllers() const;
 	Controller *GetController(int id = 0) const;
-	std::vector<GCPtr<Actor>> *GetActors();
+	std::vector<Actor*> GetActors() const;
 	std::vector<GCPtr<Widget>> GetWidgets() const;
-	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
+	void RemoveActor(const Actor* actor);
 	//Set
 	//void RemoveActorByPtr(Actor* actor);
 // 服务器方法
@@ -2767,9 +2804,7 @@ T* SpawnActor(T* actor)
 	}
 	else
 	{
-		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
-			actor->EventBegin();
-		}));
+		actor->ListenDispatcher(world,"OnWorldEventBegin","EventBegin");
 	}
 	World()->AddToWorld(actor);
 	return actor;
@@ -2788,9 +2823,7 @@ T* SpawnActor(Transform transform = {})
 	}
 	else
 	{
-		actor->ListenDispatcher(world,"EventBegin",Event([actor](TEventParams) {
-			actor->EventBegin();
-		}));
+		actor->ListenDispatcher(world,"OnWorldEventBegin","EventBegin");
 	}
 	//后面可以推进使用 level 分级
 	world->AddToWorld(actor);
@@ -2812,7 +2845,31 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 		TEndF("RandCreateActor");
 	}
 }
-#pragma once
+template<typename T>
+std::vector<T*> GetAllActorFromClass(const std::string& name = "")
+{
+	std::vector<T*> ret;
+	auto actors = World()->GetActors();
+	if (name.empty())
+	{
+		for (auto& actor : actors)
+		{
+			if (auto it = Cast<T>(actor))
+			{
+				ret.emplace_back(it);
+			}
+		}
+		return ret;
+	}
+	for (auto& actor : actors)
+	{
+		if (auto it = Cast<T>(actor); it && actor->name == name)
+		{
+			ret.emplace_back(it);
+		}
+	}
+	return ret;
+}#pragma once
 #include <string>
 #include <vector>
 #include "Types/Array.hpp"
@@ -2957,6 +3014,7 @@ public:
     TickSubSystem(int buffer_cnt);
 	TickSubSystem() : buffer_type(0) { }
     void Construct() override;
+	void RegisterDispatchers() override;
     void Tick(double delta_time);
 	void Init() override;
 	void SetBufferType(int type);
@@ -3643,20 +3701,28 @@ Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_
 void Actor::Construct()
 {
 	Object::Construct();
-	//事件
-	//event_system.AddEvent("");
-	dispatcher_system.AddEventDispatcher("OnMobilityChanged");
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
 	Root->NativeSetOuter(this);
-	// TODO处理事件回调时机，先绑定事件还是先设置位置
+	SetActorTransform(transform);
 	auto tex = Root->MountedComponent(NewObject<StaticTextureComponent>());
 	tex->SetComponentName("default_texture");
 	tex->SetStaticTexture(Create_FilledTexture_S({100,100}));
 	auto NameBlock = NewObject<SceneTextBlock>(this);
 	NameBlock->SetText(name);
 	Root->MountedComponent(NameBlock);
-	SetActorTransform(transform);
+}
+void Actor::RegisterDispatchers()
+{
+	Object::RegisterDispatchers();
+	AddDispatcher("OnMobilityChanged");
+}
+void Actor::RegisterEvents()
+{
+	Object::RegisterEvents();
+	AddCustomEvent(Event{"EventBegin", [this]() {
+		EventBegin();
+	}});
 }
 void Actor::EventBegin()
 {
@@ -3672,7 +3738,7 @@ void Actor::EventBegin()
 	//game_world = GameEngine::Instance().GetGameWorld().Get();
 }
 //所有重写tick都在PreTick内
-void Actor::Tick(double delta_time) {}
+void Actor::Tick(const double delta_time) {}
 void Actor::RootComponentTick(const double delta_time)
 {
 	for (auto& it : actor_components)
@@ -3701,7 +3767,7 @@ void Actor::SetHiddenInGame(bool new_hidden_in_game)
 // void Actor::SetMobility(const ActorMobility target_mobility)
 // {
 // 	mobility = target_mobility;
-// 	dispatcher_system.CallDispatcher("OnMobilityChanged");
+// 	dispatcher_system.CallDelegate("OnMobilityChanged");
 // }
 //
 // ActorMobility Actor::GetMobility() const
@@ -3722,6 +3788,7 @@ SceneComponent *Actor::GetSceneComponent(const std::string &component_name) cons
 }
 void Actor::SetRoot(SceneComponent *new_root)
 {
+	new_root->SetComponentWorldLocation(Root->GetComponentWorldLocation());
 	Root = new_root;
 }
 void Actor::RenderOnScreen()
@@ -3799,47 +3866,42 @@ void Character::Construct()
     capsule->SetComponentName("capsule");
     capsule->GetPhysicsBody()->mass = 200.f;
     capsule->NativeSetSceneComponentSize(sprite->GetSize());
-    SetActorTransform(transform);
+	move_strategy = God;
 }
 void Character::EventBegin()
 {
     Pawn::EventBegin();
     SetCharacterMoveStrategy(Simulation);
-    ListenDispatcher(World()->GetController(),"Key_1",Event([this](TEventParams) {
-        std::cout << "切换到上帝模式" << std::endl;
-        SetCharacterMoveStrategy(God);
-    }));
-    ListenDispatcher(World()->GetController(),"Key_2",Event([this](TEventParams) {
-        std::cout << "切换到模拟模式" << std::endl;
-        SetCharacterMoveStrategy(Simulation);
-    }));
-	ListenDispatcher(World()->GetController(),"Key_3",Event([this](TEventParams) {
-		dispatcher_system.CallDelegate("OnTest");
-	}));
-	//dispatcher_system.DelegateEvent(this, "OnTest", "Test");
+	//ListenDispatcher(World()->GetController(),"Key_3",&Character::Test);
 }
 void Character::RegisterDispatchers()
 {
 	Pawn::RegisterDispatchers();
-	AddEventDispatcher("OnMoveStrategyChanged");
-	AddEventDispatcher("OnTest");
+	AddDispatcher("OnMoveStrategyChanged",{TypeID(bool)});
 }
 void Character::RegisterEvents()
 {
 	Pawn::RegisterEvents();
-	AddCustomEvent("Test",Event([](TEventParams e) {
-		std::cout << "Do Test" << std::endl;
+	AddCustomEvent(Event("MoveStrategyChanged",[this](const bool pressed) {
+		if (pressed)
+		{
+			auto current_id = static_cast<CharacterMoveStrategy>(++move_strategy % MoveStrategySize);
+			std::cout << magic_enum::enum_name<CharacterMoveStrategy>(current_id) << std::endl;
+			SetCharacterMoveStrategy(current_id);
+		}
 	}));
 }
 void Character::Possessed(Controller* possessed_controller)
 {
 	Pawn::Possessed(possessed_controller);
 	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},RED));
+	ListenDispatcher(World()->GetController(),"Key_1", "MoveStrategyChanged");
 }
 void Character::UnPossessed(Controller* possessed_controller)
 {
 	Pawn::UnPossessed(possessed_controller);
 	sprite->SetStaticTexture(Create_FilledTexture_S({50,50},BLUE));
+	IgnoreDispatcher(possessed_controller,"Key_1");
 }
 SPhysicsBaseUtility * Character::GetCharacterPhysicsBody() const
 {
@@ -3851,12 +3913,17 @@ SPhysicsBaseUtility * Character::GetCharacterPhysicsBody() const
 }
 CharacterMoveStrategy Character::GetCharacterMoveStrategy() const
 {
-    return strategy;
+    return static_cast<CharacterMoveStrategy>(move_strategy % MoveStrategySize);
 }
 void Character::SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy)
 {
-    strategy = new_strategy;
+    move_strategy = new_strategy;
 	CallDispatcher("OnMoveStrategyChanged");
+}
+int Character::Test(bool b)
+{
+	std::cout << "Test" << std::endl;
+	return b;
 }
 #include "Classes/Controller.hpp"
 #include <SDL3/SDL.h>
@@ -3874,9 +3941,18 @@ void Controller::Possess(Pawn* pawn)
 		//解绑
 		controlled_pawn->UnPossessed(this);
 	}
+	else
+	{
+		Log("由空到控制 pawn");
+	}
+	if (!pawn)
+	{
+		Log("控制到空 pawn");
+		return ;
+	}
 	controlled_pawn = pawn;
 	controlled_pawn->Possessed(this);
-	CallDispatcher("OnPossess");
+	CallDispatcher("OnPossess", this);
 }
 void Controller::Unpossess()
 {
@@ -3884,7 +3960,7 @@ void Controller::Unpossess()
 	{
 		controlled_pawn->UnPossessed(this);
 	}
-	CallDispatcher("OnUnpossess");
+	CallDispatcher("OnUnpossess", this);
 }
 void Controller::Construct()
 {
@@ -3904,12 +3980,19 @@ void Controller::Construct()
 void Controller::RegisterDispatchers()
 {
 	//Actor::RegisterDispatchers();
-	AddEventDispatcher("OnPossess");
-	AddEventDispatcher("OnUnpossess");
+	AddDispatcher("OnPossess",{typeid(Controller*)});
+	AddDispatcher("OnUnpossess",{typeid(Controller*)});
 }
 void Controller::EventBegin()
 {
 	Actor::EventBegin();
+	ListenDispatcher_Lambda(this,"Key_R",[this](const bool pressed) {
+		if (pressed)
+		{
+			const auto pawns = GetAllActorFromClass<Pawn>();
+			Possess(pawns[SDL_rand(pawns.size())]);
+		}
+	});
 }
 void Controller::Tick(double delta)
 {
@@ -3919,7 +4002,9 @@ void Controller::Tick(double delta)
     {
     	auto t = event.type;
     	SDL_Scancode scancode = event.key.scancode;
-    	EventParams e;
+    	auto n_key_name = input_map->Normal[scancode].key_name;
+    	//auto enhanced_key_name = input_map->Enhanced[scancode].key_name;
+    	EventParams_auto e;
     	Uint8 button_id;
 	    switch (t)
         {
@@ -3941,7 +4026,7 @@ void Controller::Tick(double delta)
         				controlled_pawn->CallEnhancedInputEventBool(eip);
         			}
         		}
-	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name);
+	    		CallDispatcher(n_key_name,true);
         		break;
         	case SDL_EVENT_KEY_UP:   // 键盘松开
 	    		if (controlled_pawn)
@@ -3953,28 +4038,29 @@ void Controller::Tick(double delta)
 	    			controlled_pawn->CallEnhancedInputEventBool(eip);
 	    			key = Idle;
 	    		}
+	    		CallDispatcher(n_key_name,false);
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_DOWN: // 鼠标按下
         		// event.button.button 获取按钮
 	    		button_id = event.button.button;
-	    		e.Add("pressed",true);
-	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
+	    		//e.Add("pressed",true);
+	    		CallDispatcher(input_map->Mouse[button_id].button_name, true);
         		break;
         	case SDL_EVENT_MOUSE_BUTTON_UP:   // 鼠标松开
 	    		button_id = event.button.button;
-	    		e.Add("pressed",false);
-	    		dispatcher_system.CallDispatcher(input_map->Mouse[button_id].button_name,e);
+	    		//e.Add("pressed",false);
+	    		CallDispatcher(input_map->Mouse[button_id].button_name,false);
         		break;
         	case SDL_EVENT_MOUSE_MOTION:     // 鼠标移动
         		// event.motion.x / y / xrel / yrel
 	    		mouse_pos = {event.motion.x,event.motion.y};
-	    		e.Add("mouse_pos",Vec2<float>(mouse_pos.x,mouse_pos.y));
-	    		//dispatcher_system.CallDispatcher(input_map->Mouse[scancode].key_name,e);
+	    		//e.Add("mouse_pos",Vec2<float>(mouse_pos.x,mouse_pos.y));
+	    		//dispatcher_system.CallDelegate(input_map->Mouse[scancode].key_name,e);
         		break;
         	case SDL_EVENT_MOUSE_WHEEL:      // 鼠标滚轮
         		// event.wheel.x / y
-	    		e.Add("mouse_wheel",event.wheel.y);
-	    		dispatcher_system.CallDispatcher(input_map->Normal[scancode].key_name,e);
+	    		//e.Add("mouse_wheel",event.wheel.y);
+	    		CallDispatcher(n_key_name,event.wheel.y);
         		break;
         	default:
         		break;
@@ -4006,7 +4092,15 @@ void Controller::ReadInputMap(InputMap* map)
 {
 	for (auto &key: map->Normal | views::values)
 	{
-		dispatcher_system.AddEventDispatcher(key.key_name);
+		std::vector<std::type_index> event_type;
+		switch (key.type)
+		{
+			case EnhancedInputParamType::Bool:
+				event_type.push_back(std::type_index(typeid(bool)));
+				break;
+			default: ;
+		}
+		AddDispatcher(key.key_name,event_type);
 	}
 }
 Pawn* Controller::GetControlledPawn() const
@@ -4221,52 +4315,83 @@ void InputMap::Construct()
 	}
 }
 #include "Classes/Object.hpp"
-#include <iostream>
 using namespace std;
 Object::Object() : dispatcher_system(this)
 {
 }
 void Object::Construct()
 {
-	RegisterDispatchers();
     RegisterEvents();
+	RegisterDispatchers();
 }
-void Object::AddCustomEvent(const std::string& event_name, EventMethod&& event_method)
+// void Object::AddCustomEvent(const std::string& event_name, EventMethod&& event_method)
+// {
+//     event_system.AddEvent(Event(event_name,event_method));
+// }
+void Object::AddCustomEvent(Event&& event_method)
 {
-    event_system.AddEvent(Event(event_name,event_method));
+	event_system.AddEvent(std::forward<Event>(event_method));
 }
-void Object::CallEvent(const std::string& event_name, const std::optional<EventParams> &params)
+void Object::AddCustomEvent(const std::string& event_name,Event&& event)
+{
+	event.event_name = event_name;
+	event_system.AddEvent(std::forward<Event>(event));
+}
+void Object::CallEvent(const std::string& event_name, const TEventParams &params)
 {
     event_system.CallEvent(event_name, params);
 }
-void Object::AddEventDispatcher(const std::string& event_name)
+void Object::AddDispatcher(const std::string& event_name, const std::vector<std::type_index>& event_type)
 {
-    dispatcher_system.AddEventDispatcher(event_name);
+    dispatcher_system.AddDispatcher(event_name, event_type);
 }
-void Object::BindEventToDispatcher(Object* target, const std::string &event_name,Event event)
+void Object::AcceptDelegate(Object* delegate_obj, const std::string& dispatcher_name, const std::string& event_name)
 {
-    if (event.event_name.empty())
-    {
-        event.event_name = event_name;
-    }
-    dispatcher_system.BindEventTo(target, event_name, std::move(event));
-    //target->dispatcher_system.DelegateEvent(target, dispatcher_name);
+	dispatcher_system.AcceptDelegate(delegate_obj, dispatcher_name,event_name);
 }
-void Object::IgnoreDispatcher(Object* target, const std::string &dispatcher_name, const std::string& event_name)
+void Object::RemoveDelegate(Object* dispatcher_owner, const std::string &dispatcher_name, const std::string& event_name)
 {
-    target->dispatcher_system.IgnoreDispatcher(target, dispatcher_name, event_name);
+    dispatcher_owner->dispatcher_system.RemoveDelegate(this, dispatcher_name, event_name);
 }
-void Object::CallDispatcher(const std::string& event_name)
+void Object::CallDispatcher(const std::string& event_name, TEventParams event_params)
 {
-	dispatcher_system.CallDispatcher(event_name);
+	dispatcher_system.CallDispatcher(event_name, std::move(event_params));
 }
-void Object::ListenDispatcher(Object* target, const std::string &event_name, Event event)
+void Object::ListenDispatcher(Object* target, const std::string &dispatcher_name, const std::string& event_name)
 {
-	if (event.event_name.empty())
+	if (event_name.empty())
 	{
-		event.event_name = event_name;
+		Log("绑定空事件");
+		return ;
 	}
-	target->dispatcher_system.BindEventTo(target, event_name, std::move(event));
+	target->AcceptDelegate(this, dispatcher_name, event_name);
+}
+void Object::IgnoreDispatcher(Object* target, const std::string& dispatcher_name)
+{
+	if (dispatcher_name.empty())
+	{
+		Log("解绑到 空分发器 ");
+		return ;
+	}
+	target->dispatcher_system.RemoveAllEventByDispatcher(this, dispatcher_name);
+}
+void Object::IgnoreDispatcherEvent(Object* target, const std::string& dispatcher_name, const std::string& event_name)
+{
+	if (dispatcher_name.empty())
+	{
+		Log("解绑到 空分发器 ");
+		return ;
+	}
+	target->dispatcher_system.RemoveAllEventByEventName(this, dispatcher_name, event_name);
+}
+const std::string&& Object::ValidEvent(const std::string&& event_name) const
+{
+	auto it = event_system.events.find(event_name);
+	if (it == event_system.events.end())
+	{
+		Log(name + " 没有事件 " + event_name);
+	}
+	return std::move(event_name);
 }
 #include "Classes/Pawn.hpp"
 #include <utility>
@@ -4287,41 +4412,32 @@ void Pawn::EventBegin()
 {
 	Actor::EventBegin();
 }
-void Pawn::Tick(double deltaTime)
+void Pawn::Tick(const double deltaTime)
 {
     Actor::Tick(deltaTime);
-	//std::cout << transform.location.str() << std::endl;
-	//this->AddWorldLocation(player_input_Vec.Normalize() * static_cast<float>(deltaTime) * base_move_speed);
-	//player_input_Vec = {};
-	//event_system.CallEvent("test");
-	// EventParams eip;
-	// eip.Add<std::string>("name","Fuck");
-	//dispatcher_system.CallEvent("TestDispatcher",eip);
 }
 void Pawn::Possessed(Controller *possessed_controller)
 {
 	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
 	//
 	// }));
+	Log("控制到 " + name);
 }
 void Pawn::UnPossessed(Controller *possessed_controller)
 {
-	// ListenDispatcher(possessed_controller,"",Event([](TEventParams e) {
-	//
-	// }));
 }
 void Pawn::RegisterEvents()
 {
 	Actor::RegisterEvents();
-	AddCustomEvent("Possessed",Event([](TEventParams e) {
+	AddCustomEvent(Event("Possessed",[](TEventParams e) {
 	}));
 }
-void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param)
+void Pawn::CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const
 {
 	enhanced_input_sub_system->ExecuteBool(std::move(param));
 }
 void Pawn::CallEnhancedInputEventDouble(EnhancedInputParam<double> param) {}
-EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem()
+EnhancedInputSubSystem* Pawn::GetEnhancedInputSubSystem() const
 {
 	return enhanced_input_sub_system.Get();
 }
@@ -4532,16 +4648,17 @@ void Capsule2d::Construct()
     physics_body = NewObject<SPhysicsBaseUtility>(this);
 	pivot = PivotDir::BOTTOM_CENTER;
 }
+void Capsule2d::RegisterEvents()
+{
+	SceneComponent::RegisterEvents();
+	AddCustomEvent({"Synchronization",[this]() {
+		SetComponentWorldLocation(physics_body->after_location);
+	}});
+}
 void Capsule2d::ComponentEventBegin()
 {
     SceneComponent::ComponentEventBegin();
-    ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams) {
-        SetComponentWorldLocation(physics_body->after_location);
-        // if (world_transform.location.y > 800)
-        // {
-        //     //BREAK
-        // }
-    }));
+    ListenDispatcher(physics_body.Get(),"OnSynchronization","Synchronization");
 }
 void Capsule2d::NativeSetActiveCollision(const bool is_active)
 {
@@ -4566,10 +4683,10 @@ CollisionBox::CollisionBox()
 void CollisionBox::Construct()
 {
 	SceneComponent::Construct();
-	dispatcher_system.AddEventDispatcher("OnCollision");
+	dispatcher_system.AddDispatcher("OnCollision");
 	//物理组件
 	physics_body = NewObject<SPhysicsBaseUtility>(this);
-	dispatcher_system.AddEventDispatcher("OnEffectTransform");
+	AddDispatcher("OnEffectTransform",{typeid(Transform)});
 	//physics_body->SetBodyBox({w,h});
 	//默认描边
 	// auto texture = MountedComponent(new StaticTexture);
@@ -4580,26 +4697,8 @@ void CollisionBox::Construct()
 void CollisionBox::ComponentEventBegin()
 {
 	SceneComponent::ComponentEventBegin();
-	physics_body->BindEventToDispatcher(this,"OnCollision",Event([this](TEventParams e) {
-		dispatcher_system.CallDispatcher("OnCollision", e);
-	}));
-	ListenDispatcher(physics_body.Get(),"OnSynchronization",Event([this](TEventParams e) {
-		//Location after_location = physics_body->after_location;
-		SetComponentWorldLocation(physics_body->after_location);
-	}));
-	// ListenDispatcher(owner, "OnMobilityChanged", Event([this](TEventParams e) {
-	// 	if (owner->GetMobility() == ActorMobility::Static)
-	// 	{
-	// 		physics_body->type = PhysicsType::Static;
-	// 	}
-	// 	else
-	// 	{
-	// 		physics_body->type = PhysicsType::Movable;
-	// 	}
-	// }));
-	// BindEvent(this, "OnSceneComponentTeleport",Event([&](TEventParams e) {
-	// 	Synchronization();
-	// }));
+	ListenDispatcher(physics_body.Get(),"OnCollision", "Collision");
+	ListenDispatcher(physics_body.Get(),"OnSynchronization", "CollisionSynchronization");
 }
 void CollisionBox::ComponentRender()
 {
@@ -4650,9 +4749,9 @@ SceneComponent::SceneComponent(const Transform& trans) : w(0), h(0), parent_comp
 void SceneComponent::Construct()
 {
 	Component::Construct();
-	dispatcher_system.AddEventDispatcher("OnComponentLocationChanged");
-	dispatcher_system.AddEventDispatcher("OnComponentRotationChanged");
-	dispatcher_system.AddEventDispatcher("OnComponentScalingChanged");
+	dispatcher_system.AddDispatcher("OnComponentLocationChanged");
+	dispatcher_system.AddDispatcher("OnComponentRotationChanged");
+	dispatcher_system.AddDispatcher("OnComponentScalingChanged");
 	//dispatcher_system.AddEventDispatcher("OnSceneComponentTeleport");
 }
 void SceneComponent::NativeSceneComponentEventBegin()
@@ -5118,7 +5217,17 @@ EventDispatcherSystem::EventDispatcherSystem(GCObject *outer_)
 {
 	outer = outer_;
 }
-void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
+const Dispatcher* EventDispatcherSystem::GetDispatcherType(const std::string& dispatcher_name) const
+{
+	auto it = delegate.find(dispatcher_name);
+	if (it == delegate.end())
+	{
+		Log("没有该事件");
+		return nullptr;
+	}
+	return &it->first;
+}
+void EventDispatcherSystem::AddDispatcher(const std::string& event_name, const std::vector<std::type_index>& dispatcher_type)
 {
 #if DEBUG
 	if (bound_dispatcher.contains(event_name))
@@ -5135,87 +5244,41 @@ void EventDispatcherSystem::AddEventDispatcher(const std::string& event_name)
 	}
 #endif
 	//非Debug模式就不管了
-	delegate[event_name];
+	delegate[Dispatcher(event_name, dispatcher_type)];
 }
-//在这个事件系统里绑定其他对象的事件
-void EventDispatcherSystem::BindEventTo(Object *obj, const std::string& bounded_name, Event event)
+void EventDispatcherSystem::AcceptDelegate(Object *target, std::string dispatcher_name, std::string event_name)
 {
-    auto it = bound_dispatcher.find(bounded_name);
-    if (it != bound_dispatcher.end())
-    {
-    	//如果名字为空，就设置为 "nameless" + 绑定事件名
-    	if (event.event_name.empty())
-    	{
-			event.event_name = "nameless_" + bounded_name;
-    	}
-        bound_dispatcher[bounded_name][obj].emplace_back(event);
-    }
-    else
-    {
-        Log("Bind to Not Created Event \"" + bounded_name + "\"");
-    }
-}
-std::optional<Event> EventDispatcherSystem::GetEvent(Object* obj, const std::string& event_name)
-{
-	// auto it_by_obj = GCPtr(obj);
-	//
-	// if (bound_dispatcher.contains(event_name) && bound_dispatcher[event_name].contains(it_by_obj))
-	// {
-	// 	return bound_dispatcher[event_name][it_by_obj];
-	// }
-	return std::nullopt;
-}
-void EventDispatcherSystem::CallDispatcher(const std::string& event_name, std::optional<EventParams> event_params)
-{
-    auto it = bound_dispatcher.find(event_name);
-    if (it != bound_dispatcher.end() && !it->second.empty())			//找到事件名 并且 具有绑定的事件
-    {
-        for (auto& [owner,Events] : it->second)
-        {
-        	if (owner.Peek())					//验证对象是否有效
-        	{
-				for (auto& e : Events)
-				{
-					e(std::move(event_params));
-				}
-        	}
-        	else
-        	{
-        		it->second.erase(owner);
-        	}
-            //Log("执行了  "+ event_name + "  的事件！");
-        }
-    }
-    // else
-    // {
-    //     Log("没有名为  "+ event_name + "  的事件！");
-    // }
-}
-void EventDispatcherSystem::DelegateEvent(Object *obj, std::string dispatcher_name, std::string event_name)
-{
+	//1. 找 调用者 是否存在这个分发器
 	auto it = delegate.find(dispatcher_name);
 	if (it == delegate.end())
 	{
 		LogWithLevel(Warning,"绑定到空事件上:  " + dispatcher_name);
 		return ;
 	}
-	auto& events = it->second[obj];
-	// if (target_it == it->second.end())
-	// {
-	// 	LogWithLevel_f(Warning,"没有任何 {} 的事件绑定在 {} 上", obj->name, outer->name);
-	// 	return ;
-	// }
+	const auto delegate_event = target->event_system.GetEventByName(event_name);
+	//2 找 委托方 是否有这个事件
+	if (!delegate_event)
+	{
+		LogWithLevel(Warning,target->name + "没有注册过这个事件：" + dispatcher_name);
+		return ;
+	}
+	if (!it->first.CheckType(delegate_event->GetType()))
+	{
+		Log(dispatcher_name + " 不匹配 " + event_name + "事件绑定已取消");
+	}
+	// 2.找到这个对象绑定在这个分发器的所有函数
+	auto& events = it->second[target];
 #if DEBUG == 1
 	auto event_it = events.Find(event_name);
 	if (event_it != events.end())
 	{
-		LogWithLevel_f(Warning, "重复绑定事件,{} 试图将 {} 重复绑定到 {} 的 {} 上",obj->name, event_name, outer->name, dispatcher_name);
+		LogWithLevel_f(Warning, "重复绑定事件,{} 试图将 {} 重复绑定到 {} 的 {} 上",target->name, event_name, outer->name, dispatcher_name);
 	}
 #endif
 	//可以重复添加相同事件
 	events.insert(event_name);
 }
-void EventDispatcherSystem::IgnoreDispatcher(Object* target, const std::string& dispatcher_name, const std::string& event_name)
+void EventDispatcherSystem::RemoveDelegate(Object* target, const std::string& dispatcher_name, const std::string& event_name)
 {
 	const auto it = delegate.find(dispatcher_name);
 	if (it == delegate.end())
@@ -5235,7 +5298,7 @@ void EventDispatcherSystem::IgnoreDispatcher(Object* target, const std::string& 
 		Log_f("没有在 {} 中找到 {} 的 {} 的事件",outer->name, target->name, event_name);
 	}
 }
-void EventDispatcherSystem::CallDelegate(const std::string &dispatcher_name)
+void EventDispatcherSystem::CallDispatcher(const std::string &dispatcher_name, TEventParams event_params)
 {
 	auto it = delegate.find(dispatcher_name);
 	if (it == delegate.end())
@@ -5249,7 +5312,39 @@ void EventDispatcherSystem::CallDelegate(const std::string &dispatcher_name)
 		GCWeakPtr<Object> obj = p;
 		for (auto& event_name : events)
 		{
-			obj->CallEvent(event_name);
+			obj->CallEvent(event_name, std::move(event_params));
+		}
+	}
+}
+void EventDispatcherSystem::RemoveAllEventByDispatcher(Object* sender, const std::string &dispatcher_name)
+{
+	auto it = delegate.find(dispatcher_name);
+	if (it == delegate.end())
+	{
+		Log_f("没有找到事件分发器 {}",dispatcher_name);
+		return ;
+	}
+	it->second.erase(sender);
+}
+void EventDispatcherSystem::RemoveAllEventByEventName(Object* sender, const std::string &dispatcher_name,const std::string& event_name)
+{
+	auto it = delegate.find(dispatcher_name);
+	if (it == delegate.end())
+	{
+		Log_f("没有找到事件分发器 {}",dispatcher_name);
+		return ;
+	}
+	auto sender_it = it->second.find(sender);
+	if (sender_it == it->second.end())
+	{
+		Log_f("没有找到任何 {} 绑定到 {} 的 {} 事件",sender->name, dispatcher_name, event_name);
+	}
+	auto& events = sender_it->second;
+	for (auto& event : events)
+	{
+		if (event == event_name)
+		{
+			events.remove(event);
 		}
 	}
 }
@@ -5296,7 +5391,48 @@ void EventDispatcherSystem::CallDelegate(const std::string &dispatcher_name)
 // 	}
 // 	target_it->second.erase(event_it);
 // }
-#include "Classes/Core/EventSystem.hpp"
+// void EventDispatcherSystem::CallDispatcher(const std::string& event_name, std::optional<EventParams> event_params)
+// {
+// 	auto it = bound_dispatcher.find(event_name);
+//
+// 	if (it != bound_dispatcher.end() && !it->second.empty())			//找到事件名 并且 具有绑定的事件
+// 	{
+// 		for (auto& [owner,Events] : it->second)
+// 		{
+//
+// 			if (owner.Peek())					//验证对象是否有效
+// 			{
+// 				for (auto& e : Events)
+// 				{
+// 					e(std::move(event_params));
+// 				}
+// 			}
+// 			else
+// 			{
+// 				it->second.erase(owner);
+// 			}
+// 			//Log("执行了  "+ event_name + "  的事件！");
+// 		}
+// 	}
+// }
+//在这个事件系统里绑定其他对象的事件
+// void EventDispatcherSystem::DelegateEvent(Object *obj, const std::string& bounded_name, Event event)
+// {
+//     auto it = bound_dispatcher.find(bounded_name);
+//     if (it != bound_dispatcher.end())
+//     {
+//     	//如果名字为空，就设置为 "nameless" + 绑定事件名
+//     	if (event.event_name.empty())
+//     	{
+// 			event.event_name = "nameless_" + bounded_name;
+//     	}
+//         bound_dispatcher[bounded_name][obj].emplace_back(event);
+//     }
+//     else
+//     {
+//         Log("Bind to Not Created Event \"" + bounded_name + "\"");
+//     }
+// }#include "Classes/Core/EventSystem.hpp"
 using namespace std;
 EventSystem::EventSystem() 
 {
@@ -5306,16 +5442,13 @@ EventSystem::EventSystem()
 // {
 // 	events[event_name] = Event(event_name,forward<function<void(std::optional<EventParams>)>>(event_method));
 // }
-void EventSystem::CallEvent(const std::string& event_name, std::optional<EventParams> params)
+void EventSystem::CallEvent(const std::string& event_name,TEventParams params)
 {
-	if (events.contains(event_name))
-	{
-		events[event_name].Execute(std::move(params));
-	}
-	else
+	if (!events.contains(event_name))
 	{
 		Log("执行了不存在的事件，事件名：" + event_name);
 	}
+	events[event_name](params);
 }
 std::optional<Event> EventSystem::GetEventByName(const std::string& event_name)
 {
@@ -5420,10 +5553,11 @@ void GameEngine::EventBegin()
 	//世界的事件开始
 	game_world->StartSimulation();
 	//最后绑定事件
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderSceneDataReady", *renderer_center->event_system.GetEventByName("OnRenderSceneDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderWidgetDataReady", *renderer_center->event_system.GetEventByName("OnRenderWidgetDataReady"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderClear", *renderer_center->event_system.GetEventByName("OnRenderClear"));
-	game_world->tick_SubSystem->BindEventToDispatcher(renderer_center.Get(), "RenderPresent", *renderer_center->event_system.GetEventByName("OnRenderPresent"));
+	auto tick_sys = game_world->tick_SubSystem.Get();
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderSceneDataReady", renderer_center->ValidEvent("RenderSceneDataReady"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderWidgetDataReady", renderer_center->ValidEvent("RenderWidgetDataReady"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderClear", renderer_center->ValidEvent("RenderClear"));
+	renderer_center->ListenDispatcher(tick_sys, "OnRenderPresent", renderer_center->ValidEvent("RenderPresent"));
 }
 void GameEngine::Tick()
 {
@@ -5560,14 +5694,14 @@ std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL
 #include "Enum/ActorEnum.hpp"
 #include "Public/TestGround.hpp"
 #include "public/TestPawn.hpp"
-GameWorld::GameWorld() : is_simulation(false), is_server(false)
+GameWorld::GameWorld() : is_server(false), is_simulation(false) ,world_subsystem(nullptr)
 {
 	CNAME;
 }
 GameWorld::~GameWorld()
 {
 }
-void GameWorld::Unload()
+void GameWorld::Unload() const
 {
 	for (auto& actor : actors)
 	{
@@ -5579,6 +5713,11 @@ void GameWorld::Construct()
 {
 	Object::Construct();
 }
+void GameWorld::RegisterDispatchers()
+{
+	Object::RegisterDispatchers();
+	AddDispatcher("OnWorldEventBegin");
+}
 void GameWorld::ConstructWorld()
 {
 	is_server = true;
@@ -5588,33 +5727,18 @@ void GameWorld::ConstructWorld()
 	//tick管理器
 	tick_SubSystem = world_subsystem->CreateSubsystem<TickSubSystem>();
 	tick_SubSystem->SetBufferType(1);
-	tick_SubSystem->dispatcher_system.AddEventDispatcher("synchronization");//可以加在该子系统的构造函数内
+	tick_SubSystem->dispatcher_system.AddDispatcher("synchronization");//可以加在该子系统的构造函数内
 }
 void GameWorld::StartSimulation()
 {
 	printf("---------------simulation---------------\n");
-	dispatcher_system.AddEventDispatcher("EventBegin");
 	viewport = CreateWidget<CanvasWidget>();
 	//viewport->ConstructEvent();
 	world_subsystem->ForAllSubSystemInit();
 	game_mode = SpawnActor<GameModeBase>();
 	auto fps = CreateWidget<TestFps>();
 	AddToViewport(fps);
- // 	auto dd = SpawnActor(new Actor(Transform{{500,500}}));
-	// GameEngine::Instance().timer_system.SetTimer(1000,[dd]() {
-	// 	dd->DestroyActor();
-	// 	return -1;
-	// });
-	auto config = Engine().GetEngineAttribution();
 	//测试地面
-	// const auto ground = SpawnActor<TestGround>(Transform(Vec2<float>(-100, config.ScreenSize.y - 100)));
-	// ground->SetActorName("Ground");
-	// const auto roof= SpawnActor<TestGround>(Transform(Vec2<float>(-100, -900)));
-	// roof->SetActorName("Roof");
-	// const auto left_wall= SpawnActor<TestGround>(Transform(Vec2<float>(-900, -100)));
-	// left_wall->SetActorName("LeftWall");
-	// const auto right_wall= SpawnActor<TestGround>(Transform(Vec2<float>(config.ScreenSize.x - 100, -100)));
-	// right_wall->SetActorName("RightWall");
 	// ================== 包围整个场景 ==================
 	const auto ground = SpawnActor<TestGround>(Transform(Vec2<float>(-100, 1000 - 100)));
 	ground->SetActorName("Ground");
@@ -5672,18 +5796,16 @@ void GameWorld::StartSimulation()
 	RandCreateActorInBox<Character>(bound,world_config["WorldActorCnt"].get<int>());
 	//RandCreateActorInBox<Actor>({0,0,10,10},100);
 	is_simulation = true;
-	dispatcher_system.CallDispatcher("EventBegin");
-//在真正Begin后才建议设置对象属性
-	//ground->SetMobility(ActorMobility::Static);
-	// GCPtr<Character> t =  SpawnActor<Character>();
-	// timer_system.SetTimer(3000,[t] {
-	// 	t->DestroyActor();
-	// 	return -1;
-	// });
+	CallDispatcher("OnWorldEventBegin");
 }
-std::vector<GCPtr<Controller>> GameWorld::GetControllers()
+std::vector<Controller*> GameWorld::GetControllers() const
 {
-	return controllers;
+	std::vector<Controller*> ret;
+	for (auto& c : controllers)
+	{
+		ret.emplace_back(c.Get());
+	}
+	return ret;
 }
 Controller *GameWorld::GetController(int id) const
 {
@@ -5693,9 +5815,14 @@ Controller *GameWorld::GetController(int id) const
 	}
 	return nullptr;
 }
-std::vector<GCPtr<Actor>> *GameWorld::GetActors()
+std::vector<Actor*> GameWorld::GetActors() const
 {
-	return &actors;
+	std::vector<Actor*> ret;
+	for (auto& actor : actors)
+	{
+		ret.emplace_back(actor.Get());
+	}
+	return ret;
 }
 std::vector<GCPtr<Widget>> GameWorld::GetWidgets() const
 {
@@ -5706,7 +5833,7 @@ std::vector<GCPtr<Widget>> GameWorld::GetWidgets() const
 	}
 	return v;
 }
-void GameWorld::RemoveActorByGCPtr(const GCPtr<Actor>& actor)
+void GameWorld::RemoveActor(const Actor* actor)
 {
 	std::erase(actors, actor);
 }
@@ -5715,7 +5842,7 @@ Controller* GameWorld::AddController()
 	if (is_server)
 	{
 		auto t = SpawnActor<Controller>();
-		controllers.push_back(t);
+		controllers.emplace_back(t);
 		return t;
 	}
 	return {};
@@ -5808,36 +5935,30 @@ void GCObject::GCUnlink_self()
 #include "Types/RenderData.hpp"
 #include "../../Classes/Core/GameEngine.hpp"
 #include "Utilities/FuncLib/Deleter.hpp"
-#include "Classes/Widget/Widget.hpp"
 #include "../../Asset/Texture.hpp"
 #include "Classes/Core/GameWorld.hpp"
-#include "Classes/Widget/PanelWidget/PanelWidget.hpp"
 #include "Utilities/TracingUtility.hpp"
-RendererCenter::RendererCenter() : window(nullptr)
+RendererCenter::RendererCenter() : renderer(nullptr), window(nullptr)
 {
 }
 void RendererCenter::Init()
 {
 	InitSDL();
 	CNAME;
-	event_system.AddEvent(Event("OnRenderSceneDataReady",[&](TEventParams e) {
-		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
+	AddCustomEvent(Event("RenderSceneDataReady",[&](std::vector<RenderData> clips) {
 		RenderScene(clips);
 	}));
-	event_system.AddEvent(Event("OnRenderWidgetDataReady",[&](TEventParams e) {
-		//std::vector<GCPtr<Widget>> clips = std::move(*e->Get<std::vector<GCPtr<Widget>>>("widget_data"));
+	AddCustomEvent(Event("RenderWidgetDataReady",[&](std::vector<RenderData> clips) {
 		TStartF("UI渲染");
-		auto clips = std::move(*e->Get<std::vector<RenderData>>("render_data"));
-		//auto viewport = (*e->Get<GCPtr<GameWorld>>("widget_data"))->viewport;
 		RenderScene(clips);
 		TEndF("UI渲染");
 	}));
-	event_system.AddEvent(Event("OnRenderPresent",[&](TEventParams e) {
+	AddCustomEvent(Event("RenderPresent",[&]() {
 		TStartF("SDL_RenderPresent");
 		SDL_RenderPresent(renderer);
 		TEndF("SDL_RenderPresent");
 	}));
-	event_system.AddEvent(Event("OnRenderClear",[&](TEventParams e) {
+	AddCustomEvent(Event("RenderClear",[this]() {
 		TStartF("SDL_RenderClear");
 		SDL_SetRenderDrawColor(renderer, 100, 100, 100,0);
 		SDL_RenderClear(renderer);
@@ -6068,18 +6189,22 @@ TickSubSystem::TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(bu
 void TickSubSystem::Construct()
 {
 	EngineSubSystem::Construct();
-	dispatcher_system.AddEventDispatcher("RenderClear");
-	dispatcher_system.AddEventDispatcher("RenderPresent");
-	dispatcher_system.AddEventDispatcher("RenderSceneDataReady");
-	dispatcher_system.AddEventDispatcher("RenderWidgetDataReady");
 }
-void TickSubSystem::Tick(double delta_time)
+void TickSubSystem::RegisterDispatchers()
+{
+	EngineSubSystem::RegisterDispatchers();
+	AddDispatcher("OnRenderClear");
+	AddDispatcher("OnRenderPresent");
+	AddDispatcher("OnRenderSceneDataReady", {typeid(std::vector<RenderData>)});
+	AddDispatcher("OnRenderWidgetDataReady",{typeid(std::vector<RenderData>)});
+}
+void TickSubSystem::Tick(const double delta_time)
 {
 TStart;
 TStartF("TickSubInit");
-    auto& actors = *GameEngine::Instance().GetGameWorld()->GetActors();
-    std::vector<GCPtr<Controller>> controllers = GameEngine::Instance().GetGameWorld()->GetControllers();
-    auto world = GameEngine::Instance().GetGameWorld();
+	GameWorld* world = World();
+    const auto actors = world->GetActors();
+    const std::vector<Controller*> controllers = world->GetControllers();
 	auto& physics = Engine().physicsSys;
 	std::vector<RenderData> render_data;
 	render_data.reserve(actors.size());
@@ -6116,7 +6241,7 @@ TStartF("收集渲染数据");
 			if (a->is_pre_kill)
 			{
 				a->is_pending_kill = true;
-				world->RemoveActorByGCPtr(a);
+				world->RemoveActor(a);
 			}
 			else if (a->IsActive() && a->IsVisible())
 			{
@@ -6128,20 +6253,20 @@ TStartF("收集渲染数据");
 		world->viewport->NativeOfferRenderData(render_data);
 TEndF("收集渲染数据");
 		//清屏
-		dispatcher_system.CallDispatcher("RenderClear");
+		CallDispatcher("OnRenderClear");
 		texts[2]->SetText("SceneRenderOfferDelay: " + std::to_string(timer.Click()));
 		//场景组件
-		EventParams render_data_ready_p;
-		render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
-		dispatcher_system.CallDispatcher("RenderSceneDataReady",std::move(render_data_ready_p));
+		// EventParams render_data_ready_p;
+		// render_data_ready_p.Add<std::vector<RenderData>>("render_data",std::move(render_data));
+		CallDispatcher("OnRenderSceneDataReady",std::move(render_data));
 		texts[3]->SetText("AllPhysicsBody count: " + std::to_string(Engine().physicsSys->units.size()));
 		//Widget
 		// EventParams widget_data;
 		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
-		// dispatcher_system.CallDispatcher("RenderWidgetDataReady", widget_data);
+		// dispatcher_system.CallDelegate("RenderWidgetDataReady", widget_data);
 		//physics->DebugTree();
 // 显示到窗口  停止提交任务 ##################################################################################
-		dispatcher_system.CallDispatcher("RenderPresent");
+		dispatcher_system.CallDispatcher("OnRenderPresent");
 TStartF("SDL_ControllerTick");
 		for (auto& controller : controllers)
 		{
@@ -6195,7 +6320,7 @@ void TickSubSystem::SetBufferType(int type) { buffer_type = type; }
 // 	}
 //
 //
-// 	dispatcher_system.CallDispatcher("synchronization");
+// 	dispatcher_system.CallDelegate("synchronization");
 //
 //
 // }#include "Classes/Core/TimerSystem.hpp"
@@ -6456,8 +6581,8 @@ void SPhysicsBaseUtility::Construct()
 {
 	Object::Construct();
 	//GameEngine::Instance().physicsSys->Register(this);
-	dispatcher_system.AddEventDispatcher("OnCollision");//碰撞事件
-	dispatcher_system.AddEventDispatcher("OnSynchronization");//同步事件
+	dispatcher_system.AddDispatcher("OnCollision");//碰撞事件
+	dispatcher_system.AddDispatcher("OnSynchronization");//同步事件
 	type = PhysicsType::Static;
 	mass_inv = 1.f / mass;
 	//默认不订阅碰撞
@@ -6751,40 +6876,74 @@ RenderData::RenderData(Widget *w, std::shared_ptr<SDL_Texture> t)
 }
 #include "Utilities/Event.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-Event::Event(const std::string& event_name, const std::function<void(std::optional<EventParams>)>& event_func)
-	: event_name(event_name), event_func(std::function(event_func)), is_loop(false),
-	  interval(0),
-	  elapsed(0) {}
-Event::Event() : Event("", [](std::optional<EventParams> e){}) {}
-Event::Event(const std::function<void(std::optional<EventParams>)> &event_func) : Event("", event_func){}
-void Event::Execute() {
-	if (event_func)
-		event_func(std::nullopt);
-	else
-		Log("调用了空事件，event_func为nullptr");
-}
-void Event::Execute(const std::optional<EventParams>& params) {
-	if (event_func)
-		event_func(params);  // 按引用调用，不拷贝
-	else
-		Log("调用了空事件，event_func为nullptr");
-}
-void Event::Execute(std::optional<EventParams>&& params)
+#include "Utilities/FuncLib/SystemLib.hpp"
+bool Event::check(EventParams e) const
 {
-	if (event_func)
-		event_func(std::move(params));  // move 给 lambda
-	else
-		Log("调用了空事件，event_func为nullptr");
+	if (event_type.size() != e.types.size()) return false;
+	for (int i = 0; i < event_type.size(); i++)
+	{
+		if (event_type[i] != e.types[i] || !IsBasicType(event_type[i]) && !IsBasicType(e.types[i]))
+		{
+			LogWithLevel(Error, "类型不匹配");
+			return false;
+		}
+	}
+	return true;
 }
-void Event::operator()(std::optional<EventParams>&& event_params)
+Event::Event() : Event("", [](TEventParams e){}) {}
+// Event::Event(const std::string& event_name, const std::function<void(TEventParams)>& event_func)
+// 	: event_name(event_name), event_func(std::function(event_func)), is_loop(false),
+// 	  interval(0),
+// 	  elapsed(0) {}
+//
+// Event::Event(const std::function<void(TEventParams)> &event_func) : Event("", event_func){}
+// void Event::Execute() const
+// {
+// 	if (!event_func)  // move 给 lambda
+// 		Log("调用了空事件，event_func为nullptr");
+// 	if (!check({}))
+// 	{
+// 		std::cout << "参数无法对齐" << std::endl;
+// 		return ;
+// 	}
+// 	event_func(std::nullopt);
+// }
+//
+// void Event::Execute(const TEventParams& params) const
+// {
+// 	if (!event_func)  // move 给 lambda
+// 		Log("调用了空事件，event_func为nullptr");
+// 	if (!check(*params))
+// 	{
+// 		std::cout << "参数无法对齐" << std::endl;
+// 		return ;
+// 	}
+// 	event_func(params);
+// }
+//
+// void Event::Execute(std::optional<EventParams>&& params) const
+// {
+// 	if (!event_func)  // move 给 lambda
+// 		Log("调用了空事件，event_func为nullptr");
+// 	if (params && !check(*params))
+// 	{
+// 		std::cout << "参数无法对齐" << std::endl;
+// 		return ;
+// 	}
+// 	event_func(std::move(params));
+// }
+void Event::Traits(const std::vector<std::type_index>& traits_type)
 {
-	Execute(std::forward<std::optional<EventParams>>(event_params));
+	event_type = std::vector<std::type_index>(traits_type);
+}
+void Event::operator()(TEventParams& event_params) const
+{
+	event_func(std::forward<TEventParams>(event_params));
 }
 #include "Utilities/EventDelegateSystem.hpp"
 EventDelegateSystem::EventDelegateSystem() 
 {
 }
-#include "Utilities/Ptr.hpp"
 #include "Utilities/FuncLib/StaticCast.hpp"
 #include "Classes/Actor.hpp"
 GCObject * AsGCObject(Actor *a)
@@ -6949,9 +7108,7 @@ PanelSlot* Widget::AddChild(Widget* child)
     }
     else
     {
-        child->ListenDispatcher(World(), "EventBegin", Event([child](TEventParams e) {
-            child->WidgetEventBegin();
-        }));
+        child->ListenDispatcher(World(), "OnEventBegin", "EventBegin");
     }
     //加入新元素需要刷新
     dirty = true;
@@ -7245,6 +7402,67 @@ public:
     ~CircularArray()= default;
 };
 #pragma once
+#include <optional>
+#include <string>
+#include <vector>
+#include "EventParams.hpp"
+#include "Utilities/FuncLib/GlobalMacros.hpp"
+#include "Utilities/FuncLib/ixStaticFuncLib.hpp"
+#include "Utilities/FuncLib/SystemLib.hpp"
+namespace std
+{
+	class type_index;
+}
+struct Dispatcher
+{
+private:
+	TEventParams event_params;
+	std::string dispatcher_name;
+	std::vector<std::type_index> type;
+public:
+	Dispatcher(){}
+	Dispatcher(const std::string& dispatcher_name, const std::vector<std::type_index>& types = {}) : dispatcher_name(dispatcher_name), type(types) {}
+	bool CheckType(const std::vector<std::type_index>& other_type) const
+	{
+		if (type.size() != other_type.size()) return false;
+		for (int i = 0; i < type.size(); i++)
+		{
+			// bool a = IsBasicType(type[i]);
+			// bool b = IsBasicType(other_type[i]);
+			// bool c = type[i] != other_type[i];
+			// if (c || b && a)
+			if (type[i] != other_type[i] || !IsBasicType(type[i]) && !IsBasicType(other_type[i]))
+			{
+				LogWithLevel(Error, "类型不匹配");
+				return false;
+			}
+		}
+		return true;
+	}
+	const std::vector<std::type_index>& GetTypes() const
+	{
+		return type;
+	}
+	bool operator==(const Dispatcher& other) const noexcept
+	{
+		return dispatcher_name == other.dispatcher_name;
+	}
+	const std::string& GetDispatcherName() const
+	{
+		return dispatcher_name;
+	}
+};
+namespace std
+{
+	template<>
+	struct hash<Dispatcher>
+	{
+		size_t operator()(const Dispatcher& d) const noexcept
+		{
+			return std::hash<std::string>()(d.GetDispatcherName());
+		}
+	};
+}#pragma once
 #include "Vec.hpp"
 struct EngineState
 {
@@ -7255,6 +7473,7 @@ struct EngineState
 #include <optional>
 #include <unordered_map>
 #include <any>
+#include <typeindex>
 #include "Classes/Core/GCObject.hpp"
 enum class ParamType
 {
@@ -7273,7 +7492,7 @@ struct EventParam : IEventParam
 	explicit EventParam(U&& v) : value(std::forward<U>(v))
 	{}
 };
-struct EventParams
+struct EventParams_auto
 {
 	//参数包
 	std::unordered_map<std::string,std::any> values;
@@ -7305,6 +7524,81 @@ struct EventParams
 		//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
 		values[val_name] = v;
 	}
+};
+struct EventParams
+{
+private:
+	std::vector<std::any> values;
+	std::unordered_map<std::string,std::any> added_values;
+public:
+	std::vector<std::type_index> types; // 用 type_index 存类型信息
+	EventParams(){}
+	EventParams(const std::vector<std::any>& e) : values(e) {
+		types.reserve(e.size());
+		for (const auto& v : e) {
+			types.emplace_back(v.type()); // 自动记录每个值的类型
+		}
+	}
+	template<typename T>
+	std::optional<T> Get_index(const size_t index) const
+	{
+		if (index >= values.size()) return std::nullopt;
+		if (auto ret = std::any_cast<T>(&values[index])) {
+			return *ret;
+		}
+		return std::nullopt;
+	}
+	void Load(const std::vector<std::any>& e)
+	{
+		types.clear();
+		types.reserve(e.size());
+		for (const auto& v : e) {
+			types.emplace_back(v.type()); // 自动记录每个值的类型
+		}
+		values = e;
+	}
+	template<typename T>
+	std::optional<T> Get(const std::string& val_name)
+	{
+		auto it = added_values.find(val_name);
+		if (it != added_values.end())
+		{
+			if (auto ret = std::any_cast<T>(&it->second))
+			{
+				return *ret;
+			}
+		}
+		return std::nullopt;
+	}
+	template<typename U>
+	void Add(const std::string& val_name, U&& v)
+	{
+		//using W = std::decay_t<U>;
+		//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
+		added_values[val_name] = std::forward<U>(v);
+	}
+	template<typename U>
+	void Add(const std::string& val_name, U& v)
+	{
+		//using W = std::decay_t<U>;
+		//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
+		added_values[val_name] = v;
+	}
+	// //添加变量
+	// template<typename U>
+	// void Add(const std::string& val_name, U&& v)
+	// {
+	// 	//using W = std::decay_t<U>;
+	// 	//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
+	// 	values[val_name] = std::forward<U>(v);
+	// }
+	// template<typename U>
+	// void Add(const std::string& val_name, U& v)
+	// {
+	// 	//using W = std::decay_t<U>;
+	// 	//values[val_name] = make_GCPtr<IEventParam>(static_cast<IEventParam*>(new EventParam<W>(v)));
+	// 	values[val_name] = v;
+	// }
 };#pragma once
 #include <memory>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -7880,30 +8174,61 @@ public:
 };
 #pragma once
 #include <functional>
+#include "function_traits.hpp"
 #include "GCPtr.hpp"
 #include "Types/EventParams.hpp"
 struct Event
 {
+private:
+	std::vector<std::type_index> event_type; // 用 type_index 存类型信息
+	bool check(EventParams e) const;
+public:
 	//事件名
     std::string event_name;
 	//事件方法
 	//std::shared_ptr<std::function<void(std::optional<EventParams>)>> event_func;
-	std::function<void(std::optional<EventParams>)> event_func;
+	std::function<void(TEventParams)> event_func;
 	//事件属性
 	bool is_loop;
 	double interval;
 	double elapsed;
-	// template<typename Func>
-	// Event(Func&& func) : event_func(std::forward<Func>(func)), is_loop(false), interval(0), elapsed(0) { }
-	Event(const std::string &event_name, const std::function<void(std::optional<EventParams>)> &event_func);
 	Event();
-	Event(const std::function<void(TEventParams)> &event_func);
+	//Event(const std::string &event_name, const std::function<void(TEventParams)> &event_func);
+	template<typename Func>
+	Event(const std::string &event_name, Func&& func) : event_name(event_name), is_loop(false), interval(0), elapsed(0)
+	{
+		using traits = function_traits<std::decay_t<Func> >;
+		using ArgsTuple = typename traits::args_tuple;
+		const std::vector<std::type_index> argTypes = traits::GetArgTypes();
+		// 将 func decay-copy（可复制捕获），便于后续在事件中安全保存
+		const auto func_copy = std::decay_t<Func>(std::forward<Func>(func));
+		auto invoker = [func_copy = std::move(func_copy)](TEventParams e) mutable {
+			// 如果 lambda/func 无参（ArgsTuple size == 0），直接调用
+			if constexpr (std::tuple_size_v<ArgsTuple> == 0)
+			{
+				func_copy();
+			}
+			else
+			{
+				// 否则从 TEventParams 中解包并调用
+				InvokeCallableWithEventParams<decltype(func_copy), ArgsTuple>(func_copy, e);
+			}
+		};
+		event_func = std::move(invoker);
+		Traits(argTypes);
+	}
+	//Event(const std::function<void(TEventParams)> &event_func);
 	//Event(Event& other);
-	void Execute();
-	void Execute(const std::optional<EventParams>& params);
-	void Execute(std::optional<EventParams>&& params);
+	// void Execute() const;
+	// void Execute(const TEventParams& params) const;
+	// void Execute(TEventParams&& params) const;
+	void Traits(const std::vector<std::type_index>& traits_type);
+	const std::vector<std::type_index>& GetType() const
+	{
+		return event_type;
+	}
 	~Event()= default;
-	void operator()(std::optional<EventParams>&& event_params = std::nullopt);
+	void operator()(std::optional<EventParams>& event_params) const;
 };
 #pragma once
 class EventDelegateSystem
@@ -7935,6 +8260,56 @@ public:
     ExternalWrapper(T* v) : val(v) {}
     ~ExternalWrapper()= default;
 };
+#pragma once
+#include <tuple>
+#include "Utilities/FuncLib/GlobalMacros.hpp"
+#include "Types/EventParams.hpp"
+// ========================
+// 基础模板（函数签名）
+// ========================
+template<typename T>
+struct function_traits;
+// 普通函数
+template<typename Ret, typename... Args>
+struct function_traits<Ret(Args...)>
+{
+	using return_type = Ret;
+	using args_tuple = std::tuple<Args...>;
+	static constexpr size_t arity = sizeof...(Args);
+	static std::vector<std::type_index> GetArgTypes()
+	{
+		return { std::type_index(typeid(Args))... };
+	}
+};
+// 函数指针
+template<typename Ret, typename... Args>
+struct function_traits<Ret(*)(Args...)> : function_traits<Ret(Args...)> {};
+// std::function
+template<typename Ret, typename... Args>
+struct function_traits<std::function<Ret(Args...)>> : function_traits<Ret(Args...)> {};
+// 非 const 成员函数
+template<typename ClassType, typename Ret, typename... Args>
+struct function_traits<Ret(ClassType::*)(Args...)> : function_traits<Ret(Args...)> {};
+// const 成员函数
+template<typename ClassType, typename Ret, typename... Args>
+struct function_traits<Ret(ClassType::*)(Args...) const> : function_traits<Ret(Args...)> {};
+// lambda（重载 operator()）
+template<typename Callable>
+struct function_traits : function_traits<decltype(&Callable::operator())> {};
+template<typename Callable, typename Tuple, size_t... I>
+static void InvokeCallableWithEventParamsImpl(Callable& callable,TEventParams e, std::index_sequence<I...>)
+{
+	// 将每个参数类型从 e 中取出（取不到则用默认构造值）
+	callable(
+		e->template Get_index<std::decay_t<std::tuple_element_t<I, Tuple>>>(I).value_or(std::tuple_element_t<I, Tuple>{})...
+	);
+}
+template<typename Callable, typename Tuple>
+static void InvokeCallableWithEventParams(Callable& callable,TEventParams e)
+{
+	constexpr size_t N = std::tuple_size_v<Tuple>;
+	InvokeCallableWithEventParamsImpl<Callable, Tuple>(callable, e, std::make_index_sequence<N>{});
+}
 #pragma once
 #include <vector>
 #include "Types/Array.hpp"
@@ -8079,7 +8454,19 @@ public:
 	{
 		return ptr == other.ptr;
 	}
+	bool operator==(const T*& other) const noexcept
+	{
+		return ptr == other;
+	}
 };
+template<typename T>
+bool operator==(const GCPtr<T>& a, const T* b) noexcept {
+	return a.Get() == b;
+}
+template<typename T>
+bool operator==(const T* a, const GCPtr<T>& b) noexcept {
+	return a == b.Get();
+}
 template<typename T>
 struct std::hash<GCPtr<T>> {
 	size_t operator()(const GCPtr<T>& Ptr) const noexcept {
@@ -8296,10 +8683,7 @@ struct GCWeakPtr
 	{
 		return *ptr;
 	}
-	T* operator->()
-	{
-		return ptr;
-	}
+	T* operator->() { return ptr; }
 	bool operator==(const GCWeakPtr& other) const
 	{
 		return ptr == other.ptr;
@@ -9060,7 +9444,8 @@ struct SDLTTFDeleter
 	#define BREAK
 #endif
 #define STOP_IF(x) if(x) STOP();
-#define PIVOT_BOTTOM_CENTER Vec2<float>(0.5f, 1.f)#pragma once
+#define PIVOT_BOTTOM_CENTER Vec2<float>(0.5f, 1.f)
+#define TypeID(T) std::type_index(typeid(T))#pragma once
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -9191,6 +9576,7 @@ Actor *AsActor(GCObject* a);#pragma once
 #include <intrin.h>
 #include <set>
 #include <string>
+#include <typeindex>
 #include <vector>
 class GameWorld;
 namespace ix
@@ -9266,4 +9652,11 @@ auto sign(const T& x)
 	//static_assert(std::is_arithmetic_v<T>, "T必须是可运算");
 	using R = decltype(x);
 	return R(x > 0) - (x < 0); // 1, -1 或 0
+}
+inline bool IsBasicType(const std::type_index& ti) {
+	return ti == typeid(int) || ti == typeid(float) || ti == typeid(double)
+		|| ti == typeid(char) || ti == typeid(bool)
+		|| ti == typeid(short) || ti == typeid(long)
+		|| ti == typeid(long long) || ti == typeid(unsigned int)
+		|| ti == typeid(unsigned long);
 }

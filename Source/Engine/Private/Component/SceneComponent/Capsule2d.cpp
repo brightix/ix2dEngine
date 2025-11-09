@@ -22,11 +22,18 @@ void Capsule2d::RegisterEvents()
 	}});
 }
 
+void Capsule2d::RegisterDispatchers()
+{
+	SceneComponent::RegisterDispatchers();
+	AddDispatcher("OnCollision",{TypeID(std::unordered_set<SPhysicsBaseUtility*>)});
+}
+
 void Capsule2d::ComponentEventBegin()
 {
     SceneComponent::ComponentEventBegin();
 
     ListenDispatcher(physics_body.Get(),"OnSynchronization","Synchronization");
+	ListenDispatcher(physics_body.Get(),"OnCollision",&Capsule2d::Collision);
 }
 
 
@@ -37,6 +44,11 @@ void Capsule2d::NativeSetActiveCollision(const bool is_active)
     {
         physics_body->SetPhysicsType(PhysicsType::Movable);
     }
+}
+
+void Capsule2d::Collision(std::unordered_set<SPhysicsBaseUtility*> cols)
+{
+	CallDispatcher("OnCollision",cols);
 }
 
 

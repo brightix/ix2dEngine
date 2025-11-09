@@ -26,9 +26,9 @@ public:
 	void RegisterEvents() override;
 
 	//增强输入
-	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param);
+	void CallEnhancedInputEventBool(EnhancedInputParam<bool> param) const;
 	void CallEnhancedInputEventDouble(EnhancedInputParam<double> param);
-	EnhancedInputSubSystem* GetEnhancedInputSubSystem();
+	EnhancedInputSubSystem* GetEnhancedInputSubSystem() const;
 	Vec2<float> GetVelocity_Debug() const;
 };
 

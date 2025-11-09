@@ -31,7 +31,7 @@ public:
 			// bool b = IsBasicType(other_type[i]);
 			// bool c = type[i] != other_type[i];
 			// if (c || b && a)
-			if (type[i] != other_type[i] || !IsBasicType(type[i]) && !IsBasicType(other_type[i]))
+			if (type[i] != other_type[i] && !IsBasicType(type[i]) && !IsBasicType(other_type[i]))
 			{
 				LogWithLevel(Error, "类型不匹配");
 				return false;

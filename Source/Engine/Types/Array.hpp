@@ -30,13 +30,13 @@ public:
     }
 
 
-    void insert(T& element)
+    void insert(const T& element)
     {
         data.emplace_back(element);
     }
 
     template<typename U>
-    void insert(U* value) requires std::is_base_of_v<std::remove_pointer_t<T>, U>
+    void insert(U value) requires std::is_base_of_v<std::remove_pointer_t<T>, U>
     {
         data.push_back(static_cast<T>(value));
     }

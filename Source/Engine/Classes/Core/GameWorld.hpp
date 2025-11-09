@@ -50,12 +50,12 @@ public:
 	GCPtr<CanvasWidget> viewport;
     GameWorld();
     ~GameWorld() override;
-	void Unload();
+	void Unload() const;
 
 	void Construct() override;
 	void RegisterDispatchers() override;
 
-	void ConstructWorld();
+	virtual void ConstructWorld();
 	void StartSimulation();
 
 //Get
@@ -63,10 +63,10 @@ public:
 
 	Controller *GetController(int id = 0) const;
 
-	std::vector<GCPtr<Actor>> *GetActors();
+	std::vector<Actor*> GetActors() const;
 
 	std::vector<GCPtr<Widget>> GetWidgets() const;
-	void RemoveActorByGCPtr(const GCPtr<Actor> &actor);
+	void RemoveActor(const Actor* actor);
 
 	//Set
 	//void RemoveActorByPtr(Actor* actor);
@@ -79,8 +79,8 @@ public:
 //Sys
 	void AddToWorld(Actor *actor);
 	//Debug限定
-
-	void Tick(double delta_time);
+	//TODO 改名，此函数为单独被engine或父world调用
+	virtual void NativeWorldTick(double delta_time);
 	//作用在切换关卡
 	void WorldDestroy() const;
 	bool IsServer() const;
@@ -146,4 +146,30 @@ void RandCreateActorInBox(const FRect& Box, const int n)
 		//std::cout << i << "  in_delay: " << timer.Click() << std::endl;
 		TEndF("RandCreateActor");
 	}
+}
+
+template<typename T>
+std::vector<T*> GetAllActorFromClass(const std::string& name = "")
+{
+	std::vector<T*> ret;
+	auto actors = World()->GetActors();
+	if (name.empty())
+	{
+		for (auto& actor : actors)
+		{
+			if (auto it = Cast<T>(actor))
+			{
+				ret.emplace_back(it);
+			}
+		}
+		return ret;
+	}
+	for (auto& actor : actors)
+	{
+		if (auto it = Cast<T>(actor); it && actor->name == name)
+		{
+			ret.emplace_back(it);
+		}
+	}
+	return ret;
 }

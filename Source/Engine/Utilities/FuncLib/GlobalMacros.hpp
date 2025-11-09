@@ -57,3 +57,7 @@
 #define STOP_IF(x) if(x) STOP();
 
 #define PIVOT_BOTTOM_CENTER Vec2<float>(0.5f, 1.f)
+
+
+
+#define TypeID(T) std::type_index(typeid(T))

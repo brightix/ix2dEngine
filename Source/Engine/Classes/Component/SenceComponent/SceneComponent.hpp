@@ -137,6 +137,7 @@ public:
 	 */
 	bool SetComponentName(const std::string& new_name) override;
 	void SetRenderLayer(LayerHierarchy layer_id);
+	void SetComponentPivot(const Vec2<float>& new_pivot);
 	/**
 	 * 在子组件触发改名时调用父组件修改挂载表的关系
 	 * @param component_name 原命名

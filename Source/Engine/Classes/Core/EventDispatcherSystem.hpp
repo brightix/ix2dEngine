@@ -49,7 +49,7 @@ public:
 	void RemoveDelegate(Object* target, const std::string& dispatcher_name, const std::string& event_name);
 
 	//调用分发器
-	void CallDispatcher(const std::string& dispatcher_name, std::optional<EventParams>&& event_params = std::nullopt);
+	void CallDispatcher(const std::string& dispatcher_name, std::optional<EventParams> event_params = std::nullopt);
 
 	void RemoveAllEventByDispatcher(Object* sender, const std::string& dispatcher_name);
 
