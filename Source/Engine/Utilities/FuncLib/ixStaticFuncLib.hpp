@@ -44,7 +44,7 @@ inline void LogToFile(const char* file_name = "", const int line = 0, const char
 	if (level == LogLevel::FatalError)
 	{
 		std::cerr << "致命错误" << std::endl;
-		std::abort();
+		throw "致命错误";
 	}
 }
 

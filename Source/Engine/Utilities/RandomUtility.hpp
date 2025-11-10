@@ -50,8 +50,8 @@ public:
             Log("随机数重名，拒绝生成");
             return false;
         }
-        //auto& [min,max] = min_max;
-        map.emplace(hash,std::make_pair(std::mt19937(reg_seed(main_seed)),std::uniform_real_distribution<float>(0.f,1.f)));
+        auto& [min,max] = min_max;
+        map.emplace(hash,std::make_pair(std::mt19937(reg_seed(main_seed)),std::uniform_real_distribution<float>(min,max)));
         return true;
     }
     void Init() override

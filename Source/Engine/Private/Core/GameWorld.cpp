@@ -52,7 +52,7 @@ void GameWorld::ConstructWorld()
 	// ================== 包围整个场景 ==================
 	const auto ground = SpawnActor<TestGround>(Transform(Vec2<float>(-100, 1000 - 100)));
 	ground->SetActorName("Ground");
-	ground->SetGroundSize(Vec2<float>(1200, 200)); // 比场景略宽，防止掉出边界
+	ground->SetGroundSizeAndColor(Vec2<float>(1200, 200)); // 比场景略宽，防止掉出边界
 
 	// const auto roof = SpawnActor<TestGround>(Transform(Vec2<float>(-100, -100)));
 	// roof->SetActorName("Roof");

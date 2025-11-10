@@ -40,8 +40,8 @@ public:
 	float mass = 50.f;		//物体质量
 	float force_attenuation = 0.85f;		//力衰减
 	float bounciness = 0.2f;
-
-	float mass_inv;
+	float friction = 0.7f; //摩擦力
+	float mass_inv;		//质量相反数
 	PhysicsType type;
 	SceneComponent* collision_owner;
 

@@ -192,6 +192,11 @@ GCObject *GameEngine::GetGCRoot() const
 	return GCRoot;
 }
 
+double GameEngine::GetDeltaTime() const
+{
+	return delta_time;
+}
+
 void GameEngine::Stop()
 {
 	running = false;
@@ -252,5 +257,10 @@ std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SD
 std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL_Color color)
 {
 	return GameEngine::Instance().renderer_center->CreateFilledTexture(size,color);
+}
+
+double GetDeltaTime()
+{
+	return Engine().GetDeltaTime();
 }
 

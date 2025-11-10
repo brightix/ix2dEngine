@@ -85,6 +85,7 @@ public:
     //SDL_Renderer* GetRenderer() { return renderer; }
     GameWorld *GetGameWorld() const;
     GCObject *GetGCRoot() const;
+	double GetDeltaTime() const;
 //Render
 	//void RenderTexture(GCPtr<Texture> texture, SDL_FRect location);
 
@@ -138,3 +139,5 @@ GameWorld *World();
 GameEngine& Engine();
 std::shared_ptr<SDL_Texture> Create_OutLineTexture_S(const Vec2<float>& size, SDL_Color color = RED);
 std::shared_ptr<SDL_Texture> Create_FilledTexture_S(const Vec2<float>& size, SDL_Color color = EmeraldGreen);
+
+double GetDeltaTime();

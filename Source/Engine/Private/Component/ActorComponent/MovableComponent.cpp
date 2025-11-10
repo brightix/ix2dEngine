@@ -94,12 +94,28 @@ void MovableComponent::Construct()
 
 void MovableComponent::Jump() const
 {
-    c->GetCharacterPhysicsBody()->AddImpulse({0,-800.f});
+    if (active_move)
+    {
+        c->GetCharacterPhysicsBody()->AddImpulse({0,-700});
+    }
 }
 
 void MovableComponent::ActorComponentTick(const double deltaTime)
 {
     const Vec2<float> movement = (player_input_Vec.Normalized() * deltaTime * base_move_speed).Cast<float>();
-    owned_actor->AddActorWorldLocation(movement);
+    if (active_move)
+    {
+        owned_actor->GetRoot()->GetPhysicsBody()->AddImpulse(movement);//AddActorWorldLocation(movement);
+    }
     player_input_Vec = {};
+}
+
+void MovableComponent::SetMoveSpeed(const float speed)
+{
+    base_move_speed = speed;
+}
+
+void MovableComponent::SetActiveMove(bool active)
+{
+    active_move = active;
 }

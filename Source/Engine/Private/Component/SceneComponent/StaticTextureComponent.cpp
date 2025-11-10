@@ -27,6 +27,7 @@ void StaticTextureComponent::Construct()
 //具有开关物理属性
 	physics_body = NewObject<SPhysicsBaseUtility>(this);
 	s_texture = NewObject<Texture>(this);
+	NativeSetSceneComponentSize(s_texture->GetSize());
 	//physics_body->SetPhysicsBodyOwner(this);
 }
 
@@ -44,7 +45,7 @@ void StaticTextureComponent::ComponentRender()
 	SDL_RenderTexture(renderer,s_texture->GetTexture().get(),nullptr,&dst);
 }
 
-Vec2<float> StaticTextureComponent::GetSize()
+Vec2<float> StaticTextureComponent::GetSize() const
 {
 	return s_texture->GetSize();
 }
@@ -77,5 +78,6 @@ std::shared_ptr<SDL_Texture> StaticTextureComponent::GetRowTexture() const
 
 void StaticTextureComponent::OfferRenderData(std::vector<RenderData>& data)
 {
-	data.emplace_back(RenderData(s_texture->GetTexture(), world_transform, {},SDL_FRect(world_transform.location.x,world_transform.location.y, w, h), layer));
+	data.emplace_back(RenderData(this,s_texture->GetTexture()));
+	//data.emplace_back(RenderData(s_texture->GetTexture(), world_transform, {},SDL_FRect(world_transform.location.x,world_transform.location.y, w, h), layer));
 }

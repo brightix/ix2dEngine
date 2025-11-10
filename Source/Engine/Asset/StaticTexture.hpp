@@ -1,10 +1,9 @@
 #pragma once
 #include "Asset.hpp"
-#include "../Classes/Component/SenceComponent/SceneComponent.hpp"
-
+#include <SDL3/SDL.h>
 class StaticTexture : public Asset
 {
     std::shared_ptr<SDL_Texture> texture;
 public:
-    StaticTexture(){}
+    StaticTexture()= default;
 };

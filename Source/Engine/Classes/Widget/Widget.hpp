@@ -28,7 +28,8 @@ public:
     Widget();
 
 	void Construct() final ;
-	virtual void PreConstructEvent(){}
+	void RegisterEvents() override;
+	virtual void PreConstructEvent();
 	virtual void ConstructEvent(){}
 
 	virtual void ForTick(double delta_time);

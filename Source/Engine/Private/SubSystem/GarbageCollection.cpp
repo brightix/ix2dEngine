@@ -39,7 +39,10 @@ void GarbageCollection::GCPtrMark()
 	{
 		if (auto p = ptr->GetPtr())
 		{
-			p->bMarked = true;
+			if (!p->is_pending_kill)
+			{
+				p->bMarked = true;
+			}
 		}
 	}
 }

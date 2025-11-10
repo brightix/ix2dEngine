@@ -46,9 +46,7 @@ SPhysicsBaseUtility::~SPhysicsBaseUtility()
 
 FRect SPhysicsBaseUtility::GetCollisionBox() const
 {
-	Vec2<float> loc = collision_owner->GetComponentWorldLocation();
-	Vec2<float> size = collision_owner->GetComponentSize();
-    return {loc.x,loc.y,size.x,size.y};
+	return collision_owner->GetComponentCollisionBoundary();
 }
 
 void SPhysicsBaseUtility::SetSimulationPhysics(const bool is_active)

@@ -5,6 +5,7 @@
 #include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 #include "Classes/Core/GameEngine.hpp"
 #include "Classes/Core/GameWorld.hpp"
+#include "Types/Enums/PivotDir.hpp"
 #include "Utilities/FuncLib/GlobalMacros.hpp"
 
 void Character::Construct()
@@ -20,6 +21,7 @@ void Character::Construct()
     capsule->SetComponentName("capsule");
     capsule->GetPhysicsBody()->mass = 200.f;
     capsule->NativeSetSceneComponentSize(sprite->GetSize());
+	capsule->SetComponentPivot(PivotDir::BOTTOM_CENTER);
 	move_strategy = God;
 }
 
@@ -87,6 +89,7 @@ void Character::SetCharacterMoveStrategy(CharacterMoveStrategy new_strategy)
 	}
 	else if (new_strategy == Simulation)
 	{
+		Root->GetPhysicsBody()->velocity = {};
 		Root->ListenDispatcher(capsule->GetPhysicsBody(),"OnSynchronization","Synchronization");
 	}
 	CallDispatcher("OnMoveStrategyChanged");

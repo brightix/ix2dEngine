@@ -8,7 +8,9 @@ class Bird : public Character
 	using Character::Character;
 public:
 	void EventBegin() override;
-
+	void Construct() override;
+	void RegisterDispatchers() override;
 	void OnCollision(std::unordered_set<SPhysicsBaseUtility*> cols);
 
+	bool start_game;
 };

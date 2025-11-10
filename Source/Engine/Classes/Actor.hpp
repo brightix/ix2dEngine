@@ -78,7 +78,7 @@ public:
 
 //修正
 	Vec2<float> ConvertLocationFromPivot(Vec2<float> display_corner);
-
+	SceneComponent* GetRoot() const;
 
 
 
@@ -100,6 +100,7 @@ public:
 	}
 
     SceneComponent *GetSceneComponent(const std::string &component_name) const;
+	ActorComponent* GetActorComponent(const std::string &component_name) const;
 	void SetRoot(SceneComponent* new_root);
 
 //Sys

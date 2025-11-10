@@ -40,7 +40,10 @@ public:
     {
         data.push_back(static_cast<T>(value));
     }
-
+    void Clear()
+    {
+        data.clear();
+    }
 
 
 	T& operator[](const int index) {

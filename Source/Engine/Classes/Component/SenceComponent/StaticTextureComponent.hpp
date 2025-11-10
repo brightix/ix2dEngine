@@ -24,7 +24,7 @@ public:
 	void ComponentEventBegin() override;
 	void ComponentRender() override;
 	//Get
-	Vec2<float> GetSize();
+	[[nodiscard]] Vec2<float> GetSize() const;
 	//Set
 	//void SetPhysicsType(PhysicsType new_type) const;
 

@@ -17,6 +17,21 @@ void Widget::Construct()
     Object::Construct();
 }
 
+void Widget::RegisterEvents()
+{
+    Object::RegisterEvents();
+    AddCustomEvent(Event("ConstructEvent",[this] {
+        ConstructEvent();
+    }));
+}
+
+void Widget::PreConstructEvent()
+{
+    RegisterEvents();
+    RegisterDispatchers();
+    is_initialized = false;
+}
+
 
 void Widget::ForTick(double delta_time)
 {
@@ -57,21 +72,19 @@ PanelSlot* Widget::AddChild(Widget* child)
 	child->parent_slot = slot;
 
     child->outer = slot;
-    if (is_initialized && !child->is_initialized)
+    if (is_initialized && !child->is_initialized || World()->is_simulation)
     {
-        child->WidgetEventBegin();
+        child->ConstructEvent();
     }
     else
     {
-        child->ListenDispatcher(World(), "OnEventBegin", "EventBegin");
+        child->ListenDispatcher(World(), "OnWorldEventBegin", "ConstructEvent");
     }
     //加入新元素需要刷新
     dirty = true;
     ReceiveSlot(slot);
     return slot;
 }
-
-// GCPtr<PanelSlot> Widget::AddChild(GCPtr<Widget> child);
 
 WidgetVisibility Widget::GetVisibility() const
 {

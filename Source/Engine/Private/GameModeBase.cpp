@@ -29,7 +29,7 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActor<Bird>(Transform());
+	auto_generate_pawn = SpawnActor<Bird>(Transform({300,300}));
 	//auto_generate_pawn.Cast<Character>()->SetCharacterOpenPhysics(PhysicsType::Static);
 	controller->Possess(auto_generate_pawn.Get());
 }

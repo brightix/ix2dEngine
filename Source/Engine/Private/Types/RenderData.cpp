@@ -7,7 +7,7 @@ RenderData::RenderData(SceneComponent* c, std::shared_ptr<SDL_Texture> t)
 {
 	layer = static_cast<int>(c->layer);
 	texture = t;
-	render_transform = c->GetComponentTransform();
+	render_transform = c->GetComponentRenderLocation();
 	dst_rect = c->GetComponentRenderRect();
 }
 

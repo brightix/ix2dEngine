@@ -121,14 +121,8 @@ public:
 		id = 0;
 	}
 	[[nodiscard]] GCObject* GetOuter() const { return ptr->outer; }
-	T* operator->() const
-	{
-		return ptr;
-	}
-	T operator*() const
-	{
-		return *ptr;
-	}
+	T* operator->() const { return ptr; }
+	T operator*() const { return *ptr; }
 	explicit operator bool() const noexcept
 	{
 		return ptr != nullptr;

@@ -1,5 +1,5 @@
 {
-  "TargetFps" : 200,
+  "TargetFps" : 60,
   "ScreenWidth" : 640,
   "ScreenHeight" : 480
 }

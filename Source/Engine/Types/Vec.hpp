@@ -39,6 +39,8 @@ struct Vec2
     	y = static_cast<T>(V.y);
     }
 	Vec2(const Vec2& other) = default;
+
+
 	Vec2& operator=(const Vec2& other)
 	{
 		x = other.x;
@@ -97,6 +99,12 @@ struct Vec2
     }
 
 	template<typename U>
+	constexpr auto operator*(Vec2<U> val) const noexcept {
+		using R = std::common_type_t<T, U>;
+		return Vec2<R>{x * val.x, y * val.y};
+	}
+
+	template<typename U>
 	constexpr Vec2& operator*=(U val) noexcept {
     	x *= val;
     	y *= val;
@@ -144,24 +152,30 @@ struct Vec2
     {
     	return x == other.x && y == other.y;
     }
-	//Attr
-	double Length()
-    {
-    	static_assert(std::is_arithmetic_v<T>);
-    	return sqrt(x*x + y*y);
-    }
 
-	//algorithm
-	Vec2<double> Normalized(double precision = 0.00001)
-    {
-    	static_assert(std::is_arithmetic_v<T>);
-    	double len = Length();
-    	if (len < precision)
-    	{
-    		return {};
-    	}
-    	return Vec2<double>(*this/len);
-    }
+	// 求长度平方
+	[[nodiscard]] constexpr T LengthSquared() const noexcept
+	{
+		static_assert(std::is_arithmetic_v<T>);
+		return x * x + y * y;
+	}
+
+	// 求长度
+	[[nodiscard]] T Length() const noexcept
+	{
+		return std::sqrt(LengthSquared());
+	}
+
+	// 归一化（返回 Vec2<T>）
+	[[nodiscard]] Vec2 Normalized(T precision = static_cast<T>(0.00001)) const noexcept
+	{
+		static_assert(std::is_arithmetic_v<T>);
+		T len = Length();
+		if (len < precision)
+			return Vec2{}; // 返回 0 向量
+
+		return *this / len;
+	}
 
 	// TODO 使用angle
 	void RotateByAngle(float angle, Vec2<float> point)
@@ -187,6 +201,11 @@ struct Vec2
     {
 	    return Vec2<U>(x, y);
     }
+
+    Vec2<float> operator-()
+	{
+		return Vec2<float>{-x, -y};
+	}
 };
 
 

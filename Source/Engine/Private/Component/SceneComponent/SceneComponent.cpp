@@ -5,6 +5,7 @@
 #include "Classes/Actor.hpp"
 #include "Classes/Component/SenceComponent/CollisionBox.hpp"
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/SPhysics/SPhysics.hpp"
 #include "Types/RenderData.hpp"
 
 SceneComponent::SceneComponent() : SceneComponent(Transform{}){ }
@@ -230,6 +231,7 @@ void SceneComponent::Debug_RenderOutline(std::vector<RenderData>& data)
 {
 	//单线程
 	auto t = Create_OutLineTexture_S(Vec2<float>(w,h));
+	//data.emplace_back(RenderData(this,))
 	data.emplace_back(RenderData{t ,world_transform,{},SDL_FRect(world_transform.location.x,world_transform.location.y,w,h)});
 }
 
@@ -259,11 +261,16 @@ void SceneComponent::SetRenderLayer(LayerHierarchy layer_id)
 void SceneComponent::SetComponentPivot(const Vec2<float>& new_pivot)
 {
 	pivot = new_pivot;
-	SetComponentWorldLocation(GetComponentWorldLocation());
 	for (auto& component : mounted_components | std::views::values)
 	{
 		component->SetComponentPivot(pivot);
 	}
+	SetComponentWorldLocation(GetComponentWorldLocation());
+}
+
+Vec2<float> SceneComponent::GetComponentPivot()
+{
+	return pivot;
 }
 
 bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name)
@@ -280,6 +287,19 @@ bool SceneComponent::OnMountedComponentNameChanged(const std::string& component_
 	return true;
 }
 
+void SceneComponent::NativeRemoveComponent()
+{
+	is_pending_kill = true;
+	if (physics_body)
+	{
+		Engine().physicsSys->DeRegister(physics_body.Get());
+	}
+	for (auto& component : mounted_components | std::views::values)
+	{
+		component->NativeRemoveComponent();
+	}
+}
+
 Vec2<float> SceneComponent::GetComponentSize()
 {
 	return {w, h};
@@ -290,6 +310,8 @@ Transform SceneComponent::GetComponentTransform()
 {
 	return world_transform;
 }
+
+
 
 //变换
 void SceneComponent::SetComponentTransform(Transform new_transform)
@@ -322,7 +344,8 @@ void SceneComponent::SetComponentWorldLocation(const Vec2<float>& new_loc)
 		//如果位置无变化就不做处理，防止循环依赖
 		return ;
 	}
-	world_transform.location = new_loc;
+	//world_transform.location = new_loc;
+	world_transform.location = new_loc;// - pivot * GetComponentSize();
 	if (parent_component)
 	{
 		relative_location = world_transform.location - parent_component->GetComponentWorldLocation();
@@ -338,13 +361,20 @@ void SceneComponent::SetComponentWorldLocation(const Vec2<float>& new_loc)
 
 Vec2<float> SceneComponent::GetComponentWorldLocation() const
 {
-	//return world_transform.location;
-	return {world_transform.location.x - w * pivot.x, world_transform.location.y - h * pivot.y};
+	return world_transform.location;
+//	return {world_transform.location.x - w * pivot.x, world_transform.location.y - h * pivot.y};
 }
 
 Vec2<float> SceneComponent::GetComponentRelativeLocation()
 {
 	return relative_location;
+}
+
+Transform SceneComponent::GetComponentRenderLocation() const
+{
+	Transform ret = world_transform;
+	ret.location -= Vec2{w * pivot.x, h * pivot.y};
+	return ret;
 }
 
 
@@ -415,4 +445,11 @@ bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 	//连接新组件
 	GCLink(parent_com, new_com);
 	return true;
+}
+
+FRect SceneComponent::GetComponentCollisionBoundary()
+{
+	Vec2 ret = world_transform.location;
+	ret -= Vec2{w * pivot.x, h * pivot.y};
+	return {ret.x,ret.y,w,h};
 }

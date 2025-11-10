@@ -56,7 +56,7 @@ public:
 	void RegisterDispatchers() override;
 
 	virtual void ConstructWorld();
-	void StartSimulation();
+	virtual void StartSimulation();
 
 //Get
 	std::vector<Controller*> GetControllers() const;

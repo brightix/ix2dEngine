@@ -29,12 +29,11 @@
 }																		\
 
 #define WHITE SDL_Color(255,255,255,255)
-
 #define RED SDL_Color(255,0,0,255)
-
+#define GREEN SDL_Color(0,255,0,255)
 #define BLUE SDL_Color(0,0,255,255)
-
 #define EmeraldGreen SDL_Color(80,200,120,255)
+#define YELLOW SDL_Color(255,255,0,255)
 
 #if TRACINGTEST == 1
 	#define TStart TracingUtility::Instance().StartTracing(__FUNCTION__)

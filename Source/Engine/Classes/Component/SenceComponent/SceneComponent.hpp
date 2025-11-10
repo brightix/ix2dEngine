@@ -19,6 +19,7 @@ protected:
      * 逻辑变换
      */
     Transform world_transform;
+	Vec2<float> render_location;
 	Vec2<float> relative_location;
 	Rotation relative_rotation;
 
@@ -38,6 +39,7 @@ public:
 	float h;
 	LayerHierarchy layer;
     SceneComponent();
+	~SceneComponent(){}
     explicit SceneComponent(const Transform& trans);
 
 	void Construct() override;
@@ -99,7 +101,7 @@ public:
 			Log("构造了野组件，可能是批量构造的子组件树，需要重绑定");
 		}
 #endif
-		NativeSetOuter(outer);
+		component->NativeSetOuter(outer);
 		component->parent_component = this;
 		//这里的命名是初始类名+id
 		mounted_components.emplace(component->GetComponentName(),component);
@@ -138,6 +140,7 @@ public:
 	bool SetComponentName(const std::string& new_name) override;
 	void SetRenderLayer(LayerHierarchy layer_id);
 	void SetComponentPivot(const Vec2<float>& new_pivot);
+	Vec2<float> GetComponentPivot();
 	/**
 	 * 在子组件触发改名时调用父组件修改挂载表的关系
 	 * @param component_name 原命名
@@ -147,6 +150,8 @@ public:
 	bool OnMountedComponentNameChanged(const std::string& component_name, const std::string& new_name);
 
 
+//销毁
+	void NativeRemoveComponent();
 
 	Vec2<float> GetComponentSize();
 
@@ -159,6 +164,8 @@ public:
 	void SetComponentWorldLocation(const Vec2<float>& new_loc);
 	Vec2<float> GetComponentWorldLocation() const;
 	Vec2<float> GetComponentRelativeLocation();
+
+	Transform GetComponentRenderLocation() const;
 //Rotation
 	void SetComponentWorldRotation(const Rotation& rotation);
 	void AddComponentWorldRotation(const Rotation& rotation);
@@ -166,6 +173,9 @@ public:
 	Rotation GetComponentRelativeRotation();
 
 	static bool Replace(SceneComponent *old_com, SceneComponent *new_component);
+	//Scaling
+	//或取碰撞边界
+	virtual FRect GetComponentCollisionBoundary();
 };
 
 //单层找节点

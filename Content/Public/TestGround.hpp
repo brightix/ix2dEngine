@@ -1,5 +1,6 @@
 #pragma once
 #include "Classes/Actor.hpp"
+#include "SDL3/SDL_pixels.h"
 
 class StaticTextureComponent;
 
@@ -12,5 +13,5 @@ public:
     void Construct() override;
 
     StaticTextureComponent* GetGroundTexture();
-    void SetGroundSize(const Vec2<float>& new_size);
+    void SetGroundSizeAndColor(const Vec2<float>& new_size, SDL_Color color = GREEN);
 };

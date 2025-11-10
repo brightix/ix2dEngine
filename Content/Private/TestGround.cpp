@@ -12,7 +12,7 @@ void TestGround::Construct()
     //s_t->SetPhysicsType(PhysicsType::Static);
     //SetActorName("Unknown_");
 	size = {1000,1000};
-    SetGroundSize(size);
+    SetGroundSizeAndColor(size);
 }
 
 StaticTextureComponent* TestGround::GetGroundTexture()
@@ -20,8 +20,8 @@ StaticTextureComponent* TestGround::GetGroundTexture()
 	return st.Get();
 }
 
-void TestGround::SetGroundSize(const Vec2<float> &new_size)
+void TestGround::SetGroundSizeAndColor(const Vec2<float> &new_size, SDL_Color color)
 {
 	size = new_size;
-    Cast<StaticTextureComponent>(GetSceneComponent("default_texture"))->SetStaticTexture(Create_FilledTexture_S(new_size));
+    Cast<StaticTextureComponent>(GetSceneComponent("default_texture"))->SetStaticTexture(Create_FilledTexture_S(new_size,color));
 }

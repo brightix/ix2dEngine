@@ -91,6 +91,11 @@ void Actor::DestroyActor()
 	//三缓冲
 	is_pre_kill = true;
 	is_active = false;
+	Root->NativeRemoveComponent();
+	for (const auto &c: actor_components | std::views::values)
+	{
+		c->is_pending_kill = true;
+	}
 	//GCUnlink_self();
 }
 
@@ -123,6 +128,17 @@ SceneComponent *Actor::GetSceneComponent(const std::string &component_name) cons
 		return Root.Get();
 	}
 	return Root->GetSceneComponentByName(component_name);
+}
+
+ActorComponent * Actor::GetActorComponent(const std::string &component_name) const
+{
+	auto it = actor_components.find(component_name);
+	if (it == actor_components.end())
+	{
+		LogWithLevel(Warning,"没有找到该组件：" + component_name);
+		return nullptr;
+	}
+	return it->second.Get();
 }
 
 void Actor::SetRoot(SceneComponent *new_root)
@@ -209,6 +225,11 @@ Vec2<float> Actor::GetActorRelativeLocation()
 void Actor::AddActorWorldLocation(Vec2<float> dis) const
 {
 	Root->AddComponentWorldLocation(dis);
+}
+
+SceneComponent * Actor::GetRoot() const
+{
+	return Root.Get();
 }
 
 // Vec2<float> Actor::ConvertLocationFromPivot(Vec2<float> display_corner)
