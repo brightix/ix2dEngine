@@ -6,8 +6,10 @@ class GroundManager : public Actor
 {
 	using Actor::Actor;
 	Array<Vec2<TestGround*>> grounds;
+	std::vector<bool> is_used;
 	float entrance;
 	bool stop;
+	int score;
 
 public:
 	void Construct() override;
@@ -19,6 +21,4 @@ public:
 	void Init();
 
 	void Stop();
-
-	void Select(int i);
 };

@@ -70,20 +70,17 @@ void Object::ListenDispatcher(Object* target, const std::string& dispatcher_name
 
 
 	const std::string lambda_name = name + "lambda" + std::to_string(++lambda_id);
-	using EventFuncType = std::function<void(TEventParams)>;
-
-	std::vector<std::type_index> type = { std::type_index(typeid(Args))... };
+	const std::vector<std::type_index> type = { std::type_index(typeid(Args))... };
 
 	if (!target->dispatcher_system.GetDispatcherType(dispatcher_name)->CheckType(type))
 	{
 		LogWithLevel(Error,"无法将{" + name + "}的成员函数绑定到  " + dispatcher_name);
+		return;
 	}
-	auto event = Event(lambda_name,[listener = this, func](TEventParams e) {
-					listener->template CallWithEventParams<Listener, Ret, Args...>(func, e, std::index_sequence_for<Args...>{});
-				});
-	// auto event = Event(lambda_name, [listener = this, func](auto&&... args){
-	// 	(listener->*func)(std::forward<decltype(args)>(args)...);
-	// });
+	auto event = Event(lambda_name, [listener = static_cast<Listener*>(this), func](Args... args) {
+			// 转发参数调用成员函数
+			(listener->*func)(std::forward<Args>(args)...);
+		});
 	AddCustomEvent(std::move(event));
 	// 这里模拟 target 注册 lambda（直接调用 AddCustomEvent）
 	target->AcceptDelegate(this, dispatcher_name, lambda_name);

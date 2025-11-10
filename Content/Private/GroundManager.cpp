@@ -11,14 +11,14 @@ void GroundManager::Construct()
 	Actor::Construct();
 	entrance = 300.f;
 	Vec2<float> screen_size = Engine().GetEngineAttribution().ScreenSize;
-	Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->RegisterRandom(name,{-screen_size.y * 0.4f, 0.f});
-	Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->RegisterRandom("Entrance",{300.f, 600.f});
+	Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->RegisterRandom(name,{-screen_size.y * 0.5f, -screen_size.y * 0.1f});
+	Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->RegisterRandom("Entrance",{300.f, 500.f});
 }
 
 void GroundManager::RegisterDispatchers()
 {
 	Actor::RegisterDispatchers();
-	AddDispatcher("OnAddScore");
+	AddDispatcher("OnAddScore",{TypeID(int)});
 }
 
 void GroundManager::EventBegin()
@@ -37,23 +37,26 @@ void GroundManager::TubeMove(double delta_time)
 {
 	if (!stop)
 	{
-		for (auto& [top,bottom] : grounds)
+		for (int i = 0; i < grounds.size(); ++i)
 		{
+			auto& [top,bottom] = grounds[i];
 			auto screen_size = Engine().GetEngineAttribution().ScreenSize;
 			auto location = top->GetActorWorldLocation();
 			auto tube_size = top->size;
-			if (location.x < screen_size.x * 0.5f)
+			if (location.x < screen_size.x * 0.5f && !is_used[i])
 			{
-				CallDispatcher("OnAddScore");
+				CallDispatcher("OnAddScore",++score);
+				is_used[i] = true;
 			}
-			if (location.x + tube_size.x < 0)
+			if (location.x + tube_size.x / 2 < 0)
 			{
 				//这一组如果出左界了
 				float rand = Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->GetRandom(name).value();
-				top->SetActorLocation({static_cast<float>(screen_size.x) + tube_size.x,rand});
+				top->SetActorLocation({static_cast<float>(screen_size.x) + tube_size.x / 2,rand});
 
 				float entrance_rand = Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->GetRandom("Entrance").value();
-				bottom->SetActorLocation({static_cast<float>(screen_size.x) + tube_size.x, tube_size.y + top->GetActorWorldLocation().y + entrance_rand});
+				bottom->SetActorLocation({static_cast<float>(screen_size.x) + tube_size.x/2, tube_size.y + top->GetActorWorldLocation().y + entrance_rand});
+				is_used[i] = false;
 				continue;
 			}
 			auto movement = Vec2<float>(delta_time * -150.f, 0);
@@ -73,10 +76,11 @@ void GroundManager::Init()
 	grounds.Clear();
 	Vec2<float> screen_size = Engine().GetEngineAttribution().ScreenSize;
 	Vec2<float> tube_size(100,screen_size.y);
-	int n = 7;
+	int n = 6;
 	float interval = (screen_size.x - n * tube_size.x) / (n - 1);
 	float start_x = screen_size.x;
-	for (int i = 0; i < n - 1; ++i)
+	is_used = std::vector(n,false);
+	for (int i = 0; i < n; ++i)
 	{
 		float rand = Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->GetRandom(name).value();
 		float entrance_rand = Engine().GetEngineSubSystemManager()->GetSubsystem<RandomUtility>()->GetRandom("Entrance").value();
@@ -93,6 +97,8 @@ void GroundManager::Init()
 		bottom->GetGroundTexture()->SetComponentPivot(PivotDir::CENTER);
 		grounds.insert({top,bottom});
 	}
+	score = 0;
+	CallDispatcher("OnAddScore",score);
 	stop = false;
 }
 
@@ -100,18 +106,3 @@ void GroundManager::Stop()
 {
 	stop = true;
 }
-
-void GroundManager::Select(int i)
-{
-	if (i == 1)
-	{
-		Init();
-	}
-	else if (i == 2)
-	{
-		Stop();
-		Cast<MovableComponent>(World()->GetController()->GetControlledPawn()->GetActorComponent("MovableComponent"))->SetActiveMove(false);
-	}
-}
-
-

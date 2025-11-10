@@ -56,5 +56,6 @@ public:
     auto end() const { return data.end(); }
     auto cbegin() const { return data.cbegin(); }
     auto cend() const { return data.cend(); }
+	auto size() const { return data.size(); }
     ~Array()= default;
 };

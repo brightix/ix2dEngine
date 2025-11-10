@@ -54,7 +54,7 @@ void GameEngine::Construct()
 	in >> j;
 	in.close();
 	SysConfig = {j["TargetFps"], {j["ScreenWidth"], j["ScreenHeight"]}};
-
+	SDL_SetWindowSize(window, SysConfig.ViewportSize.x, SysConfig.ViewportSize.y);
 
 	tick_timer = NewObject(new NewTimer(),this);
 	consume_timer = NewObject(new NewTimer(),this);
@@ -97,6 +97,7 @@ void GameEngine::EventBegin()
 	renderer_center->ListenDispatcher(tick_sys, "OnRenderWidgetDataReady", renderer_center->ValidEvent("RenderWidgetDataReady"));
 	renderer_center->ListenDispatcher(tick_sys, "OnRenderClear", renderer_center->ValidEvent("RenderClear"));
 	renderer_center->ListenDispatcher(tick_sys, "OnRenderPresent", renderer_center->ValidEvent("RenderPresent"));
+	tick_sys->ListenDispatcher(game_world->GetController(),"Key_3","ShowDebugLine");
 }
 
 

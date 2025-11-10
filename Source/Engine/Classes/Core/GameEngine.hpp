@@ -57,7 +57,6 @@ public:
 	SDL_Window * window;
 	GCPtr<RendererCenter> renderer_center;
 	FontRenderer* font_manager;
-	GCPtr<TickSubSystem> tick_SubSystem;
 	GCPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
 	GCStrongPtr<SPhysics> physicsSys;

@@ -1,10 +1,12 @@
 #include "../Public/Bird.hpp"
 
 #include "../Public/TestGround.hpp"
+#include "Classes/Controller.hpp"
 #include "Classes/Component/ActorComponent/MovableComponent.hpp"
 #include "Classes/Component/SenceComponent/Capsule2d.hpp"
 #include "Classes/Component/SenceComponent/StaticTextureComponent.hpp"
 #include "Classes/Core/GameEngine.hpp"
+#include "Classes/Core/GameWorld.hpp"
 #include "Types/Enums/PivotDir.hpp"
 
 
@@ -20,6 +22,7 @@ void Bird::Construct()
 	//Root->GetSceneComponentByName("default_texture")->SetComponentPivot(PivotDir::CENTER);
 	Cast<MovableComponent>(GetActorComponent("MovableComponent"))->SetMoveSpeed(500);
 	capsule->GetPhysicsBody()->mass = 150.f;
+	Init();
 }
 
 void Bird::RegisterDispatchers()
@@ -33,8 +36,8 @@ void Bird::EventBegin()
 	Character::EventBegin();
 	ListenDispatcher(capsule,"OnCollision",&Bird::OnCollision);
 	capsule->GetPhysicsBody()->is_subscribe_collision = true;
-	SetCharacterMoveStrategy(God);
-
+	SetCharacterMoveStrategy(Simulation);
+	Cast<MovableComponent>(GetActorComponent("MovableComponent"))->SetActiveMove(true);
 }
 void Bird::OnCollision(std::unordered_set<SPhysicsBaseUtility*> cols)
 {
@@ -51,4 +54,11 @@ void Bird::OnCollision(std::unordered_set<SPhysicsBaseUtility*> cols)
 			}
 		}
 	}
+}
+
+void Bird::Init()
+{
+	auto screen_size = Engine().GetEngineAttribution().ScreenSize;
+	SetActorLocation(screen_size/2);
+	SetCharacterMoveStrategy(Simulation);
 }

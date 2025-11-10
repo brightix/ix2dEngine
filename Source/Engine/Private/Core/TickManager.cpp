@@ -14,6 +14,15 @@ TickSubSystem::TickSubSystem(int buffer_cnt) : buffer_type(buffer_cnt), fence(bu
 void TickSubSystem::Construct()
 {
 	EngineSubSystem::Construct();
+	show_debug_line = false;
+}
+
+void TickSubSystem::RegisterEvents()
+{
+	EngineSubSystem::RegisterEvents();
+	AddCustomEvent(Event("ShowDebugLine",[this](bool is_show) {
+		show_debug_line = is_show;
+	}));
 }
 
 void TickSubSystem::RegisterDispatchers()
@@ -109,8 +118,10 @@ TEndF("收集渲染数据");
 		// EventParams widget_data;
 		// widget_data.Add<GCPtr<GameWorld>>("widget_data", world);
 		// dispatcher_system.CallDelegate("RenderWidgetDataReady", widget_data);
-
-		physics->DebugTree();
+		if (show_debug_line)
+		{
+			physics->DebugTree();
+		}
 // 显示到窗口  停止提交任务 ##################################################################################
 
 		dispatcher_system.CallDispatcher("OnRenderPresent");
@@ -135,6 +146,7 @@ void TickSubSystem::Init()
 
 		texts[i] = text;
 	}
+
 }
 
 

@@ -296,6 +296,6 @@ void SPhysics::OnMovableBodyCollision(SPhysicsBaseUtility* A,SPhysicsBaseUtility
 	B->velocity -= friction_force * (B->mass_inv * dt);
 
 	// 调试输出
-	std::cout << "Ff=(" << friction_force.x << "," << friction_force.y << ") "
-			  << "N=" << normal_force << " mu=" << mu << std::endl;
+	// std::cout << "Ff=(" << friction_force.x << "," << friction_force.y << ") "
+	// 		  << "N=" << normal_force << " mu=" << mu << std::endl;
 }

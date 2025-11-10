@@ -29,7 +29,8 @@ void GameModeBase::EventBegin()
 	Actor::EventBegin();
 	controller = CreateController();
 	//controller = SpawnActorFromSelf(new Controller());
-	auto_generate_pawn = SpawnActor<Bird>(Transform({300,300}));
+	auto screen_size = Engine().GetEngineAttribution().ScreenSize;
+	auto_generate_pawn = SpawnActor<Bird>(Transform(screen_size/2));
 	//auto_generate_pawn.Cast<Character>()->SetCharacterOpenPhysics(PhysicsType::Static);
 	controller->Possess(auto_generate_pawn.Get());
 }

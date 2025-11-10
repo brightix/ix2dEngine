@@ -24,11 +24,14 @@ class TickSubSystem : public EngineSubSystem
     int buffer_type;
     int write_head = 0;
     std::vector<GCPtr<TextBlockWidget>> texts;
+    bool show_debug_line;
+
 public:
     TickSubSystem(int buffer_cnt);
 	TickSubSystem() : buffer_type(0) { }
 
     void Construct() override;
+	void RegisterEvents() override;
 	void RegisterDispatchers() override;
     void Tick(double delta_time);
 

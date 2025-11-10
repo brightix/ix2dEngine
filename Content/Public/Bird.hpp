@@ -11,6 +11,6 @@ public:
 	void Construct() override;
 	void RegisterDispatchers() override;
 	void OnCollision(std::unordered_set<SPhysicsBaseUtility*> cols);
-
+	void Init();
 	bool start_game;
 };

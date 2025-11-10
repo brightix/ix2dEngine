@@ -7,12 +7,14 @@ class BirdWidget : public UserWidget
 {
     TextBlockWidget* score_widget;
     CanvasSlot* r;
-    int score;
 public:
-    BirdWidget(){}
+    BirdWidget() : score_widget(nullptr), r(nullptr) {}
+
     void RegisterEvents() override;
     void PreConstructEvent() override;
     void ConstructEvent() override;
     void Tick(double delta_time) override;
-    void AddScore();
+
+    void SetScore(int a);
+
 };

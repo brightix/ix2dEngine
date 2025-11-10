@@ -89,6 +89,7 @@ void MovableComponent::Construct()
             }
         });
     }
+	active_move = true;
     //std::cout<< "增强输入子系统初始化完毕" << std::endl;
 }
 
@@ -107,6 +108,11 @@ void MovableComponent::ActorComponentTick(const double deltaTime)
     {
         owned_actor->GetRoot()->GetPhysicsBody()->AddImpulse(movement);//AddActorWorldLocation(movement);
     }
+	auto it = Cast<Character>(owned_actor);
+	if (it && it->GetCharacterMoveStrategy() == God)
+	{
+		owned_actor->AddActorLocation(movement);
+	}
     player_input_Vec = {};
 }
 

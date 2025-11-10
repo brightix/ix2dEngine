@@ -33,7 +33,7 @@ void PixelBirdWorld::RegisterEvents()
 			ground_manager->Init();
 			auto bird = Cast<Bird>(World()->GetController()->GetControlledPawn());
 			bird->start_game = true;
-			bird->SetActorLocation({300,300});
+			bird->Init();
 			Cast<MovableComponent>(World()->GetController()->GetControlledPawn()->GetActorComponent("MovableComponent"))->SetActiveMove(true);
 		}
 	}));
