@@ -18,6 +18,10 @@ GarbageCollection::GarbageCollection()
 void GarbageCollection::GCMark(GCObject *gc_object)
 {
 	//对象不存在 or 已被标记
+	if (gc_object->id == 2)
+	{
+		std::cout<<std::endl;
+	}
 	if (!gc_object || gc_object->bMarked || gc_object->is_pending_kill) return;
 	gc_object->bMarked = true;
 	auto& children = gc_object->referencing;
@@ -37,13 +41,12 @@ void GarbageCollection::GCPtrMark()
 {
 	for (auto& ptr : GlobalPtr)
 	{
-		if (auto p = ptr->GetPtr())
+		auto p = ptr->GetPtr();
+		if (!p || p->is_pending_kill)
 		{
-			if (!p->is_pending_kill)
-			{
-				p->bMarked = true;
-			}
+			continue;
 		}
+		p->bMarked = true;
 	}
 }
 
@@ -62,8 +65,9 @@ int GarbageCollection::GCSweep()
 	GCPtrMark();
 	int cnt = 0;
 
-	for (auto& obj : GCAllObjects)
+	for (int i = 0;i < GCAllObjects.size(); ++i)
 	{
+		auto obj = GCAllObjects[i];
 		//不可达路径删除
 		if (obj && !obj->bMarked)
 		{
@@ -75,7 +79,7 @@ int GarbageCollection::GCSweep()
 			}
 			//std::cout << "移除了 " + obj->name << std::endl;
 			delete obj;
-			obj = nullptr;
+			GCAllObjects[i] = nullptr;
 			cnt++;
 		}
 	}

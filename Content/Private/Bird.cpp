@@ -15,11 +15,13 @@ void Bird::Construct()
 {
 	Character::Construct();
 	CNAME;
-	auto center = NewObject<StaticTextureComponent>();
-	center->SetStaticTexture(Create_FilledTexture_S({3,3},GREEN));
-	Root->MountedComponent<StaticTextureComponent>(center);
 	Root->SetComponentPivot(PivotDir::BOTTOM_CENTER);
-	//Root->GetSceneComponentByName("default_texture")->SetComponentPivot(PivotDir::CENTER);
+	//创建对象，添加到组件，设置属性
+	auto center = NewObject<StaticTextureComponent>(this);
+	AddSceneComponent(center);
+
+	center->SetStaticTexture(Create_FilledTexture_S({3,3},GREEN));
+
 	Cast<MovableComponent>(GetActorComponent("MovableComponent"))->SetMoveSpeed(500);
 	capsule->GetPhysicsBody()->mass = 150.f;
 	Init();

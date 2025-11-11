@@ -418,15 +418,14 @@ Rotation SceneComponent::GetComponentRelativeRotation()
 bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 {
 	const auto parent_actor = old_com->GetOwner();
-	const auto parent_com = old_com->parent_component;
-	//old_component->Destroy();
+	const auto parent_cop = old_com->parent_component;
 	//传递挂载组件
 	for (auto& component : old_com->mounted_components | std::views::values)
 	{
-		new_com->MountedComponent(component.Get());
+		new_com->AttachComponent(component.Get());
 	}
 
-	if (!parent_com)
+	if (!parent_cop)
 	{
 		if (!parent_actor)
 		{
@@ -438,12 +437,6 @@ bool SceneComponent::Replace(SceneComponent *old_com, SceneComponent *new_com)
 
 		return true;
 	}
-
-	//非 根组件
-	//解除 旧的组件关联
-	GCUnLink(new_com->outer,old_com);
-	//连接新组件
-	GCLink(parent_com, new_com);
 	return true;
 }
 

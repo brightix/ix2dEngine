@@ -19,10 +19,9 @@ Actor * Component::GetOwner() const
 	return owned_actor;
 }
 
-void Component::NativeSetOuter(GCObject *new_owner)
+void Component::SetComponentOwner(Actor* new_owner)
 {
-	Object::NativeSetOuter(new_owner);
-	owned_actor = Cast<Actor>(new_owner);
+	owned_actor = new_owner;
 }
 
 std::string Component::GetComponentName()

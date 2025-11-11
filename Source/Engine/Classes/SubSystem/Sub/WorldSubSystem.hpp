@@ -6,6 +6,7 @@ class WorldSubSystem : public SubsystemBase
 {
 public:
     WorldSubSystem(){}
-    ~WorldSubSystem()= default;
+    ~WorldSubSystem() override = default;
+	void Init() override;
 };
 

@@ -10,7 +10,7 @@
 #include "Public/TestGround.hpp"
 #include "public/TestPawn.hpp"
 
-GameWorld::GameWorld() : is_server(false), is_simulation(false) ,world_subsystem(nullptr)
+GameWorld::GameWorld() : is_server(false), is_simulation(false) ,world_subsystem_manager(nullptr)
 {
 	CNAME;
 }
@@ -44,9 +44,9 @@ void GameWorld::ConstructWorld()
 {
 	is_server = true;
 
-	world_subsystem = NewObject<SubSystemManager>(this);
+	world_subsystem_manager = NewObject<SubSystemManager>(this);
 	//tick管理器
-	tick_SubSystem = world_subsystem->CreateSubsystem<TickSubSystem>();
+	tick_SubSystem = world_subsystem_manager->CreateSubsystem<TickSubSystem>(this);
 	tick_SubSystem->SetBufferType(1);
 	tick_SubSystem->dispatcher_system.AddDispatcher("synchronization");//可以加在该子系统的构造函数内
 	// ================== 包围整个场景 ==================
@@ -121,7 +121,7 @@ void GameWorld::StartSimulation()
 	printf("---------------simulation---------------\n");
 	viewport = CreateWidget<CanvasWidget>();
 	//viewport->ConstructEvent();
-	world_subsystem->ForAllSubSystemInit();
+	world_subsystem_manager->ForAllSubSystemInit();
 	game_mode = SpawnActor<GameModeBase>();
 
 	auto fps = CreateWidget<TestFps>();
@@ -217,7 +217,7 @@ void GameWorld::NativeWorldTick(double delta_time)
 
 void GameWorld::WorldDestroy() const
 {
-	for (const auto subsystem = world_subsystem->GetAllSubSystem(); auto& it : subsystem)
+	for (const auto subsystem = world_subsystem_manager->GetAllSubSystem(); auto& it : subsystem)
 	{
 		it->DeInit();
 	}

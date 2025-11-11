@@ -108,8 +108,10 @@ public:
 #endif
 		return ptr;
 	}
+
+	//绑定outer，需要让outer修饰object
 	template<typename T,typename ...Args>
-	T* NewObject(Object *outer = nullptr, Args... args)
+	T* NewObject(Object* outer, Args... args)
 	{
 		static_assert(std::is_base_of_v<Object, T>, "T must derive from Object");
 		T* object = new T(std::forward<Args>(args)...);
@@ -117,17 +119,17 @@ public:
 		object->Construct();
 
 		GCAllObjects.push_back(object);
-		if (outer)
-		{
-			object->NativeSetOuter(outer);
-			GCLink(outer,object);
-		}
-#if DEBUG
-		if (!outer)
-		{
-			LogWithLevel(Warning,"构造了没有outer的对象");
-		}
-#endif
+		object->SetOuter(outer);
+		// if (outer)
+		// {
+		// 	//GCLink(outer,object);
+		// }
+// #if DEBUG
+// 		if (!outer)
+// 		{
+// 			LogWithLevel(Warning,"构造了没有outer的对象");
+// 		}
+// #endif
 		return object;
 	}
 

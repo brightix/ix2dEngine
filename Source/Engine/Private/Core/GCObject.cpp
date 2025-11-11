@@ -20,9 +20,7 @@ GCObject::~GCObject()
 
 void GCObject::NativeSetOuter(GCObject *new_outer)
 {
-	GCUnLink(outer,this);
-	outer =	new_outer;
-	GCLink(outer,this);
+	outer = new_outer;
 }
 
 bool GCObject::IsActive() const

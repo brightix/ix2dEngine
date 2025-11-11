@@ -219,9 +219,7 @@ public:
 	    {
 	        if (child)
 	        {
-		        TStartF("child_query");
 	        	child->Query(collision_pairs, depth + 1);
-	        	TEndF("child_query");
 	        }
 	    }
 

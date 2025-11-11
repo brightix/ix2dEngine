@@ -11,12 +11,15 @@ protected:
 public:
 	Component();
 	void Construct() override;
+	virtual void OnComponentCreate(){}
 	Actor *GetOwnerActor() const;
 
 	virtual void ComponentEventBegin(){}
 	//void SetOwner(Actor* actor);
 	[[nodiscard]] Actor* GetOwner() const;
-	void NativeSetOuter(GCObject* new_owner) override ;
+	void SetComponentOwner(Actor* new_owner);
+
+
 	std::string GetComponentName();
 	virtual bool SetComponentName(const std::string& new_name);
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "Classes/Core/GameWorld.hpp"
 #include "Public/GroundManager.hpp"
-#include "Public/TestGround.hpp"
 
 
 class PixelBirdWorld : public GameWorld

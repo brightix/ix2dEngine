@@ -10,6 +10,7 @@
 #include "Utilities/Timer.hpp"
 #include "Classes/Core/TimerSystem.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
+#include "Classes/SubSystem/Sub/WorldSubSystem.hpp"
 class Controller;
 class GameModeBase;
 class TickSubSystem;
@@ -36,7 +37,7 @@ class GameWorld : public Object
 
 	//子系统
 	TimerSystem timer_system;
-	SubSystemManager* world_subsystem;
+	GCStrongPtr<SubSystemManager> world_subsystem_manager;
 
 
 
@@ -89,6 +90,19 @@ public:
 
 	//Widget
 	PanelSlot *AddToViewport(Widget *w) const;
+	//子系统
+	// template<typename T>
+	// T* CreateWorldSubsystem()
+	// {
+	// 	if (world_subsystem_manager == nullptr)
+	// 	{
+	// 		world_subsystem_manager = NewObject<WorldSubSystem>(this);
+	// 	}
+	// 	return world_subsystem_manager->CreateSubsystem<GarbageCollection>(this);
+	// }
+
+private:
+	//void CreateWorld
 };
 
 template<typename T>

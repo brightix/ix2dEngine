@@ -5,4 +5,5 @@ class EngineSubSystem : public SubsystemBase
 {
 public:
 	//static void ForEngineInit();
+	void Init() override;
 };

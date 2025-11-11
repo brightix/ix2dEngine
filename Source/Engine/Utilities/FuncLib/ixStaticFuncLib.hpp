@@ -19,8 +19,12 @@ strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #define CAST(x) Cast(x,__func__)
 inline void LogToFile(const char* file_name = "", const int line = 0, const char* func_name = "", const LogLevel level = Tip,const std::string& msg = "")
 {
-	static std::ofstream file("Log.log", std::ios::app);
-	if(!file.is_open()) std::cerr << "文件打开失败" << std::endl;
+	static std::ofstream* log_file = new std::ofstream("Log.log", std::ios::app);
+	if(!log_file->is_open())
+	{
+		std::cerr << "文件打开失败" << std::endl;
+		throw  "文件打开失败" ;
+	}
 
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -39,7 +43,7 @@ inline void LogToFile(const char* file_name = "", const int line = 0, const char
 	}
 #endif
 
-	file << logText << std::endl;
+	*log_file << logText << std::endl;
 
 	if (level == LogLevel::FatalError)
 	{

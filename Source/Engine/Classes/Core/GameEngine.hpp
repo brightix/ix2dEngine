@@ -15,7 +15,6 @@
 #include "Types/EngineState.hpp"
 #include "Utilities/RandomUtility.hpp"
 
-class TestPawn;
 class SPhysics;
 class CanvasWidget;
 class Widget;
@@ -41,11 +40,10 @@ class GameEngine final : public Object
 
 	//组件
 	GCPtr<GameWorld> game_world;
+	GCPtr<CanvasWidget> viewport;
 
 	//子系统
-	SubSystemManager* engine_subsystem;
-	GCPtr<CanvasWidget> viewport;
-	//std::unordered_set<GCPtr<Widget>> widgets;
+	GCStrongPtr<SubSystemManager> engine_subsystem;
 	RandomUtility* random_utility;
     GarbageCollection* GCSys;
 
@@ -59,8 +57,7 @@ public:
 	FontRenderer* font_manager;
 	GCPtr<TextureStoreSubSystem> texture_store;
     TimerSystem timer_system;
-	GCStrongPtr<SPhysics> physicsSys;
-	GCPtr<TestPawn> test_d;
+	SPhysics* physicsSys;
 public:
 
     static GameEngine& Instance()
@@ -100,7 +97,19 @@ public:
     //属性
 	EngineState GetEngineAttribution() const;
 
-    GCPtr<SubSystemManager> GetEngineSubSystemManager() const;
+    SubSystemManager* GetEngineSubSystemManager() const;
+
+
+	//子系统
+	template<typename T>
+	T* CreateEngineSubsystem()
+	{
+		if (!engine_subsystem)
+		{
+			return nullptr;
+		}
+		return engine_subsystem->CreateSubsystem<GarbageCollection>(this);
+	}
 };
 
 

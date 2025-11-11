@@ -55,12 +55,11 @@ PanelSlot * UserWidget::CreateSlot()
     if (Root)
     {
         //一个UserWidget只能有一个根
-        LogWithLevel(FatalError,"重复添加用户控件");
+        LogWithLevel(FatalError,"重复添加 用户控件 ,用户控件的CreateSlot也就是AddChild只能用一次");
         return nullptr;
     }
-    Root = NewObject<UserWidgetSlot>();
+    Root = NewObject<UserWidgetSlot>(this);
     return Root.Get();
-
 }
 
 void UserWidget::ReceiveSlot(PanelSlot *slot)

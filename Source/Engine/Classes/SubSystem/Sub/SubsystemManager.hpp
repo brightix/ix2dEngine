@@ -5,12 +5,10 @@
 
 #include "Utilities/GCPtr.hpp"
 #include "Utilities/FuncLib/ixStaticFuncLib.hpp"
-#include "Utilities/FuncLib/SystemLib.hpp"
 
 class SubSystemManager : public Object
 {
-	std::unordered_map<std::type_index,SubsystemBase*> mounted_subsystem;
-	//std::unordered_map<uint32_t,GCPtr<SubsystemBase>> mounted_subSystem_;
+	std::unordered_map<std::type_index,GCStrongPtr<SubsystemBase>> mounted_subsystem;
 public:
     SubSystemManager()
     {
@@ -18,14 +16,14 @@ public:
     }
     ~SubSystemManager() override
     {
-    	DeInitAllSubSystem();
+    	std::cout << std::endl;
     }
 	std::vector<SubsystemBase*> GetAllSubSystem()
 	{
 		std::vector<SubsystemBase*> ret;
 		for (auto& sub : mounted_subsystem | std::views::values)
 		{
-			ret.emplace_back(sub);
+			ret.emplace_back(sub.Get());
 		}
 		return ret;
 	}
@@ -47,7 +45,7 @@ public:
     	mounted_subsystem.clear();
 	}
 	template<typename T>
-	T* CreateSubsystem()
+	T* CreateSubsystem(Object* outer)
 	{
 		const std::type_index id = typeid(T);
 		auto it = mounted_subsystem.find(id);
@@ -56,9 +54,9 @@ public:
 			Log("重复添加子系统");
 			return nullptr;
 		}
-		mounted_subsystem[id] = new T();
-		mounted_subsystem[id]->Construct();
-		return static_cast<T*>(mounted_subsystem[id]);
+    	T* sub = NewObject<T>(outer);
+		mounted_subsystem[id] = sub;
+		return sub;
 	}
 	template<typename T>
 	T* GetSubsystem()
@@ -70,7 +68,7 @@ public:
 			Log(std::string("没有实例化改子系统：") + typeid(T).name());
 			return nullptr;
 		}
-		return static_cast<T*>(mounted_subsystem[id]);
+		return static_cast<T*>(mounted_subsystem[id].Get());
 	}
 };
 

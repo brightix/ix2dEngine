@@ -39,4 +39,8 @@ public:
 	void Init() override;
 
 	void SetBufferType(int type);
+	~TickSubSystem()
+	{
+		std::cout<<std::endl;
+	}
 };

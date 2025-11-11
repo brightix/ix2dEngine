@@ -60,9 +60,9 @@ public:
 
     SPhysicsBaseUtility();
 	void Construct() override;
-void RegisterDispatchers() override;
+	void RegisterDispatchers() override;
 
-	void NativeSetOuter(GCObject *new_outer) override;
+	void SetPhysicsCollisionOwner(SceneComponent* new_outer);
 
 
     virtual PhysicsType GetPhysicsType(){ return type; }
@@ -79,7 +79,7 @@ void RegisterDispatchers() override;
 
     virtual void Init();
     // void SetIsSimulatedPhysics(bool value);
-	[[deprecated("Linked when it was created So no need to use")]]
+    // //[[deprecated("Linked when it was created So no need to use")]]
 	void SetPhysicsBodyOwner(SceneComponent* new_owner);
 	void SetSubscribeCollision(bool is_subscribe);
 

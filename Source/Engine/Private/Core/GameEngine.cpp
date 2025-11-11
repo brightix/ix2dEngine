@@ -5,9 +5,7 @@
 #include "Classes/Core/GameWorld.hpp"
 #include "Classes/SubSystem/GarbageCollection.hpp"
 #include "Classes/SubSystem/Sub/SubsystemManager.hpp"
-#include "Public/TestPawn.hpp"
 #include "Public/Map/PixelBirdWorld.hpp"
-#include "Types/RenderData.hpp"
 #include "Utilities/TracingUtility.hpp"
 
 GameEngine::GameEngine() : delta_time(-1.0), GCRoot(this), engine_subsystem(nullptr), random_utility(nullptr),
@@ -45,7 +43,13 @@ void GameEngine::Construct()
 {
 	Object::Construct();
 	engine_subsystem = NewObject<SubSystemManager>(this);
-	renderer_center = engine_subsystem->CreateSubsystem<RendererCenter>();
+
+	//Engine子系统
+	GCSys = engine_subsystem->CreateSubsystem<GarbageCollection>(this);
+	physicsSys = engine_subsystem->CreateSubsystem<SPhysics>(this);
+	random_utility = engine_subsystem->CreateSubsystem<RandomUtility>(this);
+	texture_store = engine_subsystem->CreateSubsystem<TextureStoreSubSystem>(this);
+	renderer_center = engine_subsystem->CreateSubsystem<RendererCenter>(this);
 
 	//将自己添加进全局GC
 	GCAllObjects.emplace_back(this);
@@ -56,22 +60,16 @@ void GameEngine::Construct()
 	SysConfig = {j["TargetFps"], {j["ScreenWidth"], j["ScreenHeight"]}};
 	SDL_SetWindowSize(window, SysConfig.ViewportSize.x, SysConfig.ViewportSize.y);
 
-	tick_timer = NewObject(new NewTimer(),this);
-	consume_timer = NewObject(new NewTimer(),this);
+	tick_timer = NewObject<NewTimer>(this);
+	consume_timer = NewObject<NewTimer>(this);
 
 
 
-	//Engine子系统
-	GCSys = engine_subsystem->CreateSubsystem<GarbageCollection>();
-	physicsSys = engine_subsystem->CreateSubsystem<SPhysics>();
-	random_utility = engine_subsystem->CreateSubsystem<RandomUtility>();
-	//random_utility->SetSeed(123456);
-	texture_store = engine_subsystem->CreateSubsystem<TextureStoreSubSystem>();
 
 	engine_subsystem->ForAllSubSystemInit();
 
 	//加载默认关卡
-	OnChangeWorld(new PixelBirdWorld());
+	OnChangeWorld(new PixelBirdWorld);
 }
 
 
@@ -88,7 +86,7 @@ void GameEngine::EventBegin()
 		return 5000;
 	});
 	//世界的事件开始
-
+	engine_subsystem->ForAllSubSystemInit();
 	game_world->StartSimulation();
 
 	//最后绑定事件
@@ -143,9 +141,9 @@ GameEngine::~GameEngine()
 		game_world->Unload();
 	}
 	GCSys->GCSweep();
-	for (auto& p : GlobalPtr)
+	for (int i = 0; i < GlobalPtr.size(); ++i)
 	{
-		p->Reset();
+		GlobalPtr[i]->Reset();
 	}
 	GCSys->GCSweep();
 
@@ -183,9 +181,9 @@ EngineState GameEngine::GetEngineAttribution() const
 	return engine_state;
 }
 
-GCPtr<SubSystemManager> GameEngine::GetEngineSubSystemManager() const
+SubSystemManager* GameEngine::GetEngineSubSystemManager() const
 {
-	return engine_subsystem;
+	return engine_subsystem.Get();
 }
 
 GCObject *GameEngine::GetGCRoot() const

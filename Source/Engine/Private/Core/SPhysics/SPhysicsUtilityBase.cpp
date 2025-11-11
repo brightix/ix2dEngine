@@ -12,7 +12,13 @@ SPhysicsBaseUtility::SPhysicsBaseUtility()
 void SPhysicsBaseUtility::Construct()
 {
 	Object::Construct();
-	//GameEngine::Instance().physicsSys->Register(this);
+	SceneComponent* it = Cast<SceneComponent>(outer);
+	if (!it)
+	{
+		LogWithLevel(Error,"PhysicsBody绑定到非场景组件上");
+	}
+	SetPhysicsBodyOwner(it);
+
 	type = PhysicsType::Static;
 	mass_inv = 1.f / mass;
 	//默认不订阅碰撞
@@ -26,21 +32,20 @@ void SPhysicsBaseUtility::RegisterDispatchers()
 	AddDispatcher("OnSynchronization");//同步事件
 }
 
-void SPhysicsBaseUtility::NativeSetOuter(GCObject *new_outer)
+void SPhysicsBaseUtility::SetPhysicsCollisionOwner(SceneComponent* new_outer)
 {
-	Object::NativeSetOuter(new_outer);
+	outer = new_outer;
 	if ((collision_owner = Cast<SceneComponent>(new_outer)))
 	{
 		name = collision_owner->name + "_physicsBody";
 	}
-
 }
 
 SPhysicsBaseUtility::~SPhysicsBaseUtility()
 {
 	if (simulation_physics)
 	{
-		Engine().physicsSys->DeRegister(this);
+		Engine().GetEngineSubSystemManager()->GetSubsystem<SPhysics>()->DeRegister(this);
 	}
 }
 

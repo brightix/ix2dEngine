@@ -12,28 +12,28 @@
 Actor::Actor(const Transform &tf) : isShowInGame(true), is_active(true), hidden_in_game(false),
                                     is_begin_event_handled(false),
                                     transform(tf),
-                                    open_physics(false)
+                                    game_world(nullptr),open_physics(false)
 {
-	CNAME;
 }
 
 void Actor::Construct()
 {
 	Object::Construct();
+	CNAME;
 	//场景默认根组件
 	Root = NewObject<RootComponent>(this);
 	Root->NativeSetOuter(this);
-	SetActorTransform(transform);
+	Root->SetComponentOwner(this);
+	Root->SetComponentTransform(transform);
 
 
-	auto tex = Root->MountedComponent(NewObject<StaticTextureComponent>());
+	auto tex = Root->AttachComponent(NewObject<StaticTextureComponent>(this));
 	tex->SetComponentName("default_texture");
-	//tex->SetStaticTexture(Create_OutLineTexture_S({100,100}));
 	auto dt = Engine().GetDefaultTexture();
 	tex->SetStaticTexture(dt);
 	auto NameBlock = NewObject<SceneTextBlock>(this);
 	NameBlock->SetText(name);
-	Root->MountedComponent(NameBlock);
+	Root->AttachComponent(NameBlock);
 }
 
 void Actor::RegisterDispatchers()
@@ -55,7 +55,11 @@ void Actor::EventBegin()
 	game_world = World();
 	is_begin_event_handled = true;
 	//场景根
-	Root->NativeSceneComponentEventBegin();
+	//Root->NativeSceneComponentEventBegin();
+	for (auto& sc : scene_components)
+	{
+		sc->ComponentEventBegin();
+	}
 	//逻辑组件
 	for (auto& ac : actor_components | std::views::values)
 	{
@@ -120,6 +124,13 @@ void Actor::SetActorName(const std::string &new_name)
 	name = new_name;
 }
 
+
+void Actor::AddSceneComponent(SceneComponent* sc)
+{
+	sc->OnComponentCreate();
+	scene_components.emplace_back(sc);
+	Root->AttachComponent(sc);
+}
 
 SceneComponent *Actor::GetSceneComponent(const std::string &component_name) const
 {
@@ -230,6 +241,17 @@ void Actor::AddActorWorldLocation(Vec2<float> dis) const
 SceneComponent * Actor::GetRoot() const
 {
 	return Root.Get();
+}
+
+void Actor::AddActorComponent(const std::string& component_name, ActorComponent* component)
+{
+	auto it = actor_components.find(component_name);
+	if (it != actor_components.end())
+	{
+		Log("Actor组件重名:" + component_name);
+	}
+	actor_components[component_name] = component;
+	component->SetComponentOwner(this);
 }
 
 // Vec2<float> Actor::ConvertLocationFromPivot(Vec2<float> display_corner)

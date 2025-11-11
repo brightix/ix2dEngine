@@ -18,6 +18,7 @@ public:
 	GCPtr() : GCPtr(nullptr) {}
 	GCPtr(T* other_ptr)
 	{
+		static_assert(std::is_base_of_v<GCObject,T>,"T must derive from GCObject");
 		if (other_ptr)
 		{
 			ptr = other_ptr;
@@ -25,64 +26,68 @@ public:
 		}
 		GlobalPtr.insert(this);
 	}
-	~GCPtr()
+	~GCPtr() override
 	{
 		GlobalPtr.remove(this);
 	}
 	//新对象
 
-	template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-	GCPtr& operator=(GCPtr<U>& other)
-	{
-		ptr = other.Get();
-		id = other.id;
-		return *this;
-	}
+	// template<typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
+	// GCPtr& operator=(GCPtr<U>& other)
+	// {
+	// 	ptr = other.Get();
+	// 	id = other.id;
+	// 	return *this;
+	// }
 	GCPtr& operator=(T* other) noexcept {
 		ptr = other;
 		id = other ? other->id : 0;
 		return *this;
 	}
-	// ✅ 拷贝构造
-	GCPtr(const GCPtr& other) : GCBase()
-	{
-		ptr = other.ptr;
-		id = other.id;
-		GlobalPtr.insert(this);
-	}
+	// // ✅ 拷贝构造
+	// GCPtr(const GCPtr& other) : GCBase()
+	// {
+	// 	ptr = other.ptr;
+	// 	id = other.id;
+	// 	//GlobalPtr.insert(this);
+	// }
 
-	GCPtr& operator=(const GCPtr& other) {
-		if (this != &other) {
-			ptr = other.ptr;
-			id = other.id;
-		}
-		return *this;
-	}
+	// GCPtr& operator=(const GCPtr& other) {
+	// 	if (this != &other) {
+	// 		ptr = other.ptr;
+	// 		id = other.id;
+	// 	}
+	// 	return *this;
+	// }
 
 	// ✅ 移动构造
-	GCPtr(GCPtr&& other) noexcept {
-		ptr = other.ptr;
-		id = other.id;
-		other.ptr = nullptr;
-	}
+	// GCPtr(GCPtr&& other) noexcept {
+	// 	ptr = other.ptr;
+	// 	id = other.id;
+	// 	other.ptr = nullptr;
+	// }
 
 	// ✅ 移动赋值
-	GCPtr& operator=(GCPtr&& other) noexcept {
-		if (this != &other) {
-			ptr = other.ptr;
-			id = other.id;
-			other.ptr = nullptr;
-		}
-		return *this;
-	}
+	// GCPtr& operator=(GCPtr&& other) noexcept {
+	// 	if (this != &other) {
+	// 		ptr = other.ptr;
+	// 		id = other.id;
+	// 		other.ptr = nullptr;
+	// 	}
+	// 	return *this;
+	// }
+	// template<typename U, typename = std::enable_if_t<
+	// 	std::is_base_of_v<U, T> || std::is_base_of_v<T, U>
+	// >>
+	// GCPtr(const GCPtr<U>& other) : ptr(static_cast<T*>(other.Get())), id(other.id)
+	// {
+	// 	GlobalPtr.insert(this);
+	// }
+
 	template<typename U, typename = std::enable_if_t<
 		std::is_base_of_v<U, T> || std::is_base_of_v<T, U>
 	>>
-	GCPtr(const GCPtr<U>& other) : ptr(static_cast<T*>(other.Get())), id(other.id)
-	{
-		GlobalPtr.insert(this);
-	}
-
+	GCPtr(const U* other_ptr) : GCPtr(other_ptr) {}
 
 	//assets
 	T* Get() const { return ptr; }
@@ -115,10 +120,11 @@ public:
 
 		return nullptr;
 	}
-	void Reset() override
+	bool Reset() override
 	{
 		ptr = nullptr;
 		id = 0;
+		return true;
 	}
 	[[nodiscard]] GCObject* GetOuter() const { return ptr->outer; }
 	T* operator->() const { return ptr; }
@@ -131,6 +137,9 @@ public:
 	{
 		return ptr != nullptr;
 	}
+
+
+
 	bool operator==(const GCPtr& other) const
 	{
 		return ptr == other.ptr;
@@ -157,27 +166,78 @@ struct std::hash<GCPtr<T>> {
 };
 
 //出作用域自动删除
-// class GCStrongPtr : public GCPtr<T>
+
+
+//只要我还在，就不允许伤害我的ptr
 template<typename T>
-class GCStrongPtr
+class GCStrongPtr : GCBase
 {
 	T* ptr = nullptr;
 public:
-	size_t id = -1;
-	GCStrongPtr()= default;
-	GCStrongPtr& operator=(T* other)
+	size_t id;
+	GCStrongPtr() : GCStrongPtr(nullptr)
+	{}
+	GCStrongPtr(T* other_ptr)
 	{
+		static_assert(std::is_base_of_v<GCObject,T>,"T must derive from GCObject");
+		if (other_ptr)
+		{
+			ptr = other_ptr;
+			id = ptr->id;
+			GlobalPtr.insert(this);
+		}
+	}
+	~GCStrongPtr() override
+	{
+		GlobalPtr.remove(this);
+	}
+
+	GCStrongPtr& operator=(T* other) noexcept
+	{
+		if (!other)
+		{
+			Log("禁止将空值给StrongPtr");
+			return *this;
+		}
+		if (ptr)
+		{
+			Log("禁止重赋值给StrongPtr，对象是：" + ptr->name);
+			return *this;
+		}
 		ptr = other;
-		id = other ? other->id : 0;
+		id = ptr ? ptr->id : 0;
+		GlobalPtr.insert(this);
 		return *this;
 	}
-	T* operator->() const
+	bool Reset() override
+	{
+		Log("StrongPtr拒绝Reset");
+		return false;
+	}
+	GCObject* GetPtr() override
+	{
+		//验证是否存活
+		if (!ptr)
+		{
+			return nullptr;
+		}
+		return reinterpret_cast<GCObject *>(ptr);
+	}
+
+	T* Get() const { return ptr; }
+	const T* GetStrong() const
 	{
 		return ptr;
 	}
-	~GCStrongPtr()
+	auto operator<=>(const GCStrongPtr& other) const
 	{
-		delete ptr;
+		return ptr < other.ptr;
+	}
+	T* operator->() const { return ptr; }
+	T operator*() const { return *ptr; }
+	explicit operator bool() const noexcept
+	{
+		return ptr != nullptr;
 	}
 };
 

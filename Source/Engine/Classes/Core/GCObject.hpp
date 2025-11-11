@@ -44,15 +44,15 @@ struct GCObject
 
 	void GCUnlink_self();
 };
-inline void GCLink(GCObject *parent, GCObject *child)
+// single link
+inline void GCLink(GCObject *left, GCObject *right)
 {
-	if (!child || !parent)
+	if (!left || !right)
 	{
 		Log("GCLink 绑定到空指针");
 		return ;
 	}
-	parent->referencing.insert(child);
-	child->referenced.insert(parent);
+	left->referencing.insert(right);
 }
 inline void GCUnLink(GCObject *parent, GCObject *child)
 {

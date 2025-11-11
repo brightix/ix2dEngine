@@ -87,9 +87,8 @@ public:
 	//挂载子场景组件
 
 	template<typename T>
-	T* MountedComponent(T* obj)
+	T* AttachComponent(T* obj)
 	{
-		//SceneComponent* component = Cast<SceneComponent>(obj,__func__);
 		auto component = IsDerived<SceneComponent>(obj);
 		if (!component)
 		{
@@ -101,7 +100,6 @@ public:
 			Log("构造了野组件，可能是批量构造的子组件树，需要重绑定");
 		}
 #endif
-		component->NativeSetOuter(outer);
 		component->parent_component = this;
 		//这里的命名是初始类名+id
 		mounted_components.emplace(component->GetComponentName(),component);

@@ -16,21 +16,21 @@ class Actor : public Object
 //质心就是旋转中心
 
 	//Component
-    bool isShowInGame;//render
-	bool is_active;//tick
+    bool isShowInGame;	//render
+	bool is_active;		//tick
 	bool hidden_in_game;//run render
 	bool is_begin_event_handled;
+    Transform transform;
 
-//每个actor内部有个计时器组件，用来定时处理事件
+    //每个actor内部有个计时器组件，用来定时处理事件
 
 
 protected:
-	Transform transform;
-
 	FRect actor_boundary;
 	//关卡 负责管理生命周期
 	GameWorld* game_world;
 	GCPtr<SceneComponent> Root;
+	std::vector<SceneComponent*> scene_components;
 	std::unordered_map<std::string,GCPtr<ActorComponent>> actor_components;
 	//可移动性
 public:
@@ -64,7 +64,7 @@ public:
 
 
 //变换
-	Transform GetWorldTransform() const;
+	[[nodiscard]] Transform GetWorldTransform() const;
     void SetActorTransform(Transform trans);
     void AddActorTransform(Transform trans);
 //位置
@@ -85,19 +85,14 @@ public:
 
 
 	//组件
-	template<typename T>
-	void AddActorComponent(const std::string& component_name,T* component)
-	{
-		static_assert(std::is_base_of_v<ActorComponent, T>, "类必须继承自ActorComponent");
-		actor_components[component_name] = NewObject<T>(component);
-		component->SetOwnerActor(this);
-	}
+	void AddActorComponent(const std::string& component_name,ActorComponent* component);
 
 	template<typename T>
 	T* GetComponent(const std::string& component_name)
 	{
-		return Cast<T>(actor_components[component_name].Get());
+		return Cast<T>(actor_components[component_name]);
 	}
+	void AddSceneComponent(SceneComponent* sc);
 
     SceneComponent *GetSceneComponent(const std::string &component_name) const;
 	ActorComponent* GetActorComponent(const std::string &component_name) const;
